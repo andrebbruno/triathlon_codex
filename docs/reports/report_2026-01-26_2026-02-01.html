@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatorio Semanal - 2026-01-26 a 2026-02-01</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#64748b; --card:#ffffff; --accent:#0ea5e9; --accent2:#10b981; --accent3:#f59e0b; }
+    *{box-sizing:border-box} body{margin:0;font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1200px;margin:24px auto;padding:0 20px}
+    header{background:linear-gradient(135deg,#0ea5e9,#22c55e);color:white;padding:24px;border-radius:18px}
+    header h1{margin:0 0 6px 0;font-size:24px} header p{margin:0;opacity:.9}
+    .grid{display:grid;gap:16px} .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(15,23,42,0.08)}
+    .kpi{font-size:26px;font-weight:700} .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+    .section{margin-top:18px} .section h2{margin:0 0 10px 0;font-size:18px}
+    .charts{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}
+    th{color:var(--muted);font-weight:600} .note-item{padding:8px 0;border-bottom:1px dashed #e2e8f0}
+  </style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Relatorio Semanal</h1><p>2026-01-26 a 2026-02-01</p></header>
+<div class="grid grid-4 section">
+<div class="card"><div class="label">Tempo total</div><div class="kpi">0.0 h</div></div>
+<div class="card"><div class="label">Distancia</div><div class="kpi">0.0 km</div></div>
+<div class="card"><div class="label">Carga</div><div class="kpi">0</div></div>
+<div class="card"><div class="label">TSB</div><div class="kpi">-18.1</div></div>
+</div>
+<div class="grid grid-4 section">
+<div class="card"><div class="label">CTL</div><div class="kpi">58.0</div></div>
+<div class="card"><div class="label">ATL</div><div class="kpi">76.1</div></div>
+<div class="card"><div class="label">RampRate</div><div class="kpi">3.5</div></div>
+<div class="card"><div class="label">Peso</div><div class="kpi"></div></div>
+</div>
+<div class="section charts">
+  <div class="card"><h2>Distribuicao por modalidade</h2><canvas id="dist-chart"></canvas></div>
+  <div class="card"><h2>CTL / ATL</h2><canvas id="pmc-chart"></canvas></div>
+  <div class="card"><h2>Bem-estar diario</h2><canvas id="well-chart"></canvas></div>
+</div>
+<section class="card notes"><h2>Notas da Semana</h2><div class="note-item"><strong>Notas do Andre de teste para o Codex</strong><div>teste de notas para a semana, vc consegue ler?</div></div></section>
+<section class="card section"><h2>Atividades (planejado vs executado)</h2>
+<table><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr></thead><tbody>
+
+</tbody></table></section>
+</div>
+<script>
+const distCtx = document.getElementById('dist-chart');
+new Chart(distCtx,{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#0ea5e9','#10b981','#f59e0b','#6366f1','#ef4444']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
+const pmcCtx = document.getElementById('pmc-chart');
+new Chart(pmcCtx,{type:'line',data:{labels:["2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-01-31","2026-02-01"],datasets:[{label:'CTL',data:[54.5,54.5,56.0,57.1,56.9,56.6,58.0],borderColor:'#0ea5e9',tension:.3},{label:'ATL',data:[69.1,66.9,74.0,77.9,73.8,69.8,76.1],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+const wellCtx = document.getElementById('well-chart');
+new Chart(wellCtx,{type:'line',data:{labels:["2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-01-31","2026-02-01"],datasets:[{label:'Sono (h)',data:[8.6,8.6,8.6,8.6,8.6,8.6,8.6],borderColor:'#10b981',tension:.3},{label:'HRV',data:[43.0,43.0,43.0,43.0,43.0,43.0,43.0],borderColor:'#6366f1',tension:.3},{label:'FC Repouso',data:[46,46,46,46,46,46,46],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+</script>
+</body></html>
