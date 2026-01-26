@@ -5,7 +5,7 @@ param(
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $ReportsDir) { $ReportsDir = Join-Path $repoRoot "Relatorios_Intervals" }
-if (-not $SiteDir) { $SiteDir = Join-Path $repoRoot "site" }
+if (-not $SiteDir) { $SiteDir = Join-Path $repoRoot "docs" }
 
 if (-not (Test-Path $ReportsDir)) {
   Write-Host "Reports directory not found: $ReportsDir"

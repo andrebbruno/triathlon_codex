@@ -18,7 +18,7 @@ Goal: keep cost near zero and automate weekly export + web view.
 3. Enable GitHub Pages:
    - Source: `Deploy from a branch`
    - Branch: `main`
-   - Folder: `/site`
+   - Folder: `/docs`
 4. In Actions, run **weekly-export** once (manual).
 5. Check `https://<user>.github.io/<repo>/` for reports list.
 
