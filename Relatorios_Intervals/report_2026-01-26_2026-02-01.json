@@ -1,0 +1,276 @@
+{
+  "semana": {
+    "inicio": "2026-01-26",
+    "tempo_total_horas": 0.0,
+    "distancia_total_km": 0.0,
+    "fim": "2026-02-01",
+    "carga_total_tss": 0
+  },
+  "metricas": {
+    "ATL": 76.1,
+    "RampRate": 3.5,
+    "TSB": -18.1,
+    "CTL": 58.0,
+    "peso_atual": null
+  },
+  "atividades": [],
+  "treinos_planejados": [
+    {
+      "event_id": "90351303",
+      "external_id": "training_20260127_strength",
+      "start_date_local": "2026-01-26T00:00:00",
+      "end_date_local": "2026-01-27T00:00:00",
+      "start_date": "2026-01-26",
+      "type": "Workout",
+      "name": "Força - Membros Superiores",
+      "description": "",
+      "moving_time_min": null,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90391188",
+      "external_id": "2026-01-27-bike-ss-controlado",
+      "start_date_local": "2026-01-27T00:00:00",
+      "end_date_local": "2026-01-28T00:00:00",
+      "start_date": "2026-01-27",
+      "type": "Ride",
+      "name": "Bike - Sweet Spot Controlado",
+      "description": "Warmup\n- 15m 138-170W power=3s 90-95rpm\n\nMain Set Repeat 2x\n- 10m 195-210W power=3s 90-95rpm\n- 4m 140-160W power=3s\n\nEndurance\n- 12m 165-175W power=3s 90-95rpm\n\nCooldown\n- 10m 138-155W power=3s",
+      "moving_time_min": 65.0,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90351302",
+      "external_id": "training_20260127_swim",
+      "start_date_local": "2026-01-28T00:00:00",
+      "end_date_local": "2026-01-29T00:00:00",
+      "start_date": "2026-01-28",
+      "type": "Swim",
+      "name": "Natação - Técnico Base",
+      "description": "Warmup\n- 300meters Z1 pace\n\nTécnica crawl Repeat 8x\n- 50meters Z2 pace\n- Rest 15s\n\nEndurance aeróbio Repeat 4x\n- 100meters Z2 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace",
+      "moving_time_min": 26.0,
+      "distance_km": 1.3,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90396137",
+      "external_id": "2026-01-28-swim-tecnica-aerobio",
+      "start_date_local": "2026-01-28T00:00:00",
+      "end_date_local": "2026-01-29T00:00:00",
+      "start_date": "2026-01-28",
+      "type": "Swim",
+      "name": "Swim - Tecnica + Aerobio",
+      "description": "Warmup\n- 300meters Z1 pace\n\nTecnica Repeat 4x\n- 50meters Z1 pace\n- Rest 15s\n\nSerie Principal Repeat 6x\n- 100meters Z2 pace\n- Rest 15s\n\nCooldown\n- 200meters Z1 pace",
+      "moving_time_min": 37.1,
+      "distance_km": 1.3,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90391189",
+      "external_id": "2026-01-28-run-tiros-curtos",
+      "start_date_local": "2026-01-28T08:00:00",
+      "end_date_local": "2026-01-28T08:41:00",
+      "start_date": "2026-01-28",
+      "type": "Run",
+      "name": "Run - Tiros Curtos (Manutencao)",
+      "description": "Warmup\n- 15m 06:20-06:40/km pace\n\nTiros 8x\n- 30s 05:00-05:15/km pace\n- 1m30s Z1 pace\n\nCooldown\n- 10m 06:30-06:50/km pace",
+      "moving_time_min": 41.0,
+      "distance_km": 6.1,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90532593",
+      "external_id": "2026-01-28-run-teste-tiros-30s",
+      "start_date_local": "2026-01-28T08:00:00",
+      "end_date_local": "2026-01-28T09:00:00",
+      "start_date": "2026-01-28",
+      "type": "Run",
+      "name": "Run - Teste Tiros 30s",
+      "description": "Warmup\n- 10m 06:45/km pace\n\nTiros 8x\n- 30s Z4 pace\n- 1m20s Z1 pace",
+      "moving_time_min": 24.7,
+      "distance_km": 3.6,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90351308",
+      "external_id": "training_20260129_strength",
+      "start_date_local": "2026-01-29T00:00:00",
+      "end_date_local": "2026-01-30T00:00:00",
+      "start_date": "2026-01-29",
+      "type": "WeightTraining",
+      "name": "Força - Membros Inferiores",
+      "description": "",
+      "moving_time_min": null,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90351311",
+      "external_id": "training_20260201_ride",
+      "start_date_local": "2026-01-29T00:00:00",
+      "end_date_local": "2026-01-30T00:00:00",
+      "start_date": "2026-01-29",
+      "type": "Ride",
+      "name": "Bike - Volume Aeróbio",
+      "description": "- Aquecimento\n  15m Z1\n\n- Tempo sustentado\n  45m Z2\n\n- Tempo moderado\n  2x5m Z3\n\n- Desaquecimento\n  15m Z1",
+      "moving_time_min": 80.0,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90396138",
+      "external_id": "2026-01-29-bike-endurance-z2",
+      "start_date_local": "2026-01-29T00:00:00",
+      "end_date_local": "2026-01-30T00:00:00",
+      "start_date": "2026-01-29",
+      "type": "Ride",
+      "name": "Bike - Endurance Z2",
+      "description": "Endurance\n- 75m 165-175W power=3s 90-95rpm",
+      "moving_time_min": 75.0,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90351309",
+      "external_id": "training_20260130_swim",
+      "start_date_local": "2026-01-30T00:00:00",
+      "end_date_local": "2026-01-31T00:00:00",
+      "start_date": "2026-01-30",
+      "type": "Swim",
+      "name": "Natação - Volume Base",
+      "description": "Warmup\n- 200meters Z1 pace\n\nEndurance base Repeat 6x\n- 100meters Z2 pace\n- Rest 15s\n\nRitmo moderado Repeat 4x\n- 50meters Z3 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace",
+      "moving_time_min": 24.0,
+      "distance_km": 1.2,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90396139",
+      "external_id": "2026-01-30-swim-tecnica-leve",
+      "start_date_local": "2026-01-30T00:00:00",
+      "end_date_local": "2026-01-31T00:00:00",
+      "start_date": "2026-01-30",
+      "type": "Swim",
+      "name": "Swim - Tecnica + Aerobio Leve",
+      "description": "Warmup\n- 300meters Z1 pace\n\nTecnica Repeat 6x\n- 50meters Z1 pace\n- Rest 15s\n\nSerie Principal Repeat 4x\n- 100meters Z2 pace\n- Rest 15s\n\nCooldown\n- 200meters Z1 pace",
+      "moving_time_min": 35.1,
+      "distance_km": 1.2,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90391194",
+      "external_id": "2026-01-31-run-base-protegida",
+      "start_date_local": "2026-01-31T08:00:00",
+      "end_date_local": "2026-01-31T08:45:00",
+      "start_date": "2026-01-31",
+      "type": "Run",
+      "name": "Run - Base Curta Protegida",
+      "description": "Base\n- 45m 06:50-07:30/km pace",
+      "moving_time_min": 45.0,
+      "distance_km": 6.3,
+      "paired_activity_id": null
+    },
+    {
+      "event_id": "90391195",
+      "external_id": "2026-02-01-bike-longao-limpo",
+      "start_date_local": "2026-02-01T00:00:00",
+      "end_date_local": "2026-02-02T00:00:00",
+      "start_date": "2026-02-01",
+      "type": "Ride",
+      "name": "Bike - Longao Endurance Limpo",
+      "description": "Endurance\n- 2h20m 165-180W power=3s 90-95rpm\n\nCooldown\n- 10m 138-155W power=3s",
+      "moving_time_min": 150.0,
+      "distance_km": null,
+      "paired_activity_id": null
+    }
+  ],
+  "bem_estar": [
+    {
+      "data": "2026-01-26",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": 2339,
+      "ctl": 54.5,
+      "atl": 69.1,
+      "rampRate": 3.2
+    },
+    {
+      "data": "2026-01-27",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": null,
+      "ctl": 54.5,
+      "atl": 66.9,
+      "rampRate": 3.1
+    },
+    {
+      "data": "2026-01-28",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": null,
+      "ctl": 56.0,
+      "atl": 74.0,
+      "rampRate": 4.4
+    },
+    {
+      "data": "2026-01-29",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": null,
+      "ctl": 57.1,
+      "atl": 77.9,
+      "rampRate": 4.7
+    },
+    {
+      "data": "2026-01-30",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": null,
+      "ctl": 56.9,
+      "atl": 73.8,
+      "rampRate": 5.1
+    },
+    {
+      "data": "2026-01-31",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": null,
+      "ctl": 56.6,
+      "atl": 69.8,
+      "rampRate": 3.2
+    },
+    {
+      "data": "2026-02-01",
+      "peso": null,
+      "fc_reposo": 46,
+      "sono_h": 8.6,
+      "hrv": 43.0,
+      "passos": null,
+      "ctl": 58.0,
+      "atl": 76.1,
+      "rampRate": 2.2
+    }
+  ],
+  "notas_semana": [
+    {
+      "start_date_local": "2026-01-26T00:00:00",
+      "end_date_local": "2026-01-27T00:00:00",
+      "name": "Notas do Andre de teste para o Codex",
+      "description": "teste de notas para a semana, vc consegue ler?"
+    }
+  ],
+  "analise_gpt": "Versao 7.5: inclui treinos planejados e match com atividades."
+}
