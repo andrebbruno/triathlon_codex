@@ -19,6 +19,19 @@
     .charts{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
     table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}
     th{color:var(--muted);font-weight:600} .note-item{padding:8px 0;border-bottom:1px dashed #e2e8f0}
+    .activity-card{border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+    .activity-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .activity-name{font-weight:600} .activity-date{color:var(--muted);font-size:12px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+    .chip{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:11px;color:#334155}
+    .badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}
+    .badge-good{background:#dcfce7;color:#166534}
+    .badge-warn{background:#fef3c7;color:#92400e}
+    .badge-bad{background:#fee2e2;color:#991b1b}
+    .badge-neutral{background:#e2e8f0;color:#334155}
+    .activity-plan{font-size:12px;color:#475569;margin-bottom:6px}
+    .activity-insight{font-size:12px;color:#0f172a;background:#f8fafc;border-left:3px solid #0ea5e9;padding:6px 8px;border-radius:6px}
+    .activity-notes{font-size:12px;color:#64748b;margin-top:6px}
   </style>
 </head>
 <body>
@@ -41,6 +54,236 @@
   <div class="card"><h2>CTL / ATL</h2><canvas id="pmc-chart"></canvas></div>
   <div class="card"><h2>Bem-estar diario</h2><canvas id="well-chart"></canvas></div>
 </div>
+<section class="card section"><h2>Qualidade por Sessao (planejado vs executado + wellness)</h2>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Afternoon Weight Training</div>
+      <div class=""activity-date"">2026-01-19 · WeightTraining</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 55 min</span>
+    <span class=""chip"">Dist: 0.0 km</span>
+    <span class=""chip"">Sono: 8.2h</span>
+    <span class=""chip"">HRV: 43.0</span>
+    <span class=""chip"">FC Rep: 50</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o. HRV abaixo da m&#233;dia: aten&#231;&#227;o a fadiga.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Afternoon Weight Training</div>
+      <div class=""activity-date"">2026-01-20 · WeightTraining</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 52.6 min</span>
+    <span class=""chip"">Dist: 0.0 km</span>
+    <span class=""chip"">Sono: 7.6h</span>
+    <span class=""chip"">HRV: 46.0</span>
+    <span class=""chip"">FC Rep: 48</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Morning Ride</div>
+      <div class=""activity-date"">2026-01-20 · Ride</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 75.2 min</span>
+    <span class=""chip"">Dist: 18.5 km</span>
+    <span class=""chip"">Sono: 7.6h</span>
+    <span class=""chip"">HRV: 46.0</span>
+    <span class=""chip"">FC Rep: 48</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Afternoon Swim</div>
+      <div class=""activity-date"">2026-01-21 · Swim</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 44.8 min</span>
+    <span class=""chip"">Dist: 2.0 km</span>
+    <span class=""chip"">Sono: 6.9h</span>
+    <span class=""chip"">HRV: 51.0</span>
+    <span class=""chip"">FC Rep: 49</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Execu&#231;&#227;o sem alertas claros.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Morning Run - Tiros curtos</div>
+      <div class=""activity-date"">2026-01-21 · Run</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 41 min</span>
+    <span class=""chip"">Dist: 6.1 km</span>
+    <span class=""chip"">Sono: 6.9h</span>
+    <span class=""chip"">HRV: 51.0</span>
+    <span class=""chip"">FC Rep: 49</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Execu&#231;&#227;o sem alertas claros.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Morning Ride</div>
+      <div class=""activity-date"">2026-01-22 · Ride</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 84.9 min</span>
+    <span class=""chip"">Dist: 37.6 km</span>
+    <span class=""chip"">Sono: 7.5h</span>
+    <span class=""chip"">HRV: 49.0</span>
+    <span class=""chip"">FC Rep: 51</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Afternoon Weight Training</div>
+      <div class=""activity-date"">2026-01-22 · WeightTraining</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 57.6 min</span>
+    <span class=""chip"">Dist: 0.0 km</span>
+    <span class=""chip"">Sono: 7.5h</span>
+    <span class=""chip"">HRV: 49.0</span>
+    <span class=""chip"">FC Rep: 51</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Morning Swim</div>
+      <div class=""activity-date"">2026-01-23 · Swim</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 39.8 min</span>
+    <span class=""chip"">Dist: 2.0 km</span>
+    <span class=""chip"">Sono: 7.4h</span>
+    <span class=""chip"">HRV: 51.0</span>
+    <span class=""chip"">FC Rep: 49</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Execu&#231;&#227;o sem alertas claros.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Brick</div>
+      <div class=""activity-date"">2026-01-24 · Run</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 5.9 min</span>
+    <span class=""chip"">Dist: 1.0 km</span>
+    <span class=""chip"">Sono: 6h</span>
+    <span class=""chip"">HRV: 48.0</span>
+    <span class=""chip"">FC Rep: 50</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono baixo pode elevar FC e reduzir qualidade.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Rodagem Z2</div>
+      <div class=""activity-date"">2026-01-24 · Ride</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 108.8 min</span>
+    <span class=""chip"">Dist: 44.9 km</span>
+    <span class=""chip"">Sono: 6h</span>
+    <span class=""chip"">HRV: 48.0</span>
+    <span class=""chip"">FC Rep: 50</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono baixo pode elevar FC e reduzir qualidade.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Morning Run</div>
+      <div class=""activity-date"">2026-01-25 · Run</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 38.2 min</span>
+    <span class=""chip"">Dist: 5.0 km</span>
+    <span class=""chip"">Sono: 7.6h</span>
+    <span class=""chip"">HRV: 43.0</span>
+    <span class=""chip"">FC Rep: 49</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o. HRV abaixo da m&#233;dia: aten&#231;&#227;o a fadiga.</div>
+  <div class=""activity-notes""></div>
+</div>
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">Morning Ride</div>
+      <div class=""activity-date"">2026-01-25 · Ride</div>
+    </div>
+    <span class=""badge badge-neutral"">Sem plano</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: 82.7 min</span>
+    <span class=""chip"">Dist: 42.2 km</span>
+    <span class=""chip"">Sono: 7.6h</span>
+    <span class=""chip"">HRV: 43.0</span>
+    <span class=""chip"">FC Rep: 49</span>
+  </div>
+  <div class=""activity-plan"">Sem planejado</div>
+  <div class=""activity-insight"">Sono bom favorece execu&#231;&#227;o. HRV abaixo da m&#233;dia: aten&#231;&#227;o a fadiga.</div>
+  <div class=""activity-notes""></div>
+</div>
+</section>
 <section class="card section"><h2>Atividades (planejado vs executado)</h2>
 <table><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr></thead><tbody>
 <tr>

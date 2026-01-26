@@ -27,6 +27,72 @@ function Html-Escape {
   return [System.Net.WebUtility]::HtmlEncode($Text)
 }
 
+function Get-WellnessForDate {
+  param(
+    [object[]]$Wellness,
+    [string]$Date
+  )
+
+  if (-not $Date) { return $null }
+  return $Wellness | Where-Object { $_.data -eq $Date } | Select-Object -First 1
+}
+
+function Classify-Quality {
+  param(
+    [object]$Plan
+  )
+
+  if (-not $Plan) {
+    return @{ label = "Sem plano"; level = "neutral" }
+  }
+
+  $dt = $Plan.delta_time_min
+  $dd = $Plan.delta_distance_km
+  $dtAbs = if ($dt -ne $null) { [math]::Abs([double]$dt) } else { $null }
+  $ddAbs = if ($dd -ne $null) { [math]::Abs([double]$dd) } else { $null }
+
+  if (($dtAbs -ne $null -and $dtAbs -le 5) -or ($ddAbs -ne $null -and $ddAbs -le 1)) {
+    return @{ label = "No alvo"; level = "good" }
+  }
+
+  if ($dt -ne $null -and $dt -gt 5) {
+    return @{ label = "Acima"; level = "warn" }
+  }
+
+  if ($dt -ne $null -and $dt -lt -5) {
+    return @{ label = "Abaixo"; level = "bad" }
+  }
+
+  return @{ label = "Parcial"; level = "neutral" }
+}
+
+function Build-Insight {
+  param(
+    [object]$Activity,
+    [object]$WellnessDay,
+    [double]$AvgSleep,
+    [double]$AvgHrv,
+    [double]$AvgRhr
+  )
+
+  $notes = @()
+
+  if ($WellnessDay) {
+    if ($WellnessDay.sono_h -lt 6.5) { $notes += "Sono baixo pode elevar FC e reduzir qualidade." }
+    elseif ($WellnessDay.sono_h -ge 7.5) { $notes += "Sono bom favorece execução." }
+
+    if ($WellnessDay.hrv -lt ($AvgHrv - 3)) { $notes += "HRV abaixo da média: atenção a fadiga." }
+    if ($WellnessDay.fc_reposo -gt ($AvgRhr + 3)) { $notes += "FC repouso acima da média: sinal de stress." }
+  }
+
+  if ($Activity.type -eq "Run" -and $Activity.notas -match "joelho") {
+    $notes += "Joelho citado: manter volume protegido."
+  }
+
+  if ($notes.Count -eq 0) { return "Execução sem alertas claros." }
+  return ($notes -join " ")
+}
+
 function Build-ReportHtml {
   param(
     [string]$ReportPath,
@@ -72,12 +138,17 @@ function Build-ReportHtml {
   $hrvVals = @($wellness | ForEach-Object { $_.hrv })
   $rhrVals = @($wellness | ForEach-Object { $_.fc_reposo })
 
+  $avgSleep = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object sono_h -Average).Average), 2) } else { 0 }
+  $avgHrv = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object hrv -Average).Average), 1) } else { 0 }
+  $avgRhr = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object fc_reposo -Average).Average), 1) } else { 0 }
+
   $notesWeek = @()
   if ($report.PSObject.Properties.Name -contains "notas_semana") {
     $notesWeek = @($report.notas_semana)
   }
 
   $activityRows = @()
+  $activityCards = @()
   foreach ($a in ($activities | Sort-Object start_date_local)) {
     $plan = $a.planejado
     $planText = "Sem planejado"
@@ -91,6 +162,35 @@ function Build-ReportHtml {
 
     $notes = ""
     if ($a.notas) { $notes = $a.notas }
+
+    $wellDay = Get-WellnessForDate -Wellness $wellness -Date $a.start_date_local
+    $sleepText = if ($wellDay) { "$($wellDay.sono_h)h" } else { "n/a" }
+    $hrvText = if ($wellDay) { "$($wellDay.hrv)" } else { "n/a" }
+    $rhrText = if ($wellDay) { "$($wellDay.fc_reposo)" } else { "n/a" }
+    $quality = Classify-Quality -Plan $plan
+    $insight = Build-Insight -Activity $a -WellnessDay $wellDay -AvgSleep $avgSleep -AvgHrv $avgHrv -AvgRhr $avgRhr
+
+    $activityCards += @"
+<div class=""activity-card"">
+  <div class=""activity-head"">
+    <div>
+      <div class=""activity-name"">$(Html-Escape $a.name)</div>
+      <div class=""activity-date"">$(Html-Escape $a.start_date_local) · $(Html-Escape $a.type)</div>
+    </div>
+    <span class=""badge badge-$($quality.level)"">$($quality.label)</span>
+  </div>
+  <div class=""chips"">
+    <span class=""chip"">Tempo: $($a.moving_time_min) min</span>
+    <span class=""chip"">Dist: $($a.distance_km) km</span>
+    <span class=""chip"">Sono: $sleepText</span>
+    <span class=""chip"">HRV: $hrvText</span>
+    <span class=""chip"">FC Rep: $rhrText</span>
+  </div>
+  <div class=""activity-plan"">$(Html-Escape $planText)</div>
+  <div class=""activity-insight"">$(Html-Escape $insight)</div>
+  <div class=""activity-notes"">$(Html-Escape $notes)</div>
+</div>
+"@
 
     $activityRows += @"
 <tr>
@@ -137,6 +237,19 @@ function Build-ReportHtml {
   $html += "    .charts{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}"
   $html += "    table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}"
   $html += "    th{color:var(--muted);font-weight:600} .note-item{padding:8px 0;border-bottom:1px dashed #e2e8f0}"
+  $html += "    .activity-card{border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:10px;background:#fff}"
+  $html += "    .activity-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}"
+  $html += "    .activity-name{font-weight:600} .activity-date{color:var(--muted);font-size:12px}"
+  $html += "    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}"
+  $html += "    .chip{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:11px;color:#334155}"
+  $html += "    .badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}"
+  $html += "    .badge-good{background:#dcfce7;color:#166534}"
+  $html += "    .badge-warn{background:#fef3c7;color:#92400e}"
+  $html += "    .badge-bad{background:#fee2e2;color:#991b1b}"
+  $html += "    .badge-neutral{background:#e2e8f0;color:#334155}"
+  $html += "    .activity-plan{font-size:12px;color:#475569;margin-bottom:6px}"
+  $html += "    .activity-insight{font-size:12px;color:#0f172a;background:#f8fafc;border-left:3px solid #0ea5e9;padding:6px 8px;border-radius:6px}"
+  $html += "    .activity-notes{font-size:12px;color:#64748b;margin-top:6px}"
   $html += "  </style>"
   $html += "</head>"
   $html += "<body>"
@@ -160,6 +273,11 @@ function Build-ReportHtml {
   $html += "  <div class=""card""><h2>Bem-estar diario</h2><canvas id=""well-chart""></canvas></div>"
   $html += "</div>"
   if ($notesBlock) { $html += $notesBlock }
+  if ($activityCards.Count -gt 0) {
+    $html += "<section class=""card section""><h2>Qualidade por Sessao (planejado vs executado + wellness)</h2>"
+    $html += ($activityCards -join "`n")
+    $html += "</section>"
+  }
   $html += "<section class=""card section""><h2>Atividades (planejado vs executado)</h2>"
   $html += "<table><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr></thead><tbody>"
   $html += ($activityRows -join "`n")
@@ -211,7 +329,7 @@ $lines += "      <ul>"
 foreach ($file in $reportFiles) {
   $name = $file.Name
   $htmlName = ($file.Name -replace "\.json$", ".html")
-  $lines += "        <li><a href=`"reports/$htmlName`">$htmlName</a> Â· <a href=`"reports/$name`">json</a></li>"
+  $lines += "        <li><a href=`"reports/$htmlName`">$htmlName</a> | <a href=`"reports/$name`">json</a></li>"
 }
 $lines += "      </ul>"
 $lines += "    </section>"
