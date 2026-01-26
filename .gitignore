@@ -1,0 +1,9 @@
+api_key.txt
+API Strava.txt
+strava_token.json
+upload_training.log.jsonl
+export-intervals-week.ps1
+report_*.json
+planned_*.md
+!Relatorios_Intervals/report_*.json
+!Relatorios_Intervals/planned_*.md

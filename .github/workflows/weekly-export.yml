@@ -1,0 +1,40 @@
+name: weekly-export
+
+on:
+  schedule:
+    - cron: "0 12 * * 0"
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Write api_key.txt
+        shell: pwsh
+        env:
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+        run: |
+          if (-not $env:INTERVALS_API_KEY) { throw "Missing INTERVALS_API_KEY secret." }
+          Set-Content -Path ./api_key.txt -Value $env:INTERVALS_API_KEY -Encoding ASCII
+
+      - name: Export Intervals reports
+        shell: pwsh
+        run: |
+          ./export-intervals-week-com-notas.ps1 -ApiKeyPath ./api_key.txt
+          Remove-Item ./api_key.txt -Force
+
+      - name: Build static site
+        shell: pwsh
+        run: |
+          ./scripts/build_site.ps1
+
+      - name: Commit reports and site
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add Relatorios_Intervals site
+          git commit -m "Weekly report" || echo "No changes to commit"
+          git push

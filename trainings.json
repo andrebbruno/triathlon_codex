@@ -1,0 +1,82 @@
+[
+  {
+    "external_id": "2026-01-26-strength-membros-superiores",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-26T00:00:00",
+    "type": "WeightTraining",
+    "name": "Strength - Membros Superiores",
+    "description": "Aquecimento\n- 10m\n\nTreino principal\n- 35m\n\nAlongamento\n- 5m"
+  },
+  {
+    "external_id": "2026-01-27-bike-endurance-z2",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-27T00:00:00",
+    "type": "Ride",
+    "name": "Bike - Endurance Z2",
+    "description": "Endurance\n- 60m 155-170W power=3s 85-95rpm"
+  },
+  {
+    "external_id": "2026-01-27-strength-membros-inferiores",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-27T00:00:00",
+    "type": "WeightTraining",
+    "name": "Strength - Membros Inferiores",
+    "description": "Aquecimento\n- 10m\n\nTreino principal\n- 35m\n\nAlongamento\n- 5m"
+  },
+  {
+    "external_id": "2026-01-28-run-base-protegida",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-28T00:00:00",
+    "type": "Run",
+    "name": "Run - Base Curta Protegida",
+    "description": "Base\n- 35m 06:45-07:30/km pace"
+  },
+  {
+    "external_id": "2026-01-28-swim-tecnica-base",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-28T00:00:00",
+    "type": "Swim",
+    "name": "Swim - Tecnica Base",
+    "description": "Warmup\n- 300meters Z1 pace\n\nTecnica Repeat 6x\n- 50meters Z1 pace\n- Rest 15s\n\nSerie Principal Repeat 4x\n- 100meters Z2 pace\n- Rest 15s\n\nCooldown\n- 200meters Z1 pace"
+  },
+  {
+    "external_id": "2026-01-29-bike-endurance-aerobio",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-29T00:00:00",
+    "type": "Ride",
+    "name": "Bike - Volume Aerobio",
+    "description": "Endurance\n- 75m 155-175W power=3s 85-95rpm"
+  },
+  {
+    "external_id": "2026-01-29-strength-core",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-29T00:00:00",
+    "type": "WeightTraining",
+    "name": "Strength - Core e Mobilidade",
+    "description": "Aquecimento\n- 10m\n\nTreino principal\n- 35m\n\nAlongamento\n- 5m"
+  },
+  {
+    "external_id": "2026-01-30-swim-aerobio-leve",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-30T00:00:00",
+    "type": "Swim",
+    "name": "Swim - Aerobio Leve",
+    "description": "Warmup\n- 300meters Z1 pace\n\nSerie Principal Repeat 8x\n- 100meters Z2 pace\n- Rest 15s\n\nCooldown\n- 200meters Z1 pace"
+  },
+  {
+    "external_id": "2026-01-31-run-base-curta",
+    "category": "WORKOUT",
+    "start_date_local": "2026-01-31T00:00:00",
+    "type": "Run",
+    "name": "Run - Base Curta",
+    "description": "Base\n- 40m 06:45-07:30/km pace"
+  },
+  {
+    "external_id": "2026-02-01-bike-longo-controlado",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-01T00:00:00",
+    "type": "Ride",
+    "name": "Bike - Longo Controlado",
+    "description": "Endurance\n- 1h50m 155-175W power=3s 85-95rpm\n\nCooldown\n- 10m 138-155W power=3s"
+  }
+]
