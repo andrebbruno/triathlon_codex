@@ -5,67 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Relatorio Semanal - 2026-01-26 a 2026-02-01</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#64748b; --card:#ffffff; --accent:#0ea5e9; --accent2:#10b981; --accent3:#f59e0b; }
-    *{box-sizing:border-box} body{margin:0;font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink)}
-    .wrap{max-width:1200px;margin:24px auto;padding:0 20px}
-    header{background:linear-gradient(135deg,#0ea5e9,#22c55e);color:white;padding:24px;border-radius:18px}
-    header h1{margin:0 0 6px 0;font-size:24px} header p{margin:0;opacity:.9}
-    .grid{display:grid;gap:16px} .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(15,23,42,0.08)}
-    .kpi{font-size:26px;font-weight:700} .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
-    .section{margin-top:18px} .section h2{margin:0 0 10px 0;font-size:18px}
+    :root{
+      --bg:#f4f3ef;
+      --ink:#0f172a;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --accent:#1f8ef1;
+      --accent-2:#16a34a;
+      --accent-3:#f59e0b;
+      --accent-4:#111827;
+      --shadow:0 16px 45px rgba(15,23,42,0.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"IBM Plex Sans",sans-serif;
+      background:radial-gradient(circle at 20% 20%, #ffffff 0%, #f4f3ef 55%, #ede9e3 100%);
+      color:var(--ink);
+    }
+    .wrap{max-width:1200px;margin:24px auto;padding:0 24px}
+    .hero{
+      background:linear-gradient(135deg,#0f172a 0%,#1f2937 100%);
+      color:#f8fafc;
+      padding:28px;
+      border-radius:22px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      width:320px;height:320px;
+      right:-80px;top:-140px;
+      background:radial-gradient(circle,#1f8ef1 0%,rgba(31,142,241,0) 70%);
+      opacity:.6;
+    }
+    .hero h1{font-family:"Space Grotesk",sans-serif;margin:0 0 6px 0;font-size:26px}
+    .hero p{margin:0;color:#cbd5f5}
+    .grid{display:grid;gap:16px}
+    .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+    .section{margin-top:20px}
+    .card{
+      background:var(--card);
+      border-radius:16px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .kpi{font-size:28px;font-weight:700;font-family:"Space Grotesk",sans-serif}
+    .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em}
     .charts{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-    table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}
-    th{color:var(--muted);font-weight:600} .note-item{padding:8px 0;border-bottom:1px dashed #e2e8f0}
-    .activity-card{border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+    .note-item{padding:8px 0;border-bottom:1px dashed #e5e7eb}
+    .activity-card{border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin-top:12px;background:#fff}
     .activity-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .activity-name{font-weight:600} .activity-date{color:var(--muted);font-size:12px}
+    .activity-name{font-weight:600;font-family:"Space Grotesk",sans-serif}
+    .activity-date{color:var(--muted);font-size:12px}
     .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
-    .chip{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:11px;color:#334155}
+    .chip{background:#f8fafc;border-radius:999px;padding:4px 10px;font-size:11px;color:#334155}
     .badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}
     .badge-good{background:#dcfce7;color:#166534}
     .badge-warn{background:#fef3c7;color:#92400e}
     .badge-bad{background:#fee2e2;color:#991b1b}
     .badge-neutral{background:#e2e8f0;color:#334155}
     .activity-plan{font-size:12px;color:#475569;margin-bottom:6px}
-    .activity-insight{font-size:12px;color:#0f172a;background:#f8fafc;border-left:3px solid #0ea5e9;padding:6px 8px;border-radius:6px}
+    .activity-target{font-size:12px;color:#111827;margin-bottom:6px}
+    .activity-insight{font-size:12px;color:#0f172a;background:#f1f5f9;border-left:3px solid #1f8ef1;padding:8px;border-radius:8px}
     .activity-notes{font-size:12px;color:#64748b;margin-top:6px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}
+    th{color:var(--muted);font-weight:600}
   </style>
 </head>
 <body>
 <div class="wrap">
-<header><h1>Relatorio Semanal</h1><p>2026-01-26 a 2026-02-01</p></header>
-<div class="grid grid-4 section">
-<div class="card"><div class="label">Tempo total</div><div class="kpi">0.0 h</div></div>
-<div class="card"><div class="label">Distancia</div><div class="kpi">0.0 km</div></div>
-<div class="card"><div class="label">Carga</div><div class="kpi">0</div></div>
-<div class="card"><div class="label">TSB</div><div class="kpi">-18.1</div></div>
-</div>
-<div class="grid grid-4 section">
-<div class="card"><div class="label">CTL</div><div class="kpi">58.0</div></div>
-<div class="card"><div class="label">ATL</div><div class="kpi">76.1</div></div>
-<div class="card"><div class="label">RampRate</div><div class="kpi">3.5</div></div>
-<div class="card"><div class="label">Peso</div><div class="kpi"></div></div>
-</div>
-<div class="section charts">
-  <div class="card"><h2>Distribuicao por modalidade</h2><canvas id="dist-chart"></canvas></div>
-  <div class="card"><h2>CTL / ATL</h2><canvas id="pmc-chart"></canvas></div>
-  <div class="card"><h2>Bem-estar diario</h2><canvas id="well-chart"></canvas></div>
-</div>
-<section class="card notes"><h2>Notas da Semana</h2><div class="note-item"><strong>Notas do Andre de teste para o Codex</strong><div>teste de notas para a semana, vc consegue ler?</div></div></section>
-<section class="card section"><h2>Atividades (planejado vs executado)</h2>
-<table><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr></thead><tbody>
+  <div class="hero">
+    <h1>Relatorio Semanal</h1>
+    <p>2026-01-26 a 2026-02-01</p>
+  </div>
 
-</tbody></table></section>
+  <div class="grid grid-4 section">
+    <div class="card"><div class="label">Tempo total</div><div class="kpi">0.0 h</div></div>
+    <div class="card"><div class="label">Distancia</div><div class="kpi">0.0 km</div></div>
+    <div class="card"><div class="label">Carga</div><div class="kpi">0</div></div>
+    <div class="card"><div class="label">TSB</div><div class="kpi">-18.1</div></div>
+  </div>
+  <div class="grid grid-4 section">
+    <div class="card"><div class="label">CTL</div><div class="kpi">58.0</div></div>
+    <div class="card"><div class="label">ATL</div><div class="kpi">76.1</div></div>
+    <div class="card"><div class="label">RampRate</div><div class="kpi">3.5</div></div>
+    <div class="card"><div class="label">Peso</div><div class="kpi"></div></div>
+  </div>
+
+  <div class="section charts">
+    <div class="card"><h2>Distribuicao por modalidade</h2><canvas id="dist-chart"></canvas></div>
+    <div class="card"><h2>CTL / ATL</h2><canvas id="pmc-chart"></canvas></div>
+    <div class="card"><h2>Bem-estar diario</h2><canvas id="well-chart"></canvas></div>
+  </div>
+
+  <section class="card notes"><h2>Notas da Semana</h2><div class="note-item"><strong>Notas do Andre de teste para o Codex</strong><div>teste de notas para a semana, vc consegue ler?</div></div></section>
+
+  <section class="card section">
+    <h2>Qualidade por Sessao (planejado vs executado + wellness)</h2>
+    
+  </section>
+
+  <section class="card section">
+    <h2>Atividades (planejado vs executado)</h2>
+    <table>
+      <thead>
+        <tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+  </section>
 </div>
 <script>
-const distCtx = document.getElementById('dist-chart');
-new Chart(distCtx,{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#0ea5e9','#10b981','#f59e0b','#6366f1','#ef4444']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
-const pmcCtx = document.getElementById('pmc-chart');
-new Chart(pmcCtx,{type:'line',data:{labels:["2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-01-31","2026-02-01"],datasets:[{label:'CTL',data:[54.5,54.5,56.0,57.1,56.9,56.6,58.0],borderColor:'#0ea5e9',tension:.3},{label:'ATL',data:[69.1,66.9,74.0,77.9,73.8,69.8,76.1],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-const wellCtx = document.getElementById('well-chart');
-new Chart(wellCtx,{type:'line',data:{labels:["2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-01-31","2026-02-01"],datasets:[{label:'Sono (h)',data:[8.6,8.6,8.6,8.6,8.6,8.6,8.6],borderColor:'#10b981',tension:.3},{label:'HRV',data:[43.0,43.0,43.0,43.0,43.0,43.0,43.0],borderColor:'#6366f1',tension:.3},{label:'FC Repouso',data:[46,46,46,46,46,46,46],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('dist-chart'),{
+    type:'doughnut',
+    data:{labels:[],datasets:[{data:[],backgroundColor:['#1f8ef1','#16a34a','#f59e0b','#111827','#ef4444']}]},
+    options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}
+  });
+  new Chart(document.getElementById('pmc-chart'),{
+    type:'line',
+    data:{labels:["2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-01-31","2026-02-01"],datasets:[
+      {label:'CTL',data:[54.5,54.5,56.0,57.1,56.9,56.6,58.0],borderColor:'#1f8ef1',tension:.3},
+      {label:'ATL',data:[69.1,66.9,74.0,77.9,73.8,69.8,76.1],borderColor:'#f59e0b',tension:.3}
+    ]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}
+  });
+  new Chart(document.getElementById('well-chart'),{
+    type:'line',
+    data:{labels:["2026-01-26","2026-01-27","2026-01-28","2026-01-29","2026-01-30","2026-01-31","2026-02-01"],datasets:[
+      {label:'Sono (h)',data:[8.6,8.6,8.6,8.6,8.6,8.6,8.6],borderColor:'#16a34a',tension:.3},
+      {label:'HRV',data:[43.0,43.0,43.0,43.0,43.0,43.0,43.0],borderColor:'#1f8ef1',tension:.3},
+      {label:'FC Repouso',data:[46,46,46,46,46,46,46],borderColor:'#ef4444',tension:.3}
+    ]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}
+  });
 </script>
-</body></html>
+</body>
+</html>

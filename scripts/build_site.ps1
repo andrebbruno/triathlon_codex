@@ -147,6 +147,54 @@ function Build-ReportHtml {
     $notesWeek = @($report.notas_semana)
   }
 
+  $distLabelsJson = ConvertTo-Json $distLabels -Compress
+  $distValuesJson = ConvertTo-Json $distValues -Compress
+  $wellDatesJson = ConvertTo-Json $wellDates -Compress
+  $ctlJson = ConvertTo-Json $ctlVals -Compress
+  $atlJson = ConvertTo-Json $atlVals -Compress
+  $sleepJson = ConvertTo-Json $sleepVals -Compress
+  $hrvJson = ConvertTo-Json $hrvVals -Compress
+  $rhrJson = ConvertTo-Json $rhrVals -Compress
+
+  function Parse-PlanTarget {
+    param(
+      [string]$Description,
+      [string]$Type
+    )
+
+    if (-not $Description) { return $null }
+
+    if ($Type -eq "Ride") {
+      $m = [regex]::Match($Description, "(\d+)\s*-\s*(\d+)\s*W", "IgnoreCase")
+      if ($m.Success) { return @{ min = [int]$m.Groups[1].Value; max = [int]$m.Groups[2].Value; unit = "W" } }
+      $m2 = [regex]::Match($Description, "(\d+)\s*W", "IgnoreCase")
+      if ($m2.Success) { $v = [int]$m2.Groups[1].Value; return @{ min = $v; max = $v; unit = "W" } }
+    }
+
+    if ($Type -eq "Run") {
+      $m = [regex]::Match($Description, "(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/km", "IgnoreCase")
+      if ($m.Success) { return @{ min = $m.Groups[1].Value; max = $m.Groups[2].Value; unit = "pace" } }
+      $m2 = [regex]::Match($Description, "(\d{1,2}:\d{2})/km", "IgnoreCase")
+      if ($m2.Success) { $v = $m2.Groups[1].Value; return @{ min = $v; max = $v; unit = "pace" } }
+    }
+
+    return $null
+  }
+
+  function Pace-From-Activity {
+    param(
+      [double]$Minutes,
+      [double]$DistanceKm
+    )
+
+    if (-not $DistanceKm -or $DistanceKm -le 0) { return $null }
+    $pace = $Minutes / $DistanceKm
+    $min = [math]::Floor($pace)
+    $sec = [math]::Round(($pace - $min) * 60)
+    if ($sec -eq 60) { $min += 1; $sec = 0 }
+    return "{0}:{1:00}/km" -f $min, $sec
+  }
+
   $activityRows = @()
   $activityCards = @()
   foreach ($a in ($activities | Sort-Object start_date_local)) {
@@ -170,6 +218,21 @@ function Build-ReportHtml {
     $quality = Classify-Quality -Plan $plan
     $insight = Build-Insight -Activity $a -WellnessDay $wellDay -AvgSleep $avgSleep -AvgHrv $avgHrv -AvgRhr $avgRhr
 
+    $planTarget = Parse-PlanTarget -Description $plan.description -Type $a.type
+    $actualTarget = $null
+    if ($a.type -eq "Ride" -and $a.average_watts) {
+      $actualTarget = "$($a.average_watts) W"
+    } elseif ($a.type -eq "Run") {
+      $paceActual = Pace-From-Activity -Minutes $a.moving_time_min -DistanceKm $a.distance_km
+      if ($paceActual) { $actualTarget = $paceActual }
+    }
+
+    $planTargetText = "n/a"
+    if ($planTarget) {
+      if ($planTarget.unit -eq "W") { $planTargetText = "$($planTarget.min)-$($planTarget.max) W" }
+      if ($planTarget.unit -eq "pace") { $planTargetText = "$($planTarget.min)-$($planTarget.max)" }
+    }
+
     $activityCards += @"
 <div class=""activity-card"">
   <div class=""activity-head"">
@@ -187,6 +250,7 @@ function Build-ReportHtml {
     <span class=""chip"">FC Rep: $rhrText</span>
   </div>
   <div class=""activity-plan"">$(Html-Escape $planText)</div>
+  <div class=""activity-target""><strong>Alvo:</strong> $(Html-Escape $planTargetText) · <strong>Executado:</strong> $(Html-Escape $actualTarget)</div>
   <div class=""activity-insight"">$(Html-Escape $insight)</div>
   <div class=""activity-notes"">$(Html-Escape $notes)</div>
 </div>
@@ -215,83 +279,159 @@ function Build-ReportHtml {
     $notesBlock = "<section class=""card notes""><h2>Notas da Semana</h2>$notesHtml</section>"
   }
 
-  $html = @()
-  $html += "<!doctype html>"
-  $html += "<html lang=""pt-BR"">"
-  $html += "<head>"
-  $html += "  <meta charset=""utf-8"">"
-  $html += "  <meta name=""viewport"" content=""width=device-width, initial-scale=1"">"
-  $html += "  <title>Relatorio Semanal - $range</title>"
-  $html += "  <script src=""https://cdn.jsdelivr.net/npm/chart.js""></script>"
-  $html += "  <link href=""https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap"" rel=""stylesheet"">"
-  $html += "  <style>"
-  $html += "    :root { --bg:#f6f7fb; --ink:#0f172a; --muted:#64748b; --card:#ffffff; --accent:#0ea5e9; --accent2:#10b981; --accent3:#f59e0b; }"
-  $html += "    *{box-sizing:border-box} body{margin:0;font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink)}"
-  $html += "    .wrap{max-width:1200px;margin:24px auto;padding:0 20px}"
-  $html += "    header{background:linear-gradient(135deg,#0ea5e9,#22c55e);color:white;padding:24px;border-radius:18px}"
-  $html += "    header h1{margin:0 0 6px 0;font-size:24px} header p{margin:0;opacity:.9}"
-  $html += "    .grid{display:grid;gap:16px} .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}"
-  $html += "    .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(15,23,42,0.08)}"
-  $html += "    .kpi{font-size:26px;font-weight:700} .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}"
-  $html += "    .section{margin-top:18px} .section h2{margin:0 0 10px 0;font-size:18px}"
-  $html += "    .charts{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}"
-  $html += "    table{width:100%;border-collapse:collapse;font-size:12px} th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}"
-  $html += "    th{color:var(--muted);font-weight:600} .note-item{padding:8px 0;border-bottom:1px dashed #e2e8f0}"
-  $html += "    .activity-card{border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:10px;background:#fff}"
-  $html += "    .activity-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}"
-  $html += "    .activity-name{font-weight:600} .activity-date{color:var(--muted);font-size:12px}"
-  $html += "    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}"
-  $html += "    .chip{background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:11px;color:#334155}"
-  $html += "    .badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}"
-  $html += "    .badge-good{background:#dcfce7;color:#166534}"
-  $html += "    .badge-warn{background:#fef3c7;color:#92400e}"
-  $html += "    .badge-bad{background:#fee2e2;color:#991b1b}"
-  $html += "    .badge-neutral{background:#e2e8f0;color:#334155}"
-  $html += "    .activity-plan{font-size:12px;color:#475569;margin-bottom:6px}"
-  $html += "    .activity-insight{font-size:12px;color:#0f172a;background:#f8fafc;border-left:3px solid #0ea5e9;padding:6px 8px;border-radius:6px}"
-  $html += "    .activity-notes{font-size:12px;color:#64748b;margin-top:6px}"
-  $html += "  </style>"
-  $html += "</head>"
-  $html += "<body>"
-  $html += "<div class=""wrap"">"
-  $html += "<header><h1>Relatorio Semanal</h1><p>$range</p></header>"
-  $html += "<div class=""grid grid-4 section"">"
-  $html += "<div class=""card""><div class=""label"">Tempo total</div><div class=""kpi"">$totalTime h</div></div>"
-  $html += "<div class=""card""><div class=""label"">Distancia</div><div class=""kpi"">$totalDist km</div></div>"
-  $html += "<div class=""card""><div class=""label"">Carga</div><div class=""kpi"">$totalTss</div></div>"
-  $html += "<div class=""card""><div class=""label"">TSB</div><div class=""kpi"">$tsb</div></div>"
-  $html += "</div>"
-  $html += "<div class=""grid grid-4 section"">"
-  $html += "<div class=""card""><div class=""label"">CTL</div><div class=""kpi"">$ctl</div></div>"
-  $html += "<div class=""card""><div class=""label"">ATL</div><div class=""kpi"">$atl</div></div>"
-  $html += "<div class=""card""><div class=""label"">RampRate</div><div class=""kpi"">$ramp</div></div>"
-  $html += "<div class=""card""><div class=""label"">Peso</div><div class=""kpi"">$peso</div></div>"
-  $html += "</div>"
-  $html += "<div class=""section charts"">"
-  $html += "  <div class=""card""><h2>Distribuicao por modalidade</h2><canvas id=""dist-chart""></canvas></div>"
-  $html += "  <div class=""card""><h2>CTL / ATL</h2><canvas id=""pmc-chart""></canvas></div>"
-  $html += "  <div class=""card""><h2>Bem-estar diario</h2><canvas id=""well-chart""></canvas></div>"
-  $html += "</div>"
-  if ($notesBlock) { $html += $notesBlock }
-  if ($activityCards.Count -gt 0) {
-    $html += "<section class=""card section""><h2>Qualidade por Sessao (planejado vs executado + wellness)</h2>"
-    $html += ($activityCards -join "`n")
-    $html += "</section>"
-  }
-  $html += "<section class=""card section""><h2>Atividades (planejado vs executado)</h2>"
-  $html += "<table><thead><tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr></thead><tbody>"
-  $html += ($activityRows -join "`n")
-  $html += "</tbody></table></section>"
-  $html += "</div>"
-  $html += "<script>"
-  $html += "const distCtx = document.getElementById('dist-chart');"
-  $html += "new Chart(distCtx,{type:'doughnut',data:{labels:$([string](ConvertTo-Json $distLabels -Compress)),datasets:[{data:$([string](ConvertTo-Json $distValues -Compress)),backgroundColor:['#0ea5e9','#10b981','#f59e0b','#6366f1','#ef4444']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});"
-  $html += "const pmcCtx = document.getElementById('pmc-chart');"
-  $html += "new Chart(pmcCtx,{type:'line',data:{labels:$([string](ConvertTo-Json $wellDates -Compress)),datasets:[{label:'CTL',data:$([string](ConvertTo-Json $ctlVals -Compress)),borderColor:'#0ea5e9',tension:.3},{label:'ATL',data:$([string](ConvertTo-Json $atlVals -Compress)),borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});"
-  $html += "const wellCtx = document.getElementById('well-chart');"
-  $html += "new Chart(wellCtx,{type:'line',data:{labels:$([string](ConvertTo-Json $wellDates -Compress)),datasets:[{label:'Sono (h)',data:$([string](ConvertTo-Json $sleepVals -Compress)),borderColor:'#10b981',tension:.3},{label:'HRV',data:$([string](ConvertTo-Json $hrvVals -Compress)),borderColor:'#6366f1',tension:.3},{label:'FC Repouso',data:$([string](ConvertTo-Json $rhrVals -Compress)),borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});"
-  $html += "</script>"
-  $html += "</body></html>"
+  $html = @"
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatorio Semanal - $range</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f3ef;
+      --ink:#0f172a;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --accent:#1f8ef1;
+      --accent-2:#16a34a;
+      --accent-3:#f59e0b;
+      --accent-4:#111827;
+      --shadow:0 16px 45px rgba(15,23,42,0.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"IBM Plex Sans",sans-serif;
+      background:radial-gradient(circle at 20% 20%, #ffffff 0%, #f4f3ef 55%, #ede9e3 100%);
+      color:var(--ink);
+    }
+    .wrap{max-width:1200px;margin:24px auto;padding:0 24px}
+    .hero{
+      background:linear-gradient(135deg,#0f172a 0%,#1f2937 100%);
+      color:#f8fafc;
+      padding:28px;
+      border-radius:22px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      width:320px;height:320px;
+      right:-80px;top:-140px;
+      background:radial-gradient(circle,#1f8ef1 0%,rgba(31,142,241,0) 70%);
+      opacity:.6;
+    }
+    .hero h1{font-family:"Space Grotesk",sans-serif;margin:0 0 6px 0;font-size:26px}
+    .hero p{margin:0;color:#cbd5f5}
+    .grid{display:grid;gap:16px}
+    .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+    .section{margin-top:20px}
+    .card{
+      background:var(--card);
+      border-radius:16px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .kpi{font-size:28px;font-weight:700;font-family:"Space Grotesk",sans-serif}
+    .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em}
+    .charts{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .note-item{padding:8px 0;border-bottom:1px dashed #e5e7eb}
+    .activity-card{border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin-top:12px;background:#fff}
+    .activity-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .activity-name{font-weight:600;font-family:"Space Grotesk",sans-serif}
+    .activity-date{color:var(--muted);font-size:12px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+    .chip{background:#f8fafc;border-radius:999px;padding:4px 10px;font-size:11px;color:#334155}
+    .badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}
+    .badge-good{background:#dcfce7;color:#166534}
+    .badge-warn{background:#fef3c7;color:#92400e}
+    .badge-bad{background:#fee2e2;color:#991b1b}
+    .badge-neutral{background:#e2e8f0;color:#334155}
+    .activity-plan{font-size:12px;color:#475569;margin-bottom:6px}
+    .activity-target{font-size:12px;color:#111827;margin-bottom:6px}
+    .activity-insight{font-size:12px;color:#0f172a;background:#f1f5f9;border-left:3px solid #1f8ef1;padding:8px;border-radius:8px}
+    .activity-notes{font-size:12px;color:#64748b;margin-top:6px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}
+    th{color:var(--muted);font-weight:600}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Relatorio Semanal</h1>
+    <p>$range</p>
+  </div>
+
+  <div class="grid grid-4 section">
+    <div class="card"><div class="label">Tempo total</div><div class="kpi">$totalTime h</div></div>
+    <div class="card"><div class="label">Distancia</div><div class="kpi">$totalDist km</div></div>
+    <div class="card"><div class="label">Carga</div><div class="kpi">$totalTss</div></div>
+    <div class="card"><div class="label">TSB</div><div class="kpi">$tsb</div></div>
+  </div>
+  <div class="grid grid-4 section">
+    <div class="card"><div class="label">CTL</div><div class="kpi">$ctl</div></div>
+    <div class="card"><div class="label">ATL</div><div class="kpi">$atl</div></div>
+    <div class="card"><div class="label">RampRate</div><div class="kpi">$ramp</div></div>
+    <div class="card"><div class="label">Peso</div><div class="kpi">$peso</div></div>
+  </div>
+
+  <div class="section charts">
+    <div class="card"><h2>Distribuicao por modalidade</h2><canvas id="dist-chart"></canvas></div>
+    <div class="card"><h2>CTL / ATL</h2><canvas id="pmc-chart"></canvas></div>
+    <div class="card"><h2>Bem-estar diario</h2><canvas id="well-chart"></canvas></div>
+  </div>
+
+  $notesBlock
+
+  <section class="card section">
+    <h2>Qualidade por Sessao (planejado vs executado + wellness)</h2>
+    $($activityCards -join "`n")
+  </section>
+
+  <section class="card section">
+    <h2>Atividades (planejado vs executado)</h2>
+    <table>
+      <thead>
+        <tr><th>Data</th><th>Tipo</th><th>Nome</th><th>Tempo</th><th>Distancia</th><th>Planejado</th><th>Notas</th></tr>
+      </thead>
+      <tbody>
+        $($activityRows -join "`n")
+      </tbody>
+    </table>
+  </section>
+</div>
+<script>
+  new Chart(document.getElementById('dist-chart'),{
+    type:'doughnut',
+    data:{labels:$distLabelsJson,datasets:[{data:$distValuesJson,backgroundColor:['#1f8ef1','#16a34a','#f59e0b','#111827','#ef4444']}]},
+    options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}
+  });
+  new Chart(document.getElementById('pmc-chart'),{
+    type:'line',
+    data:{labels:$wellDatesJson,datasets:[
+      {label:'CTL',data:$ctlJson,borderColor:'#1f8ef1',tension:.3},
+      {label:'ATL',data:$atlJson,borderColor:'#f59e0b',tension:.3}
+    ]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}
+  });
+  new Chart(document.getElementById('well-chart'),{
+    type:'line',
+    data:{labels:$wellDatesJson,datasets:[
+      {label:'Sono (h)',data:$sleepJson,borderColor:'#16a34a',tension:.3},
+      {label:'HRV',data:$hrvJson,borderColor:'#1f8ef1',tension:.3},
+      {label:'FC Repouso',data:$rhrJson,borderColor:'#ef4444',tension:.3}
+    ]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}
+  });
+</script>
+</body>
+</html>
+"@
 
   Set-Content -Path $OutputPath -Value $html -Encoding UTF8
 }
