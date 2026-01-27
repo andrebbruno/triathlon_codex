@@ -2077,6 +2077,7 @@ foreach ($report in $reportFiles) {
 
   $latestReport = if ($reportFiles.Count -gt 0) { $reportFiles[0] } else { $null }
   $latestData = if ($latestReport) { Get-Content $latestReport.FullName -Raw | ConvertFrom-Json } else { $null }
+  $latestHtmlName = if ($latestReport) { ($latestReport.Name -replace "\.json$", ".html") } else { "reports" }
   $ctl = if ($latestData) { $latestData.metricas.CTL } else { $null }
   $atl = if ($latestData) { $latestData.metricas.ATL } else { $null }
   $tsb = if ($latestData) { $latestData.metricas.TSB } else { $null }
@@ -2096,15 +2097,38 @@ foreach ($report in $reportFiles) {
     $htmlName = ($file.Name -replace "\.json$", ".html")
     $reportsList += "<div class=""link-card""><a href=""reports/$htmlName"">$htmlName</a><span><a href=""reports/$name"">json</a></span></div>"
   }
-  $plannedList = @()
-  foreach ($file in $plannedFiles) {
-    $name = $file.Name
-    $plannedList += "<div class=""link-card""><a href=""reports/$name"">$name</a></div>"
+  function Format-MonthLabel {
+    param([string]$MonthKey)
+    if (-not $MonthKey) { return "" }
+    $dt = $null
+    try { $dt = [DateTime]::ParseExact("$MonthKey-01", "yyyy-MM-dd", $null) } catch { $dt = $null }
+    if ($dt) { return $dt.ToString("MMM yyyy").ToLower() }
+    return $MonthKey
   }
-  $longtermList = @()
-  foreach ($file in $longtermFiles) {
+
+  $reportGroups = @{}
+  foreach ($file in $reportFiles) {
     $name = $file.Name
-    $longtermList += "<div class=""link-card""><a href=""reports/$name"">$name</a></div>"
+    $monthKey = ""
+    if ($name -match "report_(\d{4}-\d{2})-\d{2}_") { $monthKey = $matches[1] }
+    if (-not $monthKey) { $monthKey = "outros" }
+    if (-not $reportGroups.ContainsKey($monthKey)) { $reportGroups[$monthKey] = @() }
+    $reportGroups[$monthKey] += $file
+  }
+  $monthKeys = @($reportGroups.Keys | Sort-Object -Descending)
+  $archiveButtons = @()
+  foreach ($m in $monthKeys) {
+    $label = Format-MonthLabel -MonthKey $m
+    $archiveButtons += "<button class=""chip"" data-month-btn=""$m"">$label</button>"
+  }
+  $archiveGroups = @()
+  foreach ($m in $monthKeys) {
+    $items = @()
+    foreach ($file in $reportGroups[$m]) {
+      $htmlName = ($file.Name -replace "\.json$", ".html")
+      $items += "<div class=""link-card""><a href=""reports/$htmlName"">$htmlName</a><span><a href=""reports/$($file.Name)"">json</a></span></div>"
+    }
+    $archiveGroups += "<div class=""archive-group"" data-month-group=""$m"">$($items -join "`n")</div>"
   }
 
   $indexHtml = @"
@@ -2124,6 +2148,8 @@ foreach ($report in $reportFiles) {
     .hero h1{margin:0;font-size:28px}
     .hero p{margin:6px 0 0 0;color:#eef2ff}
     .pill{background:rgba(15,23,42,0.3);padding:8px 14px;border-radius:999px;font-weight:600}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:#0b1022;color:#e5e7eb;border:1px solid rgba(148,163,184,0.3);padding:10px 14px;border-radius:999px;font-weight:600}
+    .btn:hover{border-color:rgba(148,163,184,0.6)}
     .grid{display:grid;gap:14px}
     .grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
     .grid-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
@@ -2142,6 +2168,10 @@ foreach ($report in $reportFiles) {
     .event-meta,.event-date{font-size:12px;color:var(--muted)}
     .event-tag{font-size:12px;background:#1f2a4a;padding:6px 10px;border-radius:999px}
     .link-card{display:flex;justify-content:space-between;align-items:center;background:var(--card-2);padding:10px 12px;border-radius:12px}
+    .chip{background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.35);color:#dbeafe;padding:6px 10px;border-radius:999px;font-size:12px;cursor:pointer}
+    .chip.active{background:#60a5fa;color:#0b1022}
+    .archive-group{display:none}
+    .archive-group.active{display:grid;gap:10px}
     a{color:#93c5fd;text-decoration:none}
     a:hover{text-decoration:underline}
     .muted{color:var(--muted)}
@@ -2154,7 +2184,10 @@ foreach ($report in $reportFiles) {
         <h1>Relatório de Coaching</h1>
         <p>$athleteName · Temporada 2026</p>
       </div>
-      <div class="pill">Atualizado: $(Get-Date -Format "yyyy-MM-dd HH:mm")</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <a class="btn" href="reports/$latestHtmlName">Abrir relatório da semana</a>
+        <div class="pill">Atualizado: $(Get-Date -Format "yyyy-MM-dd HH:mm")</div>
+      </div>
     </section>
 
     <section class="grid grid-3" style="margin-top:16px">
@@ -2193,15 +2226,23 @@ foreach ($report in $reportFiles) {
     </section>
 
     <section>
-      <h2>Planejado</h2>
-      <div class="grid grid-2">$($plannedList -join "`n")</div>
-    </section>
-
-    <section>
-      <h2>Longterm</h2>
-      <div class="grid grid-2">$($longtermList -join "`n")</div>
+      <h2>Relatórios Anteriores</h2>
+      <div class="grid" style="margin-bottom:12px">$($archiveButtons -join "`n")</div>
+      <div class="grid grid-2">$($archiveGroups -join "`n")</div>
     </section>
   </div>
+  <script>
+    const buttons = document.querySelectorAll('[data-month-btn]');
+    const groups = document.querySelectorAll('[data-month-group]');
+    function setMonth(month){
+      buttons.forEach(b=>b.classList.toggle('active', b.dataset.monthBtn===month));
+      groups.forEach(g=>g.classList.toggle('active', g.dataset.monthGroup===month));
+    }
+    if (buttons.length) {
+      setMonth(buttons[0].dataset.monthBtn);
+      buttons.forEach(b=>b.addEventListener('click',()=>setMonth(b.dataset.monthBtn)));
+    }
+  </script>
 </body>
 </html>
 "@
