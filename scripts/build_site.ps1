@@ -2095,7 +2095,15 @@ foreach ($report in $reportFiles) {
   foreach ($file in $reportFiles) {
     $name = $file.Name
     $htmlName = ($file.Name -replace "\.json$", ".html")
-    $reportsList += "<div class=""link-card""><a href=""reports/$htmlName"">$htmlName</a><span><a href=""reports/$name"">json</a></span></div>"
+    $label = $null
+    if ($htmlName -match "report_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})") {
+      $start = $null; $end = $null
+      try { $start = [DateTime]::ParseExact($matches[1], "yyyy-MM-dd", $null) } catch { $start = $null }
+      try { $end = [DateTime]::ParseExact($matches[2], "yyyy-MM-dd", $null) } catch { $end = $null }
+      if ($start -and $end) { $label = "{0:dd/MM} a {1:dd/MM}" -f $start, $end }
+    }
+    if (-not $label) { $label = $htmlName }
+    $reportsList += "<div class=""link-card""><a href=""reports/$htmlName"">$label</a></div>"
   }
   function Format-MonthLabel {
     param([string]$MonthKey)
@@ -2104,6 +2112,18 @@ foreach ($report in $reportFiles) {
     try { $dt = [DateTime]::ParseExact("$MonthKey-01", "yyyy-MM-dd", $null) } catch { $dt = $null }
     if ($dt) { return $dt.ToString("MMM yyyy").ToLower() }
     return $MonthKey
+  }
+
+  function Format-ReportLabel {
+    param([string]$FileName)
+    if (-not $FileName) { return "Relatorio" }
+    if ($FileName -match "report_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})") {
+      $start = $null; $end = $null
+      try { $start = [DateTime]::ParseExact($matches[1], "yyyy-MM-dd", $null) } catch { $start = $null }
+      try { $end = [DateTime]::ParseExact($matches[2], "yyyy-MM-dd", $null) } catch { $end = $null }
+      if ($start -and $end) { return "{0:dd/MM} a {1:dd/MM}" -f $start, $end }
+    }
+    return ($FileName -replace "\.html$", "")
   }
 
   $reportGroups = @{}
@@ -2126,7 +2146,8 @@ foreach ($report in $reportFiles) {
     $items = @()
     foreach ($file in $reportGroups[$m]) {
       $htmlName = ($file.Name -replace "\.json$", ".html")
-      $items += "<div class=""link-card""><a href=""reports/$htmlName"">$htmlName</a><span><a href=""reports/$($file.Name)"">json</a></span></div>"
+      $label = Format-ReportLabel -FileName $htmlName
+      $items += "<div class=""link-card""><a href=""reports/$htmlName"">$label</a></div>"
     }
     $archiveGroups += "<div class=""archive-group"" data-month-group=""$m"">$($items -join "`n")</div>"
   }
