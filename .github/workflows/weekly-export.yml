@@ -27,6 +27,7 @@ jobs:
         shell: pwsh
         run: |
           ./export-intervals-week-com-notas.ps1 -ApiKeyPath ./api_key.txt
+          ./intervals-longterm-coach-edition.ps1 -ApiKeyPath ./api_key.txt -WeeksBack 12
           Remove-Item ./api_key.txt -Force
 
       - name: Build static site

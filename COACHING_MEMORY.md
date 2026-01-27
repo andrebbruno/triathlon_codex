@@ -280,6 +280,20 @@ Solicite maiores informações sempre que necessário, o André é um entusiasta
 
 ---
 
+## 10. MAPA DE OBJETIVOS DOS TREINOS (para análise automática)
+
+Usado pelo relatório para dar contexto ao campo **Objetivo** e ao resumo do treino. Atualizar quando novos formatos surgirem.
+
+- **Recuperação / Solto / Leve:** reduzir fadiga e manter circulação sem estressar o joelho.
+- **Sweet Spot / Tempo (bike):** elevar limiar e sustentar potência com controle.
+- **Endurance / Z2 / Base:** construir base aeróbia e eficiência metabólica.
+- **Intervalos / Tiros / VO2:** estimular VO2 e velocidade com controle de recuperação.
+- **Técnica (swim):** eficiência de nado, posição e economia.
+- **Corrida protegida / Base curta:** manter base com volume controlado para proteção do joelho.
+- **Força:** estabilidade, prevenção de lesões e suporte ao triathlon.
+
+---
+
 *Última atualização: 25/01/2026* 
 *Próxima análise: Domingo dia 01/03/2026
 * 

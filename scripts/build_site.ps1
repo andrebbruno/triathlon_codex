@@ -20,6 +20,7 @@ Copy-Item -Path (Join-Path $ReportsDir "*.md") -Destination $siteReports -Force 
 
 $reportFiles = Get-ChildItem $ReportsDir -Filter "report_*.json" | Sort-Object Name -Descending
 $plannedFiles = Get-ChildItem $ReportsDir -Filter "planned_*.md" | Sort-Object Name -Descending
+$longtermFiles = Get-ChildItem $ReportsDir -Filter "intervals_longterm_*coach_edition.json" | Sort-Object Name -Descending
 
 function Html-Escape {
   param([string]$Text)
@@ -141,6 +142,9 @@ function Build-ReportHtml {
   $avgSleep = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object sono_h -Average).Average), 2) } else { 0 }
   $avgHrv = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object hrv -Average).Average), 1) } else { 0 }
   $avgRhr = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object fc_reposo -Average).Average), 1) } else { 0 }
+  $sleepDelta = if ($avgSleep -gt 0) { [math]::Round(($avgSleep - $idealSleep), 1) } else { 0 }
+  $hrvDelta = if ($avgHrv -gt 0) { [math]::Round(($avgHrv - $baselineHrv), 1) } else { 0 }
+  $rhrDelta = if ($avgRhr -gt 0) { [math]::Round(($avgRhr - $baselineRhr), 1) } else { 0 }
 
   $notesWeek = @()
   if ($report.PSObject.Properties.Name -contains "notas_semana") {
@@ -436,10 +440,1438 @@ function Build-ReportHtml {
   Set-Content -Path $OutputPath -Value $html -Encoding UTF8
 }
 
+function Build-ReportHtmlModern {
+  param(
+    [string]$ReportPath,
+    [string]$OutputPath
+  )
+
+  function Format-Duration {
+    param([double]$Minutes)
+    if ($Minutes -eq $null) { return "n/a" }
+    $total = [math]::Round($Minutes, 0)
+    if ($total -lt 60) { return "$total" + "min" }
+    $h = [math]::Floor($total / 60)
+    $m = $total % 60
+    return "{0}h{1:00}min" -f $h, $m
+  }
+
+  function Pace-To-Secs {
+    param([string]$Pace)
+    if (-not $Pace) { return $null }
+    $parts = $Pace -replace "/km","" -split ":"
+    if ($parts.Length -ne 2) { return $null }
+    return ([int]$parts[0] * 60) + [int]$parts[1]
+  }
+
+  function Format-Pace {
+    param([double]$MinutesPerKm)
+    if ($MinutesPerKm -eq $null) { return "n/a" }
+    $min = [math]::Floor($MinutesPerKm)
+    $sec = [math]::Round(($MinutesPerKm - $min) * 60)
+    if ($sec -eq 60) { $min += 1; $sec = 0 }
+    return "{0}:{1:00}/km" -f $min, $sec
+  }
+
+  function Format-Pace100 {
+    param([double]$MinutesPer100)
+    if ($MinutesPer100 -eq $null) { return "n/a" }
+    $min = [math]::Floor($MinutesPer100)
+    $sec = [math]::Round(($MinutesPer100 - $min) * 60)
+    if ($sec -eq 60) { $min += 1; $sec = 0 }
+    return "{0}:{1:00}/100m" -f $min, $sec
+  }
+
+  function Parse-NumberFromText {
+    param(
+      [string]$Value,
+      [double]$Default = 0
+    )
+    if (-not $Value) { return $Default }
+    $clean = $Value -replace "[^0-9,\.]", ""
+    if (-not $clean) { return $Default }
+    $clean = $clean -replace ",", "."
+    return [double]$clean
+  }
+
+  function Format-DeltaValue {
+    param(
+      [double]$Value,
+      [string]$Unit
+    )
+    if ($Value -eq $null) { return "n/a" }
+    $sign = if ($Value -gt 0) { "+" } elseif ($Value -lt 0) { "-" } else { "" }
+    $abs = [math]::Abs([math]::Round($Value, 1))
+    return "$sign$abs$Unit"
+  }
+
+  function Format-DeltaPace {
+    param([double]$DeltaSeconds)
+    if ($DeltaSeconds -eq $null) { return "n/a" }
+    $sign = if ($DeltaSeconds -gt 0) { "+" } elseif ($DeltaSeconds -lt 0) { "-" } else { "" }
+    $sec = [math]::Abs([math]::Round($DeltaSeconds, 0))
+    $min = [math]::Floor($sec / 60)
+    $s = $sec % 60
+    return "{0}{1}:{2:00}/km" -f $sign, $min, $s
+  }
+
+  function Safe-Divide {
+    param(
+      [double]$Num,
+      [double]$Den
+    )
+    if ($Den -and $Den -ne 0) { return $Num / $Den }
+    return $null
+  }
+
+  function Format-Percent {
+    param([double]$Value)
+    if ($Value -eq $null) { return "n/a" }
+    return "{0:0.0}%" -f $Value
+  }
+
+  function Build-MetricCard {
+    param(
+      [string]$Value,
+      [string]$Label
+    )
+    return "<div class=""metric""><div class=""value"">$Value</div><div class=""label"">$Label</div></div>"
+  }
+
+  function Get-PerformanceScore {
+    param([double]$CTL, [double]$TSB, [double]$RampRate)
+    if ($CTL -eq $null -or $TSB -eq $null -or $RampRate -eq $null) { return $null }
+    $ctlScore = [math]::Min($CTL / 100 * 40, 40)
+    $tsbScore = if ($TSB -ge -5 -and $TSB -le 10) { 30 }
+                elseif ($TSB -ge -15 -and $TSB -lt -5) { 20 }
+                elseif ($TSB -gt 10 -and $TSB -le 20) { 20 }
+                else { 10 }
+    $rampScore = if ($RampRate -ge 2 -and $RampRate -le 6) { 30 }
+                 elseif ($RampRate -ge 0 -and $RampRate -lt 2) { 20 }
+                 elseif ($RampRate -gt 6 -and $RampRate -le 10) { 15 }
+                 else { 5 }
+    return [math]::Round($ctlScore + $tsbScore + $rampScore, 0)
+  }
+
+  function Get-RecoveryStatus {
+    param([double]$TSB, [double]$HRV, [double]$RestingHR, [double]$Sleep)
+    if ($TSB -eq $null -or $HRV -eq $null -or $RestingHR -eq $null -or $Sleep -eq $null) { return $null }
+    $score = 0; $factors = @()
+    if ($TSB -ge -5) { $score += 25; $factors += "TSB otimo" }
+    elseif ($TSB -ge -15) { $score += 15; $factors += "TSB aceitavel" }
+    else { $score += 5; $factors += "TSB critico" }
+
+    if ($HRV -ge 45) { $score += 25; $factors += "HRV bom" }
+    elseif ($HRV -ge 38) { $score += 15; $factors += "HRV medio" }
+    else { $score += 5; $factors += "HRV baixo" }
+
+    if ($RestingHR -le 52) { $score += 25; $factors += "FC repouso normal" }
+    elseif ($RestingHR -le 58) { $score += 15; $factors += "FC repouso elevada" }
+    else { $score += 5; $factors += "FC repouso alta" }
+
+    if ($Sleep -ge 7.5) { $score += 25; $factors += "Sono adequado" }
+    elseif ($Sleep -ge 6.5) { $score += 15; $factors += "Sono razoavel" }
+    else { $score += 5; $factors += "Sono insuficiente" }
+
+    $status = if ($score -ge 80) { "EXCELENTE" }
+              elseif ($score -ge 60) { "BOM" }
+              elseif ($score -ge 40) { "MODERADO" }
+              else { "CRITICO" }
+    return @{ score = $score; status = $status; factors = $factors }
+  }
+
+  function Get-WellnessFlags {
+    param(
+      [object]$WellDay,
+      [double]$BaselineRhr,
+      [double]$BaselineHrv,
+      [double]$IdealSleep
+    )
+    $flags = @()
+    if ($WellDay -and $WellDay.sono_h -ne $null -and $IdealSleep -gt 0 -and $WellDay.sono_h -lt ($IdealSleep - 0.5)) { $flags += "sono baixo" }
+    if ($WellDay -and $WellDay.fc_reposo -ne $null -and $BaselineRhr -gt 0 -and $WellDay.fc_reposo -gt ($BaselineRhr + 5)) { $flags += "FC repouso alta" }
+    if ($WellDay -and $WellDay.hrv -ne $null -and $BaselineHrv -gt 0 -and $WellDay.hrv -lt ($BaselineHrv - 5)) { $flags += "HRV baixa" }
+    return $flags
+  }
+
+  function Parse-PlanTarget {
+    param(
+      [string]$Description,
+      [string]$Type
+    )
+
+    if (-not $Description) { return $null }
+
+    if ($Type -eq "Ride") {
+      $m = [regex]::Match($Description, "(\d+)\s*-\s*(\d+)\s*W", "IgnoreCase")
+      if ($m.Success) { return @{ min = [int]$m.Groups[1].Value; max = [int]$m.Groups[2].Value; unit = "W" } }
+      $m2 = [regex]::Match($Description, "(\d+)\s*W", "IgnoreCase")
+      if ($m2.Success) { $v = [int]$m2.Groups[1].Value; return @{ min = $v; max = $v; unit = "W" } }
+    }
+
+    if ($Type -eq "Run") {
+      $m = [regex]::Match($Description, "(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/km", "IgnoreCase")
+      if ($m.Success) { return @{ min = $m.Groups[1].Value; max = $m.Groups[2].Value; unit = "pace" } }
+      $m2 = [regex]::Match($Description, "(\d{1,2}:\d{2})/km", "IgnoreCase")
+      if ($m2.Success) { $v = $m2.Groups[1].Value; return @{ min = $v; max = $v; unit = "pace" } }
+    }
+
+    return $null
+  }
+
+  function Compare-Target {
+    param(
+      [object]$PlanTarget,
+      [string]$Type,
+      [double]$AvgWatts,
+      [string]$ActualPace
+    )
+
+    if (-not $PlanTarget) { return "Sem alvo detalhado no plano." }
+    if ($PlanTarget.unit -eq "W" -and $AvgWatts) {
+      if ($AvgWatts -lt $PlanTarget.min) { return "Abaixo do alvo (" + [math]::Round($PlanTarget.min - $AvgWatts,0) + "W)" }
+      if ($AvgWatts -gt $PlanTarget.max) { return "Acima do alvo (" + [math]::Round($AvgWatts - $PlanTarget.max,0) + "W)" }
+      return "Dentro do alvo"
+    }
+    if ($PlanTarget.unit -eq "pace" -and $ActualPace) {
+      $actualSecs = Pace-To-Secs -Pace $ActualPace
+      $minSecs = Pace-To-Secs -Pace $PlanTarget.min
+      $maxSecs = Pace-To-Secs -Pace $PlanTarget.max
+      if ($actualSecs -gt $maxSecs) { return "Mais lento que o alvo" }
+      if ($actualSecs -lt $minSecs) { return "Mais rápido que o alvo" }
+      return "Dentro do alvo"
+    }
+    return "Sem dado executado comparavel."
+  }
+
+  function Estimate-Race {
+    param(
+      [string]$Type,
+      [string]$Name,
+      [double]$RunPace,
+      [double]$BikeSpeed,
+      [double]$SwimPace100
+    )
+
+    if (-not $RunPace -or $RunPace -le 0) { $RunPace = 6.5 }
+    if (-not $BikeSpeed -or $BikeSpeed -le 0) { $BikeSpeed = 28 }
+    if (-not $SwimPace100 -or $SwimPace100 -le 0) { $SwimPace100 = 2.2 }
+
+    if ($Type -eq "Corrida") {
+      $dist = 10
+      if ($Name -match "Meia") { $dist = 21.1 }
+      $mins = $RunPace * $dist
+      return Format-Duration -Minutes $mins
+    }
+
+    if ($Type -match "Ol" -or $Name -match "Olimp") {
+      $swim = ($SwimPace100 * 15) # 1500m
+      $bike = if ($BikeSpeed -gt 0) { (40 / $BikeSpeed) * 60 } else { 90 }
+      $run = $RunPace * 10
+      return Format-Duration -Minutes ($swim + $bike + $run + 6)
+    }
+
+    if ($Name -match "70\.3" -or $Type -match "70\.3") {
+      $swim = ($SwimPace100 * 19) # 1900m
+      $bike = if ($BikeSpeed -gt 0) { (90 / $BikeSpeed) * 60 } else { 210 }
+      $run = $RunPace * 21.1
+      return Format-Duration -Minutes ($swim + $bike + $run + 8)
+    }
+
+    return "n/a"
+  }
+
+  function Get-Objective {
+    param(
+      [object]$Plan,
+      [object]$Activity
+    )
+
+    $text = ""
+    if ($Plan) { $text += "$($Plan.name) $($Plan.description) " }
+    $text += "$($Activity.name)"
+    $text = $text.ToLower()
+
+    if ($text -match "recuper|solto|leve") {
+      return "Recuperacao ativa para reduzir fadiga e manter circulacao."
+    }
+    if ($text -match "sweet spot|ss|tempo") {
+      return "Sweet Spot para elevar limiar e sustentar potencia com controle."
+    }
+    if ($text -match "endurance|z2|base") {
+      return "Base aerobica para eficiencia metabolica e resistencia."
+    }
+    if ($text -match "tiro|interval|vo2") {
+      return "Intervalos para estimular VO2 e velocidade."
+    }
+    if ($text -match "tecnica") {
+      if ($Activity.type -eq "Swim") { return "Tecnica de nado para eficiencia e economia." }
+      return "Tecnica para eficiencia de movimento."
+    }
+    if ($Activity.type -eq "Swim") { return "Natacao aerobica com foco tecnico." }
+    if ($Activity.type -eq "Ride") { return "Sessao de ciclismo para evolucao aerobica." }
+    if ($Activity.type -eq "Run") { return "Corrida protegida visando manter base sem sobrecarga." }
+    if ($Activity.type -eq "Strength" -or $Activity.type -eq "WeightTraining") { return "Forca para estabilidade, prevencao de lesao e suporte ao triathlon." }
+    return "Treino geral com foco em consistencia."
+  }
+
+  $report = Get-Content $ReportPath -Raw | ConvertFrom-Json
+  $range = "$($report.semana.inicio) a $($report.semana.fim)"
+  $referenceDate = [DateTime]::Parse($report.semana.fim)
+
+  $activities = @($report.atividades)
+  $wellness = @($report.bem_estar)
+  $activityCount = $activities.Count
+
+  $memoryPath = Join-Path $repoRoot "COACHING_MEMORY.md"
+  $memoryText = if (Test-Path $memoryPath) { Get-Content $memoryPath -Raw } else { "" }
+  $athleteName = if ($memoryText -match "\*\*Nome:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Atleta" }
+  $phaseTitle = if ($memoryText -match "\*\*Fase:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Base Geral" }
+  $phaseFocus = if ($memoryText -match "\*\*Foco principal:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $phaseRun = if ($memoryText -match "\*\*Run:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $phaseSwim = if ($memoryText -match "\*\*Swim:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $phaseForce = if ($memoryText -match "\*\*Força:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+
+  function Get-MemoryNumber {
+    param(
+      [string]$Pattern,
+      [double]$Default
+    )
+    if ($memoryText -match $Pattern) {
+      return Parse-NumberFromText -Value $matches[1] -Default $Default
+    }
+    return $Default
+  }
+
+  $ftpBike = Get-MemoryNumber "\*\*FTP:\*\*\s*([0-9,\.]+)" 200
+  $ftpRun = Get-MemoryNumber "\*\*FTP Run:\*\*\s*([0-9,\.]+)" 300
+  $lthr = Get-MemoryNumber "\*\*LTHR:\*\*\s*([0-9,\.]+)" 165
+  $baselineRhr = Get-MemoryNumber "\*\*FC Repouso baseline:\*\*\s*~?([0-9,\.]+)" 48
+  $baselineHrv = Get-MemoryNumber "\*\*HRV baseline:\*\*\s*~?([0-9,\.]+)" 45
+  $idealSleep = Get-MemoryNumber "\*\*Sono ideal:\*\*\s*([0-9,\.]+)" 7.5
+
+  $thresholdPaceSecs = $null
+  if ($memoryText -match "Threshold Pace:\s*~?([0-9:]+)/km") {
+    $thresholdPaceSecs = Pace-To-Secs -Pace $matches[1]
+  }
+  if (-not $thresholdPaceSecs) { $thresholdPaceSecs = 330 }
+
+  $phaseObjectives = @()
+  if ($phaseFocus) { $phaseObjectives += $phaseFocus }
+  if ($phaseRun) { $phaseObjectives += "Run: $phaseRun" }
+  if ($phaseSwim) { $phaseObjectives += "Swim: $phaseSwim" }
+  if ($phaseForce) { $phaseObjectives += "Força: $phaseForce" }
+
+  $phaseTransition = @(
+    "Introduzir intervalos de Threshold (bike)",
+    "Tiros curtos na corrida (se joelho permitir)",
+    "Natação: aumentar volume + séries de ritmo"
+  )
+
+  $totalTime = $report.semana.tempo_total_horas
+  $totalDist = $report.semana.distancia_total_km
+  $totalTss = $report.semana.carga_total_tss
+  $ctl = $report.metricas.CTL
+  $atl = $report.metricas.ATL
+  $tsb = $report.metricas.TSB
+  $ramp = $report.metricas.RampRate
+  $peso = $report.metricas.peso_atual
+  $pesoText = if ($peso) { [math]::Round($peso, 1) } else { "n/a" }
+  $pesoDisplay = if ($pesoText -eq "n/a") { "n/a" } else { "$pesoText kg" }
+
+  $ctlText = if ($ctl -ne $null) { [math]::Round($ctl, 1) } else { "n/a" }
+  $atlText = if ($atl -ne $null) { [math]::Round($atl, 1) } else { "n/a" }
+  $tsbText = if ($tsb -ne $null) { [math]::Round($tsb, 1) } else { "n/a" }
+
+  $ctlStart = ($wellness | Where-Object { $_.ctl -ne $null } | Select-Object -First 1).ctl
+  $ctlEnd = ($wellness | Where-Object { $_.ctl -ne $null } | Select-Object -Last 1).ctl
+  $atlStart = ($wellness | Where-Object { $_.atl -ne $null } | Select-Object -First 1).atl
+  $atlEnd = ($wellness | Where-Object { $_.atl -ne $null } | Select-Object -Last 1).atl
+  $ctlDelta = if ($ctlStart -ne $null -and $ctlEnd -ne $null) { [math]::Round(($ctlEnd - $ctlStart), 1) } else { $null }
+  $atlDelta = if ($atlStart -ne $null -and $atlEnd -ne $null) { [math]::Round(($atlEnd - $atlStart), 1) } else { $null }
+
+  $tsbStatus = "Equilibrado"
+  $tsbClass = "tsb-ok"
+  if ($tsb -le -25) { $tsbStatus = "Fadigado"; $tsbClass = "tsb-high" }
+  elseif ($tsb -le -10) { $tsbStatus = "Cansado"; $tsbClass = "tsb-med" }
+  elseif ($tsb -le 0) { $tsbStatus = "Controlado"; $tsbClass = "tsb-low" }
+  elseif ($tsb -gt 0) { $tsbStatus = "Descansado"; $tsbClass = "tsb-good" }
+
+  $plannedEvents = @()
+  if ($report.PSObject.Properties.Name -contains "treinos_planejados") {
+    $plannedEvents = @($report.treinos_planejados)
+  }
+  $plannedCount = $plannedEvents.Count
+  $matchedCount = ($activities | Where-Object { $_.planejado }).Count
+  $complianceValue = if ($plannedCount -gt 0) { [math]::Round((($matchedCount / $plannedCount) * 100), 1) } else { $null }
+  $complianceText = if ($complianceValue -ne $null) { Format-Percent -Value $complianceValue } else { "n/a" }
+  $complianceLabel = "Sem dados"
+  $complianceClass = "comp-neutral"
+  if ($complianceValue -ne $null) {
+    if ($complianceValue -ge 85) { $complianceLabel = "Excelente"; $complianceClass = "comp-good" }
+    elseif ($complianceValue -ge 70) { $complianceLabel = "Bom"; $complianceClass = "comp-mid" }
+    else { $complianceLabel = "Baixo"; $complianceClass = "comp-low" }
+  }
+
+  $plannedTimeMin = if ($plannedEvents.Count -gt 0) { ($plannedEvents | Measure-Object moving_time_min -Sum).Sum } else { $null }
+  $plannedDistKm = if ($plannedEvents.Count -gt 0) { ($plannedEvents | Measure-Object distance_km -Sum).Sum } else { $null }
+  $plannedTimeText = if ($plannedTimeMin -ne $null) { "{0:0.1}h" -f ($plannedTimeMin / 60) } else { "n/a" }
+  $plannedDistText = if ($plannedDistKm -ne $null) { "{0:0.1}km" -f $plannedDistKm } else { "n/a" }
+  $executedTimeText = if ($totalTime -ne $null) { "{0:0.1}h" -f $totalTime } else { "n/a" }
+  $executedDistText = if ($totalDist -ne $null) { "{0:0.1}km" -f $totalDist } else { "n/a" }
+  $complianceDetail = if ($plannedCount -gt 0) {
+    "Planejado: $plannedCount sess | $plannedTimeText | $plannedDistText. Executado: $activityCount sess | $executedTimeText | $executedDistText."
+  } else {
+    "Sem planejamento importado nesta semana."
+  }
+
+  $ctlDeltaText = if ($ctlDelta -ne $null) { Format-DeltaValue -Value $ctlDelta -Unit "" } else { "n/a" }
+  $atlDeltaText = if ($atlDelta -ne $null) { Format-DeltaValue -Value $atlDelta -Unit "" } else { "n/a" }
+
+  $classification = "HOLD"
+  $classCss = "hold"
+  if ($tsb -le -25) { $classification = "STEP BACK"; $classCss = "stepback" }
+  elseif ($tsb -le -10) { $classification = "HOLD"; $classCss = "hold" }
+  else { $classification = "PUSH"; $classCss = "push" }
+
+  $avgSleep = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object sono_h -Average).Average), 2) } else { 0 }
+  $avgHrv = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object hrv -Average).Average), 1) } else { 0 }
+  $avgRhr = if ($wellness.Count -gt 0) { [math]::Round((($wellness | Measure-Object fc_reposo -Average).Average), 1) } else { 0 }
+
+  $dailyLoads = $activities | Group-Object start_date_local | ForEach-Object { ($_.Group | Measure-Object suffer_score -Sum).Sum }
+  $meanLoad = if ($dailyLoads.Count -gt 0) { ($dailyLoads | Measure-Object -Average).Average } else { 0 }
+  $sdLoad = 0
+  if ($dailyLoads.Count -gt 1) {
+    $variance = ($dailyLoads | ForEach-Object { [math]::Pow($_ - $meanLoad, 2) } | Measure-Object -Average).Average
+    $sdLoad = [math]::Sqrt($variance)
+  }
+  $monotony = if ($sdLoad -gt 0) { [math]::Round($meanLoad / $sdLoad, 2) } else { 0 }
+  $strain = $totalTss
+
+  $deltaSleepText = if ($avgSleep -gt 0) { Format-DeltaValue -Value $sleepDelta -Unit "h" } else { "n/a" }
+  $deltaHrvText = if ($avgHrv -gt 0) { Format-DeltaValue -Value $hrvDelta -Unit " ms" } else { "n/a" }
+  $deltaRhrText = if ($avgRhr -gt 0) { Format-DeltaValue -Value $rhrDelta -Unit " bpm" } else { "n/a" }
+
+  $deltaSleepClass = if ($sleepDelta -lt -0.5) { "neg" } elseif ($sleepDelta -gt 0.5) { "pos" } else { "neu" }
+  $deltaHrvClass = if ($hrvDelta -lt -3) { "neg" } elseif ($hrvDelta -gt 3) { "pos" } else { "neu" }
+  $deltaRhrClass = if ($rhrDelta -gt 3) { "neg" } elseif ($rhrDelta -lt -3) { "pos" } else { "neu" }
+
+  $runDist = ($activities | Where-Object type -eq "Run" | Measure-Object distance_km -Sum).Sum
+  $runTime = ($activities | Where-Object type -eq "Run" | Measure-Object moving_time_min -Sum).Sum
+  $runPace = if ($runDist -gt 0) { $runTime / $runDist } else { 6.5 }
+
+  if ($memoryText -match "Threshold Pace:\s*~?([0-9:]+)/km") {
+    $p = $matches[1]
+    $secs = Pace-To-Secs -Pace $p
+    if ($secs) { $runPace = $secs / 60 * 1.15 }
+  }
+
+  $bikeDist = ($activities | Where-Object type -eq "Ride" | Measure-Object distance_km -Sum).Sum
+  $bikeTime = ($activities | Where-Object type -eq "Ride" | Measure-Object moving_time_min -Sum).Sum
+  $bikeSpeed = if ($bikeTime -gt 0) { $bikeDist / ($bikeTime / 60) } else { 28 }
+
+  $swimDist = ($activities | Where-Object type -eq "Swim" | Measure-Object distance_km -Sum).Sum
+  $swimTime = ($activities | Where-Object type -eq "Swim" | Measure-Object moving_time_min -Sum).Sum
+  $swimPace100 = if ($swimDist -gt 0) { $swimTime / ($swimDist * 10) } else { 2.2 }
+
+  $strengthTime = ($activities | Where-Object { $_.type -eq "Strength" -or $_.type -eq "WeightTraining" } | Measure-Object moving_time_min -Sum).Sum
+  $totalTimeMin = ($activities | Measure-Object moving_time_min -Sum).Sum
+  $swimPct = if ($totalTimeMin -gt 0) { [math]::Round(($swimTime / $totalTimeMin) * 100, 1) } else { 0 }
+  $bikePct = if ($totalTimeMin -gt 0) { [math]::Round(($bikeTime / $totalTimeMin) * 100, 1) } else { 0 }
+  $runPct = if ($totalTimeMin -gt 0) { [math]::Round(($runTime / $totalTimeMin) * 100, 1) } else { 0 }
+  $strengthPct = if ($totalTimeMin -gt 0) { [math]::Round(($strengthTime / $totalTimeMin) * 100, 1) } else { 0 }
+
+  $iconRun = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12 6 12 9 6 13 18 16 12 21 12"/></svg>'
+  $iconRide = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l5-8h4l4 8M10 9h4"/></svg>'
+  $iconSwim = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0"/><path d="M3 21c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0"/><circle cx="7" cy="7" r="2"/><path d="M9 9l4 2"/></svg>'
+  $iconStrength = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M7 8v8M17 8v8M21 10v4"/><path d="M7 12h10"/></svg>'
+  $iconInfo = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="12" y1="7" x2="12.01" y2="7"/></svg>'
+  $iconHeart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>'
+  $iconWave = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c2-4 4 4 6 0s4 4 6 0 4 4 6 0"/></svg>'
+  $iconMoon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>'
+  $iconScale = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 8v4"/><path d="M9 8h6"/></svg>'
+  $iconBars = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="10"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="22" y1="20" x2="22" y2="4"/></svg>'
+  $iconBolt = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'
+
+  $raceCards = @()
+  $nextRaceName = ""
+  $nextRaceDays = $null
+  $nextRacePriority = ""
+  $nextRaceAName = ""
+  $nextRaceADays = $null
+  $otherRaces = @()
+  if ($memoryText -match "\| Data \| Prova \| Tipo \| Prioridade \| Status \|") {
+    $lines = $memoryText -split "`n"
+    $startIdx = ($lines | Select-String -Pattern "^\| Data \| Prova" | Select-Object -First 1).LineNumber
+    for ($i = $startIdx; $i -lt $lines.Count; $i++) {
+      $line = $lines[$i].Trim()
+      if (-not $line.StartsWith("|")) { break }
+      if ($line -match "^\|\s*-") { continue }
+      $cols = $line.Trim("|") -split "\|"
+      if ($cols.Count -lt 5) { continue }
+      $dateText = $cols[0].Trim()
+      $raceName = $cols[1].Trim()
+      $raceType = $cols[2].Trim()
+      $priority = ($cols[3].Trim() -replace "\*","")
+      $status = if ($cols.Count -ge 5) { $cols[4].Trim() } else { "" }
+      if ($status -eq "-") { $status = "" }
+
+      $dateParts = $dateText -split "/"
+      if ($dateParts.Count -ne 2) { continue }
+      $raceDate = Get-Date -Year 2026 -Month $dateParts[1] -Day $dateParts[0]
+      $days = [math]::Max(0, ($raceDate - $referenceDate).Days)
+      $weeks = if ($days -gt 0) { [math]::Floor($days / 7) } else { 0 }
+      $estimate = Estimate-Race -Type $raceType -Name $raceName -RunPace $runPace -BikeSpeed $bikeSpeed -SwimPace100 $swimPace100
+
+      if ($days -ge 0) {
+        if ($nextRaceDays -eq $null -or $days -lt $nextRaceDays) {
+          $nextRaceDays = $days
+          $nextRaceName = $raceName
+          $nextRacePriority = $priority
+        }
+        if ($priority -eq "A") {
+          if ($nextRaceADays -eq $null -or $days -lt $nextRaceADays) {
+            $nextRaceADays = $days
+            $nextRaceAName = $raceName
+          }
+        } else {
+          $otherRaces += $raceName
+        }
+      }
+
+      $stage = "Build"
+      if ($priority -eq "A") { $stage = "Peak" }
+      elseif ($priority -eq "B") { $stage = if ($raceType -match "Corrida") { "Especifico Run" } else { "Especifico" } }
+
+      $raceCards += @"
+<div class="race-card priority-$priority">
+  <div class="race-days">
+    <div class="days">$days</div>
+    <div class="label">DIAS</div>
+    <div class="sub">$weeks sem</div>
+  </div>
+  <div class="race-info">
+    <div class="race-name">$raceName</div>
+    <div class="race-meta">$raceType | Prioridade $priority</div>
+    <div class="race-estimate">Estimativa hoje: $estimate</div>
+    $(if ($status) { "<div class=""race-status"">$status</div>" } else { "" })
+  </div>
+  <div class="race-badge">$stage</div>
+</div>
+"@
+    }
+  }
+
+  $performanceCards = @"
+<div class="performance-grid">
+  <div class="stat-card">
+    <div class="stat-value">$ctlText</div>
+    <div class="stat-label">CTL (Fitness)</div>
+    <div class="stat-pill">$ctlDeltaText</div>
+    <div class="stat-note">Forma fisica acumulada nos ultimos 42 dias.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">$atlText</div>
+    <div class="stat-label">ATL (Fadiga)</div>
+    <div class="stat-pill">$atlDeltaText</div>
+    <div class="stat-note">Carga de treino dos ultimos 7 dias.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">$tsbText</div>
+    <div class="stat-label">TSB (Forma)</div>
+    <div class="stat-pill $tsbClass">$tsbStatus</div>
+    <div class="stat-note">CTL - ATL. Negativo = cansado. Ideal +5 a +15.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">$complianceText</div>
+    <div class="stat-label">Compliance</div>
+    <div class="stat-pill $complianceClass">$complianceLabel</div>
+    <div class="stat-note">Quanto do plano foi executado. Meta: &gt;85%. $complianceDetail</div>
+  </div>
+</div>
+"@
+
+  $wellnessCards = @"
+<div class="wellness-grid">
+  <div class="wellness-card">
+    <div class="value">$avgRhr</div>
+    <div class="label"><span class="well-icon">$iconHeart</span>FC repouso <a class="info-icon" href="#glossario-wellness" title="Batimentos em repouso; aumento pode indicar fadiga.">$iconInfo</a></div>
+    <div class="delta $deltaRhrClass">$deltaRhrText vs base</div>
+  </div>
+  <div class="wellness-card">
+    <div class="value">$avgHrv</div>
+    <div class="label"><span class="well-icon">$iconWave</span>HRV <a class="info-icon" href="#glossario-wellness" title="Variabilidade da frequencia cardiaca; baixo sinaliza estresse.">$iconInfo</a></div>
+    <div class="delta $deltaHrvClass">$deltaHrvText vs base</div>
+  </div>
+  <div class="wellness-card">
+    <div class="value">$avgSleep h</div>
+    <div class="label"><span class="well-icon">$iconMoon</span>Sono medio <a class="info-icon" href="#glossario-wellness" title="Horas dormidas; abaixo do ideal reduz recuperacao.">$iconInfo</a></div>
+    <div class="delta $deltaSleepClass">$deltaSleepText vs ideal</div>
+  </div>
+  <div class="wellness-card">
+    <div class="value">$pesoDisplay</div>
+    <div class="label"><span class="well-icon">$iconScale</span>Peso <a class="info-icon" href="#glossario-wellness" title="Acompanhar tendencia semanal, nao dia isolado.">$iconInfo</a></div>
+    <div class="delta neu">última medida</div>
+  </div>
+  <div class="wellness-card">
+    <div class="value">$monotony</div>
+    <div class="label"><span class="well-icon">$iconBars</span>Monotonia <a class="info-icon" href="#glossario-wellness" title="Variabilidade da carga diaria; alto = risco de estresse.">$iconInfo</a></div>
+    <div class="delta neu">carga diária</div>
+  </div>
+  <div class="wellness-card">
+    <div class="value">$strain</div>
+    <div class="label"><span class="well-icon">$iconBolt</span>Strain <a class="info-icon" href="#glossario-wellness" title="Carga semanal total; alto com sono baixo = alerta.">$iconInfo</a></div>
+    <div class="delta neu">carga semanal</div>
+  </div>
+</div>
+"@
+
+  $phaseObjectiveItems = ($phaseObjectives | ForEach-Object { "<li>$_</li>" }) -join ""
+  $phaseTransitionItems = ($phaseTransition | ForEach-Object { "<li>$_</li>" }) -join ""
+
+  $notesWeek = @()
+  if ($report.PSObject.Properties.Name -contains "notas_semana") {
+    $notesWeek = @($report.notas_semana)
+  }
+  $notesBlock = ""
+  if ($notesWeek.Count -gt 0) {
+    $noteLines = @()
+    foreach ($n in $notesWeek) {
+      $noteLines += "<div class=""note-item""><strong>$(Html-Escape $n.name)</strong><div>$(Html-Escape $n.description)</div></div>"
+    }
+    $notesBlock = "<section class=""card section""><h2>Notas da Semana</h2>$($noteLines -join '')</section>"
+  }
+
+  $totalTimeText = if ($totalTime -ne $null) { "{0:0.0}h" -f $totalTime } else { "n/a" }
+  $tsbStateText = "equilibrio"
+  $tsbAdvice = "Mantenha a carga controlada."
+  if ($tsb -le -25) { $tsbStateText = "sobrecarga significativa"; $tsbAdvice = "Considere uma semana de recuperacao." }
+  elseif ($tsb -le -10) { $tsbStateText = "sobrecarga moderada"; $tsbAdvice = "Segurar intensidade e priorizar sono." }
+  elseif ($tsb -le 0) { $tsbStateText = "leve sobrecarga"; $tsbAdvice = "Monitorar sinais de fadiga." }
+  elseif ($tsb -gt 0) { $tsbStateText = "recuperado"; $tsbAdvice = "Boa janela para manter qualidade." }
+
+  $ctlBand = "moderado"
+  if ($ctl -lt 40) { $ctlBand = "baixo" }
+  elseif ($ctl -ge 60) { $ctlBand = "alto" }
+
+  $summaryText = "Voce completou $activityCount atividades totalizando $totalTimeText e $totalTss TSS. Voce esta em $tsbStateText (TSB $tsbText). $tsbAdvice"
+  $fitnessText = "Seu CTL de $ctlText esta na faixa de fitness $ctlBand. Continue a progressao - meta de CTL 70+ para o 70.3."
+  $complianceSentence = if ($complianceValue -ne $null) { "Compliance de $complianceText - $complianceLabel." } else { "Compliance indisponivel nesta semana." }
+
+  $modalityLines = @()
+  if ($swimPct -lt 20 -and $swimPct -gt 0) { $modalityLines += "<li>Natacao abaixo do ideal ($swimPct%). Para triathlon, busque 20-25% do volume.</li>" }
+  elseif ($swimPct -gt 0) { $modalityLines += "<li>Natacao em linha com o alvo ($swimPct%).</li>" }
+
+  if ($bikePct -ge $runPct -and $bikePct -ge $swimPct) { $modalityLines += "<li>Bike como principal modalidade ($bikePct%) - coerente com fase e protecao do joelho.</li>" }
+  if ($runPct -gt 0) { $modalityLines += "<li>Volume de corrida controlado ($runPct%) - bom para protecao do joelho.</li>" }
+  if ($strengthPct -gt 0) { $modalityLines += "<li>Forca presente ($strengthPct%) - manter 2x/semana.</li>" }
+  if ($modalityLines.Count -eq 0) { $modalityLines += "<li>Sem dados de modalidade suficientes.</li>" }
+
+  $focusLines = @(
+    "Consistencia sobre intensidade - 3x natacao, 3x bike, 2x corrida, 2x forca",
+    "Qualidade tecnica - cada sessao e oportunidade de melhorar eficiencia",
+    "Recuperacao - sono, nutricao e estresse impactam adaptacao"
+  )
+  if ($tsb -le -20) {
+    $focusLines = @(
+      "Recuperacao - reduzir carga e priorizar sono",
+      "Consistencia sobre intensidade - manter volume controlado",
+      "Qualidade tecnica - foco em execucao limpa"
+    )
+  }
+
+  $nextRaceLine = if ($nextRaceAName -and $nextRaceADays -ne $null) {
+    "Faltam $nextRaceADays dias para $nextRaceAName (Prova A)."
+  } elseif ($nextRaceName -and $nextRaceDays -ne $null) {
+    "Faltam $nextRaceDays dias para $nextRaceName."
+  } else {
+    "Proximas provas monitoradas no calendario."
+  }
+  $otherRacesLine = if ($otherRaces.Count -gt 0) { "Outras provas exigem atencao: " + ($otherRaces -join ", ") + "." } else { "" }
+
+  $modalityHtml = $modalityLines -join ""
+  $focusHtml = ($focusLines | ForEach-Object { "<li>$_</li>" }) -join ""
+
+  $feedbackBlock = @"
+<section class="card section coach-card">
+  <div class="coach-header">
+    <div class="coach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11a8 8 0 0 1-8 8H7l-4 3 1-5a8 8 0 1 1 17-6z"/></svg></div>
+    <div>
+      <h2>Feedback do Coach</h2>
+      <div class="coach-subtitle">Resumo objetivo da semana</div>
+    </div>
+  </div>
+  <div class="coach-block">
+    <div class="coach-title">Resumo da Semana</div>
+    <p>$summaryText</p>
+  </div>
+  <div class="coach-block">
+    <div class="coach-title">Progressao de Fitness</div>
+    <p>$fitnessText $complianceSentence</p>
+  </div>
+  <div class="coach-block">
+    <div class="coach-title">Analise por Modalidade</div>
+    <ul>$modalityHtml</ul>
+  </div>
+  <div class="coach-block">
+    <div class="coach-title">Foco para Proxima Semana</div>
+    <p>$nextRaceLine $otherRacesLine</p>
+    <ol>$focusHtml</ol>
+  </div>
+  <div class="coach-block">
+    <div class="coach-title">Proximo Passo</div>
+    <p>Preencha sua autoavaliacao. Sua percepcao subjetiva e tao importante quanto os numeros.</p>
+  </div>
+</section>
+"@
+
+  $recommendationsBlock = @"
+<section class="card section">
+  <h2>Recomendacoes Tecnicas</h2>
+  <div class="rec-grid">
+    <div class="rec-card">
+      <div class="rec-icon strength">$iconStrength</div>
+      <div class="rec-title">Forca</div>
+      <ul>
+        <li>Gluteo medio/maximo (estabilidade no pedal e corrida)</li>
+        <li>Core anti-rotacao (natacao e bike aero)</li>
+        <li>Panturrilha excêntrica (protecao tendao Aquiles)</li>
+        <li>Mobilidade de quadril (posicao aero)</li>
+      </ul>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon ride">$iconRide</div>
+      <div class="rec-title">Ciclismo</div>
+      <ul>
+        <li>Cadencia: manter 85-95 rpm em Z2</li>
+        <li>Pedalada redonda: foco no &quot;puxar&quot; (11h-2h)</li>
+        <li>Posicao aero: aumentar tempo gradualmente</li>
+        <li>Sweet Spot: progressao para Build</li>
+      </ul>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon run">$iconRun</div>
+      <div class="rec-title">Corrida</div>
+      <ul>
+        <li>Cadencia alta (175-180 spm) para reduzir impacto</li>
+        <li>Aterrissagem medio-pe</li>
+        <li>Volume protegido ate joelho &lt; 3/10</li>
+        <li>Fortalecimento: step-ups, agachamento unilateral</li>
+      </ul>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon swim">$iconSwim</div>
+      <div class="rec-title">Natacao</div>
+      <ul>
+        <li>Rotacao de quadril (nao so ombros)</li>
+        <li>Cotovelo alto na puxada</li>
+        <li>Respiracao bilateral</li>
+        <li>Aumentar frequencia: 3x/semana minimo</li>
+      </ul>
+    </div>
+  </div>
+</section>
+"@
+
+  $wellnessGlossary = @"
+<section class="card section" id="glossario-wellness">
+  <h2>Glossario Wellness</h2>
+  <a class="back-link" href="#wellness">Voltar ao Wellness</a>
+  <div class="glossary-grid">
+    <div><strong>FC repouso:</strong> batimentos em repouso; aumento pode indicar fadiga.</div>
+    <div><strong>HRV:</strong> variabilidade da frequencia cardiaca; baixo sinaliza estresse.</div>
+    <div><strong>Sono medio:</strong> horas dormidas; abaixo do ideal reduz recuperacao.</div>
+    <div><strong>Peso:</strong> acompanhamento semanal; use tendencia, nao dia isolado.</div>
+    <div><strong>Monotonia:</strong> variabilidade da carga diaria; alto = risco de estresse.</div>
+    <div><strong>Strain:</strong> carga semanal; alto com sono baixo = alerta.</div>
+  </div>
+</section>
+"@
+
+  $longterm = $null
+  $longtermFile = Get-ChildItem $ReportsDir -Filter "intervals_longterm_*coach_edition.json" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if ($longtermFile) {
+    try {
+      $longterm = Get-Content -Raw $longtermFile.FullName | ConvertFrom-Json
+    } catch {}
+  }
+
+  $trendReports = @()
+  if ($longterm -and $longterm.analise_semanal) {
+    foreach ($w in $longterm.analise_semanal) {
+      $endDate = [DateTime]::Parse($w.fim)
+      if ($endDate -le $referenceDate) {
+        $trendReports += [PSCustomObject]@{
+          end = $endDate
+          label = $w.semana
+          ctl = $w.ctl
+          atl = $w.atl
+          tsb = $w.tsb
+          ramp = $w.rampRate
+          tss = $w.total_tss
+          hours = $w.tempo_horas
+          weight = $w.peso_medio
+          sleep = $w.sono_medio
+          hrv = $w.hrv_medio
+          rhr = $w.fc_repouso_media
+        }
+      }
+    }
+  } else {
+    foreach ($file in $reportFiles) {
+      try {
+        $r = Get-Content -Raw $file.FullName | ConvertFrom-Json
+        $endDate = [DateTime]::Parse($r.semana.fim)
+        if ($endDate -le $referenceDate) {
+          $sleepAvg = if ($r.bem_estar) { [math]::Round((($r.bem_estar | Measure-Object sono_h -Average).Average), 2) } else { $null }
+          $hrvAvg = if ($r.bem_estar) { [math]::Round((($r.bem_estar | Measure-Object hrv -Average).Average), 1) } else { $null }
+          $rhrAvg = if ($r.bem_estar) { [math]::Round((($r.bem_estar | Measure-Object fc_reposo -Average).Average), 1) } else { $null }
+          $trendReports += [PSCustomObject]@{
+            end = $endDate
+            label = $endDate.ToString("dd/MM")
+            ctl = $r.metricas.CTL
+            atl = $r.metricas.ATL
+            tsb = $r.metricas.TSB
+            ramp = $r.metricas.RampRate
+            tss = $r.semana.carga_total_tss
+            hours = $r.semana.tempo_total_horas
+            weight = $r.metricas.peso_atual
+            sleep = $sleepAvg
+            hrv = $hrvAvg
+            rhr = $rhrAvg
+          }
+        }
+      } catch {}
+    }
+  }
+  $trendReports = @($trendReports | Sort-Object end)
+  if ($trendReports.Count -gt 12) { $trendReports = $trendReports[-12..-1] }
+
+  $trendLabels = ConvertTo-Json ($trendReports | ForEach-Object { $_.label }) -Compress
+  $trendCtl = ConvertTo-Json ($trendReports | ForEach-Object { $_.ctl }) -Compress
+  $trendAtl = ConvertTo-Json ($trendReports | ForEach-Object { $_.atl }) -Compress
+  $trendTsb = ConvertTo-Json ($trendReports | ForEach-Object { $_.tsb }) -Compress
+  $trendTss = ConvertTo-Json ($trendReports | ForEach-Object { $_.tss }) -Compress
+  $trendHours = ConvertTo-Json ($trendReports | ForEach-Object { $_.hours }) -Compress
+  $trendSleep = ConvertTo-Json ($trendReports | ForEach-Object { $_.sleep }) -Compress
+  $trendHrv = ConvertTo-Json ($trendReports | ForEach-Object { $_.hrv }) -Compress
+  $trendRhr = ConvertTo-Json ($trendReports | ForEach-Object { $_.rhr }) -Compress
+  $trendWeight = ConvertTo-Json ($trendReports | ForEach-Object { $_.weight }) -Compress
+
+  $trendWeeks = $trendReports.Count
+  $trendWeeksLabel = if ($trendWeeks -eq 1) { "1 semana" } else { "$trendWeeks semanas" }
+  $trendTitle = if ($longterm) { "Tendencias Longo Prazo ($trendWeeksLabel)" } else { "Tendencias ($trendWeeksLabel)" }
+  $trendCtlDelta = if ($trendWeeks -gt 1) { [math]::Round(($trendReports[-1].ctl - $trendReports[0].ctl), 1) } else { 0 }
+  $trendWeightDelta = if ($trendWeeks -gt 1 -and $trendReports[-1].weight -ne $null -and $trendReports[0].weight -ne $null) { [math]::Round(($trendReports[-1].weight - $trendReports[0].weight), 1) } else { $null }
+
+  $last4 = if ($trendWeeks -gt 0) { $trendReports | Select-Object -Last ([Math]::Min(4, $trendWeeks)) } else { @() }
+  $prev4 = if ($trendWeeks -gt 4) { $trendReports | Select-Object -Skip ([Math]::Max(0, $trendWeeks - 8)) -First ([Math]::Min(4, $trendWeeks - 4)) } else { @() }
+  $last4Tss = if ($last4.Count -gt 0) { [math]::Round((($last4 | Measure-Object tss -Average).Average), 0) } else { $null }
+  $prev4Tss = if ($prev4.Count -gt 0) { [math]::Round((($prev4 | Measure-Object tss -Average).Average), 0) } else { $null }
+  $tssDelta = if ($last4Tss -ne $null -and $prev4Tss -ne $null) { [math]::Round(($last4Tss - $prev4Tss), 0) } else { $null }
+  $last4Sleep = if ($last4.Count -gt 0) { [math]::Round((($last4 | Measure-Object sleep -Average).Average), 2) } else { $null }
+  $prev4Sleep = if ($prev4.Count -gt 0) { [math]::Round((($prev4 | Measure-Object sleep -Average).Average), 2) } else { $null }
+  $sleepTrend = if ($last4Sleep -ne $null -and $prev4Sleep -ne $null) { [math]::Round(($last4Sleep - $prev4Sleep), 2) } else { $null }
+
+  $perfScore = Get-PerformanceScore -CTL $ctl -TSB $tsb -RampRate $ramp
+  $recovery = Get-RecoveryStatus -TSB $tsb -HRV $avgHrv -RestingHR $avgRhr -Sleep $avgSleep
+  $recoveryStatus = if ($recovery) { $recovery.status } else { "n/a" }
+  $recoveryScore = if ($recovery) { $recovery.score } else { "n/a" }
+
+  $longtermInsightsBlock = ""
+  if ($longterm) {
+    $insights = @($longterm.insights)
+    $alerts = @($longterm.alertas)
+    $insightItems = if ($insights.Count -gt 0) { ($insights | ForEach-Object { "<li>$_</li>" }) -join "" } else { "" }
+    $alertItems = if ($alerts.Count -gt 0) { ($alerts | ForEach-Object { "<li>$_</li>" }) -join "" } else { "" }
+    $blocks = @($longterm.analise_blocos)
+    $blockCards = @()
+    if ($blocks.Count -gt 0) {
+      $lastBlocks = $blocks | Select-Object -Last ([Math]::Min(3, $blocks.Count))
+      foreach ($b in $lastBlocks) {
+        $blockCards += "<div class=""lt-block""><strong>$($b.bloco)</strong><div>$($b.semanas)</div><div>TSS: $($b.media_tss_semanal)</div><div>CTL: $($b.ctl_final) | TSB: $($b.tsb_final)</div></div>"
+      }
+    }
+    $blocksHtml = if ($blockCards.Count -gt 0) { ($blockCards -join "") } else { "<div class=""lt-empty"">Sem blocos suficientes.</div>" }
+    $periodo = if ($longterm.relatorio) { "$($longterm.relatorio.inicio) a $($longterm.relatorio.fim)" } else { "" }
+    $longtermInsightsBlock = @"
+<div class="lt-meta">Longo prazo: $periodo</div>
+<div class="lt-grid">
+  <div class="lt-panel">
+    <h3>Insights</h3>
+    $(if ($insightItems) { "<ul class=""lt-list"">$insightItems</ul>" } else { "<div class=""lt-empty"">Sem insights.</div>" })
+  </div>
+  <div class="lt-panel">
+    <h3>Alertas</h3>
+    $(if ($alertItems) { "<ul class=""lt-list lt-alert"">$alertItems</ul>" } else { "<div class=""lt-empty"">Sem alertas.</div>" })
+  </div>
+  <div class="lt-panel">
+    <h3>Blocos 4 semanas</h3>
+    <div class="lt-blocks">$blocksHtml</div>
+  </div>
+</div>
+"@
+  }
+
+  $trendCards = @"
+<div class="performance-grid">
+  <div class="stat-card">
+    <div class="stat-value">$ctlText</div>
+    <div class="stat-label">CTL atual</div>
+    <div class="stat-pill">$(Format-DeltaValue -Value $trendCtlDelta -Unit "")</div>
+    <div class="stat-note">Evolucao nas ultimas $trendWeeks semanas.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">$last4Tss</div>
+    <div class="stat-label">TSS medio 4s</div>
+    <div class="stat-pill">$(Format-DeltaValue -Value $tssDelta -Unit "")</div>
+    <div class="stat-note">Comparado com as 4 semanas anteriores.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">$last4Sleep h</div>
+    <div class="stat-label">Sono medio 4s</div>
+    <div class="stat-pill">$(Format-DeltaValue -Value $sleepTrend -Unit "h")</div>
+    <div class="stat-note">Tendencia recente de recuperacao.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">$(if ($trendReports.Count -gt 0) { $trendReports[-1].weight } else { "n/a" })</div>
+    <div class="stat-label">Peso atual</div>
+    <div class="stat-pill">$(if ($trendWeightDelta -ne $null) { Format-DeltaValue -Value $trendWeightDelta -Unit "kg" } else { "n/a" })</div>
+    <div class="stat-note">Variacao desde o inicio do periodo.</div>
+  </div>
+</div>
+<div class="trend-score">
+  <div class="score-card">
+    <div class="score-title">Performance Score</div>
+    <div class="score-value">$perfScore</div>
+    <div class="score-note">CTL + TSB + RampRate</div>
+  </div>
+  <div class="score-card">
+    <div class="score-title">Recovery Status</div>
+    <div class="score-value">$recoveryStatus</div>
+    <div class="score-note">Sono, HRV, FC repouso e TSB</div>
+  </div>
+</div>
+$longtermInsightsBlock
+"@
+
+  $activityCards = @()
+  foreach ($a in ($activities | Sort-Object start_date_local)) {
+    $plan = $a.planejado
+    $planTarget = Parse-PlanTarget -Description $plan.description -Type $a.type
+
+    $actualPaceMin = if ($a.type -eq "Run" -and $a.distance_km -gt 0) { $a.moving_time_min / $a.distance_km } else { $null }
+    $actualPace = if ($actualPaceMin) { Format-Pace -MinutesPerKm $actualPaceMin } else { $null }
+
+    $wellDay = $wellness | Where-Object { $_.data -eq $a.start_date_local } | Select-Object -First 1
+    $wellFlags = Get-WellnessFlags -WellDay $wellDay -BaselineRhr $baselineRhr -BaselineHrv $baselineHrv -IdealSleep $idealSleep
+    if ($wellDay) {
+      $sleepDeltaDay = if ($wellDay.sono_h -ne $null) { $wellDay.sono_h - $idealSleep } else { $null }
+      $hrvDeltaDay = if ($wellDay.hrv -ne $null) { $wellDay.hrv - $baselineHrv } else { $null }
+      $rhrDeltaDay = if ($wellDay.fc_reposo -ne $null) { $wellDay.fc_reposo - $baselineRhr } else { $null }
+      $sleepValue = if ($wellDay.sono_h -ne $null) { "$($wellDay.sono_h)h" } else { "n/a" }
+      $hrvValue = if ($wellDay.hrv -ne $null) { $wellDay.hrv } else { "n/a" }
+      $rhrValue = if ($wellDay.fc_reposo -ne $null) { $wellDay.fc_reposo } else { "n/a" }
+      $wellText = "Sono $sleepValue ($(Format-DeltaValue -Value $sleepDeltaDay -Unit 'h')) | HRV $hrvValue ($(Format-DeltaValue -Value $hrvDeltaDay -Unit ' ms')) | FC $rhrValue ($(Format-DeltaValue -Value $rhrDeltaDay -Unit ' bpm'))"
+      if ($wellFlags.Count -gt 0) { $wellText += " | Alerta: " + ($wellFlags -join ", ") }
+    } else {
+      $wellText = "Sem wellness do dia"
+    }
+
+    $comparison = Compare-Target -PlanTarget $planTarget -Type $a.type -AvgWatts $a.average_watts -ActualPace $actualPace
+    if ($comparison -match "Abaixo" -and $wellDay -and $wellDay.sono_h -lt ($idealSleep - 0.5)) { $comparison += " (sono baixo pode ter influenciado)" }
+
+    $planSummary = "Sem planejado encontrado."
+    if ($plan) {
+      $planParts = @()
+      if ($plan.moving_time_min -ne $null) { $planParts += "$($plan.moving_time_min)min" }
+      if ($plan.distance_km -ne $null) {
+        if ($a.type -eq "Swim") { $planParts += ("{0}m" -f [math]::Round(($plan.distance_km * 1000), 0)) }
+        else { $planParts += "$($plan.distance_km)km" }
+      }
+      if ($planTarget) {
+        if ($planTarget.unit -eq "W") { $planParts += "$($planTarget.min)-$($planTarget.max)W" }
+        elseif ($planTarget.unit -eq "pace") { $planParts += "$($planTarget.min)-$($planTarget.max)/km" }
+      }
+      if ($planParts.Count -eq 0) { $planParts = @("sem detalhes") }
+
+      $actualParts = @()
+      if ($a.moving_time_min -ne $null) { $actualParts += "{0}min" -f ([math]::Round($a.moving_time_min, 0)) }
+      if ($a.distance_km -ne $null) {
+        if ($a.type -eq "Swim") { $actualParts += ("{0}m" -f [math]::Round(($a.distance_km * 1000), 0)) }
+        else { $actualParts += "{0}km" -f ([math]::Round($a.distance_km, 1)) }
+      }
+      if ($a.average_watts -ne $null -and $a.type -ne "Swim") { $actualParts += "{0}W" -f ([math]::Round($a.average_watts, 0)) }
+      if ($actualPace -and $a.type -eq "Run") { $actualParts += $actualPace }
+      if ($actualParts.Count -eq 0) { $actualParts = @("sem dados") }
+
+      $deltaParts = @()
+      if ($plan.delta_time_min -ne $null) { $deltaParts += "Delta tempo $(Format-DeltaValue -Value $plan.delta_time_min -Unit 'min')" }
+      if ($plan.delta_distance_km -ne $null) {
+        if ($a.type -eq "Swim") { $deltaParts += "Delta dist $(Format-DeltaValue -Value ($plan.delta_distance_km * 1000) -Unit 'm')" }
+        else { $deltaParts += "Delta dist $(Format-DeltaValue -Value $plan.delta_distance_km -Unit 'km')" }
+      }
+      if ($comparison) { $deltaParts += "Intensidade: $comparison" }
+      if ($deltaParts.Count -eq 0) { $deltaParts = @("sem comparação") }
+
+      $planSummary = "Planejado: " + ($planParts -join " • ") + " | Executado: " + ($actualParts -join " • ") + " | " + ($deltaParts -join " • ")
+    }
+
+    $objective = Get-Objective -Plan $plan -Activity $a
+
+    $durationText = "{0}min" -f ([math]::Round($a.moving_time_min,0))
+    if ($a.type -eq "Swim" -and $a.distance_km -gt 0) {
+      $distanceText = "{0}m" -f ([math]::Round($a.distance_km * 1000, 0))
+    } else {
+      $distanceText = "{0}km" -f ([math]::Round($a.distance_km,1))
+    }
+    $tssText = if ($a.suffer_score) { [math]::Round($a.suffer_score,0) } else { "-" }
+    $powerText = if ($a.average_watts) { [math]::Round($a.average_watts,0).ToString() + "W" } else { "-" }
+    $npText = if ($a.normalized_power) { [math]::Round($a.normalized_power,0).ToString() + "W" } else { "-" }
+    $hrText = if ($a.average_hr) { [math]::Round($a.average_hr,0).ToString() + " bpm" } else { "-" }
+    $viText = if ($a.variabilidade) { [math]::Round($a.variabilidade,2).ToString() } elseif ($a.normalized_power -and $a.average_watts) { [math]::Round(($a.normalized_power / $a.average_watts),2).ToString() } else { "-" }
+
+    $intensityPower = if ($a.normalized_power) { $a.normalized_power } else { $a.average_watts }
+    $ifValue = $null
+    if ($a.type -eq "Ride") { $ifValue = Safe-Divide -Num $intensityPower -Den $ftpBike }
+    elseif ($a.type -eq "Run") { $ifValue = Safe-Divide -Num $intensityPower -Den $ftpRun }
+    $ifText = if ($ifValue) { [math]::Round($ifValue, 2) } else { "-" }
+
+    $paceLabel = "Pace"
+    $paceValue = "-"
+    if ($a.type -eq "Run") {
+      $paceValue = if ($actualPace) { $actualPace } else { "-" }
+    } elseif ($a.type -eq "Swim" -and $a.distance_km -gt 0) {
+      $paceValue = Format-Pace100 -MinutesPer100 ($a.moving_time_min / ($a.distance_km * 10))
+      $paceLabel = "Pace 100m"
+    } elseif ($a.type -eq "Ride" -and $a.moving_time_min -gt 0) {
+      $paceLabel = "Velocidade"
+      $paceValue = "{0} km/h" -f ([math]::Round(($a.distance_km / ($a.moving_time_min / 60)),1))
+    }
+
+    $paceDeltaText = $null
+    if ($a.type -eq "Run" -and $actualPaceMin) {
+      $paceDeltaText = Format-DeltaPace -DeltaSeconds (($actualPaceMin * 60) - $thresholdPaceSecs)
+    }
+
+    $qualityLabel = "Dentro"
+    $qualityClass = "quality-ok"
+    if ($comparison -match "Sem alvo" -or $comparison -match "Sem dado") { $qualityLabel = "Sem alvo"; $qualityClass = "quality-low" }
+    elseif ($comparison -match "Acima") { $qualityLabel = "Acima"; $qualityClass = "quality-high" }
+    elseif ($comparison -match "Abaixo" -or $comparison -match "Mais lento") { $qualityLabel = "Abaixo"; $qualityClass = "quality-low" }
+    if ($wellFlags.Count -gt 0 -and $qualityLabel -eq "Acima") { $qualityLabel = "Risco"; $qualityClass = "quality-risk" }
+
+    $typeClass = ($a.type).ToLower()
+    $typeIcon = $iconRun
+    switch ($a.type) {
+      "Run" { $typeClass = "run"; $typeIcon = $iconRun }
+      "Ride" { $typeClass = "ride"; $typeIcon = $iconRide }
+      "Swim" { $typeClass = "swim"; $typeIcon = $iconSwim }
+      "Strength" { $typeClass = "strength"; $typeIcon = $iconStrength }
+      "WeightTraining" { $typeClass = "strength"; $typeIcon = $iconStrength }
+      default { $typeClass = "run"; $typeIcon = $iconRun }
+    }
+
+    $recommendation = "Manter consistência."
+    if ($comparison -match "Acima" -and $wellFlags.Count -gt 0) { $recommendation = "Segurar intensidade e priorizar recuperação hoje." }
+    elseif ($comparison -match "Acima") { $recommendation = "Sessão acima do alvo; monitorar fadiga." }
+    elseif ($comparison -match "Abaixo" -and $wellFlags.Count -gt 0) { $recommendation = "Redução de carga ok dado wellness baixo; foco em sono." }
+    elseif ($comparison -match "Abaixo") { $recommendation = "Se era sessão chave, revisar pacing/potência." }
+    if ($a.type -eq "Run" -and $a.notas -match "joelho") { $recommendation = "Manter volume protegido até joelho < 4/10." }
+    if ($a.average_hr -and $lthr -gt 0 -and $a.average_hr -gt ($lthr + 5)) { $recommendation += " FC média alta para o alvo." }
+
+    $summaryBase = switch ($a.type) {
+      "Run" { "Corrida" }
+      "Ride" { "Ciclismo" }
+      "Swim" { "Natacao" }
+      "Strength" { "Forca" }
+      "WeightTraining" { "Forca" }
+      default { "Sessao" }
+    }
+    $targetText = if ($comparison -match "Dentro") { "dentro do alvo" } elseif ($comparison -match "Acima") { "acima do alvo" } elseif ($comparison -match "Abaixo" -or $comparison -match "Mais lento") { "abaixo do alvo" } else { "sem alvo definido" }
+    $sentence1 = "$summaryBase $targetText."
+    $sentence2Parts = @()
+    if ($plan -and $plan.moving_time_min -ne $null -and $plan.moving_time_min -gt 0 -and $plan.delta_time_min -ne $null) {
+      $pct = [math]::Abs(($plan.delta_time_min / $plan.moving_time_min) * 100)
+      if ($pct -le 10) { $sentence2Parts += "Volume alinhado ao planejado." }
+      elseif ($plan.delta_time_min -gt 0) { $sentence2Parts += "Volume acima do planejado." }
+      else { $sentence2Parts += "Volume abaixo do planejado." }
+    }
+    if ($a.average_hr -and $lthr -gt 0 -and $a.average_hr -le ($lthr - 10)) { $sentence2Parts += "FC controlada." }
+    elseif ($a.average_hr -and $lthr -gt 0 -and $a.average_hr -gt ($lthr + 5)) { $sentence2Parts += "FC alta para o objetivo." }
+    if ($wellFlags.Count -gt 0) { $sentence2Parts += ("Wellness baixo (" + ($wellFlags -join ", ") + ") pode ter influenciado.") }
+    $summaryText = if ($sentence2Parts.Count -gt 0) { "$sentence1 " + ($sentence2Parts -join " ") } else { $sentence1 }
+
+    if ($a.type -eq "Swim") {
+      $intensitySummary = "Pace $paceValue | Volume $distanceText"
+    } elseif ($a.type -eq "Run") {
+      $intensitySummary = "Potência $powerText | NP $npText | IF $ifText | HR $hrText"
+    } else {
+      $intensitySummary = "Potência $powerText | NP $npText | VI $viText | IF $ifText | HR $hrText"
+    }
+
+    $metricCards = @()
+    switch ($a.type) {
+      "Run" {
+        $metricCards += Build-MetricCard -Value $durationText -Label "Duração"
+        $metricCards += Build-MetricCard -Value $distanceText -Label "Distância"
+        $metricCards += Build-MetricCard -Value $paceValue -Label "Pace"
+        $metricCards += Build-MetricCard -Value $tssText -Label "TSS"
+        $metricCards += Build-MetricCard -Value $hrText -Label "FC média"
+        $metricCards += Build-MetricCard -Value $powerText -Label "Potência"
+        $metricCards += Build-MetricCard -Value $npText -Label "NP"
+        $metricCards += Build-MetricCard -Value $ifText -Label "IF"
+      }
+      "Ride" {
+        $metricCards += Build-MetricCard -Value $durationText -Label "Duração"
+        $metricCards += Build-MetricCard -Value $distanceText -Label "Distância"
+        $metricCards += Build-MetricCard -Value $paceValue -Label "Velocidade"
+        $metricCards += Build-MetricCard -Value $tssText -Label "TSS"
+        $metricCards += Build-MetricCard -Value $hrText -Label "FC média"
+        $metricCards += Build-MetricCard -Value $powerText -Label "Potência"
+        $metricCards += Build-MetricCard -Value $npText -Label "NP"
+        $metricCards += Build-MetricCard -Value $ifText -Label "IF"
+      }
+      "Swim" {
+        $metricCards += Build-MetricCard -Value $durationText -Label "Duração"
+        $metricCards += Build-MetricCard -Value $distanceText -Label "Distância"
+        $metricCards += Build-MetricCard -Value $paceValue -Label "Pace 100m"
+        $metricCards += Build-MetricCard -Value $tssText -Label "TSS"
+        $metricCards += Build-MetricCard -Value $hrText -Label "FC média"
+      }
+      default {
+        $metricCards += Build-MetricCard -Value $durationText -Label "Duração"
+        $metricCards += Build-MetricCard -Value $tssText -Label "TSS"
+        $metricCards += Build-MetricCard -Value $hrText -Label "FC média"
+      }
+    }
+    $metricsHtml = $metricCards -join ""
+
+    $analysisItems = @()
+    $analysisSummary = "<p class=""analysis-summary"">$summaryText</p>"
+    $analysisItems += "<li><strong>Objetivo:</strong> $(Html-Escape $objective)</li>"
+    $analysisItems += "<li><strong>Planejado vs executado:</strong> $(Html-Escape $planSummary)</li>"
+    if ($a.type -eq "Run" -and $paceDeltaText) { $analysisItems += "<li><strong>Pace vs threshold:</strong> $paceValue ($paceDeltaText)</li>" }
+    $analysisItems += "<li><strong>Intensidade:</strong> $intensitySummary</li>"
+    if ($a.type -eq "Run") { $analysisItems += "<li><strong>Joelho:</strong> manter protocolo e nao progredir se dor > 4/10.</li>" }
+    $analysisItems += "<li><strong>Wellness do dia:</strong> $wellText</li>"
+    if ($a.notas) { $analysisItems += "<li><strong>Sua nota:</strong> $(Html-Escape $a.notas)</li>" }
+    $analysisItems += "<li><strong>Recomendação:</strong> $recommendation</li>"
+    $analysisHtml = $analysisSummary + "<ul>" + ($analysisItems -join "") + "</ul>"
+
+    $activityCards += @"
+<div class="activity-card activity-$typeClass">
+  <div class="activity-title">
+    <div class="activity-icon $typeClass">$typeIcon</div>
+    <div>
+      <div class="activity-name">$(Html-Escape $a.name)</div>
+      <div class="activity-date">$(Html-Escape $a.start_date_local)</div>
+    </div>
+    <div class="activity-badge $qualityClass">$qualityLabel</div>
+  </div>
+  <div class="activity-metrics">
+    $metricsHtml
+  </div>
+  <div class="analysis-block">
+    <div class="analysis-title">Análise Completa</div>
+    $analysisHtml
+  </div>
+</div>
+"@
+  }
+
+  if ($activityCards.Count -eq 0) {
+    $activityCards = @("<div class=""card section"">Sem atividades registradas no período.</div>")
+  }
+
+  $distGroups = $activities | Group-Object type | ForEach-Object {
+    $timeMin = ($_.Group | Measure-Object moving_time_min -Sum).Sum
+    [PSCustomObject]@{ type = $_.Name; time_h = if ($timeMin) { [math]::Round($timeMin / 60, 2) } else { 0 } }
+  } | Sort-Object type
+  $distLabels = ConvertTo-Json ($distGroups | ForEach-Object { $_.type }) -Compress
+  $distValues = ConvertTo-Json ($distGroups | ForEach-Object { $_.time_h }) -Compress
+  $wellDates = ConvertTo-Json ($wellness | ForEach-Object { $_.data }) -Compress
+  $ctlVals = ConvertTo-Json ($wellness | ForEach-Object { $_.ctl }) -Compress
+  $atlVals = ConvertTo-Json ($wellness | ForEach-Object { $_.atl }) -Compress
+  $sleepVals = ConvertTo-Json ($wellness | ForEach-Object { $_.sono_h }) -Compress
+  $hrvVals = ConvertTo-Json ($wellness | ForEach-Object { $_.hrv }) -Compress
+  $rhrVals = ConvertTo-Json ($wellness | ForEach-Object { $_.fc_reposo }) -Compress
+
+  $html = @"
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatório de Coaching</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020;
+      --bg-2:#0f172a;
+      --card:#121b34;
+      --card-soft:#0f1a33;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --accent:#5ea3ff;
+      --accent-2:#22c55e;
+      --accent-3:#f59e0b;
+      --accent-4:#ef4444;
+      --accent-run:#22c55e;
+      --accent-ride:#f59e0b;
+      --accent-swim:#38bdf8;
+      --accent-strength:#a855f7;
+      --shadow:0 18px 40px rgba(0,0,0,0.4);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Sora",sans-serif;background:var(--bg);color:var(--text)}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 10% 10%, rgba(94,163,255,0.18), transparent 45%),
+                 radial-gradient(circle at 80% 20%, rgba(34,197,94,0.12), transparent 45%),
+                 radial-gradient(circle at 50% 80%, rgba(245,158,11,0.14), transparent 50%);
+      pointer-events:none;
+      z-index:-1;
+    }
+    .wrap{max-width:1200px;margin:24px auto;padding:0 20px}
+    .hero{background:linear-gradient(135deg,#4f7cff,#6c5bd8);padding:24px;border-radius:20px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;right:-80px;top:-80px;width:220px;height:220px;background:rgba(255,255,255,0.12);border-radius:50%}
+    .hero h1{margin:0;font-family:"Space Grotesk",sans-serif;font-size:24px}
+    .hero p{margin:6px 0 0 0;color:#e2e8f0}
+    .hero-pill{background:rgba(255,255,255,0.2);padding:8px 16px;border-radius:999px;font-weight:600}
+    .hero-status{padding:10px 20px;border-radius:14px;font-weight:700}
+    .status-hold{background:#f59e0b;color:#111827}
+    .status-push{background:#22c55e;color:#052e16}
+    .status-stepback{background:#ef4444;color:#fff}
+    .section{margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:16px;box-shadow:var(--shadow);border:1px solid rgba(148,163,184,0.12)}
+    .grid{display:grid;gap:16px}
+    .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+    .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .metric{background:var(--card-soft);padding:14px;border-radius:12px;text-align:center}
+    .metric .value{font-size:20px;font-weight:700}
+    .metric .label{font-size:11px;color:var(--muted)}
+    .performance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .stat-card{background:#151f3b;border-radius:14px;padding:16px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
+    .stat-value{font-size:28px;font-weight:700;color:var(--accent)}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:6px}
+    .stat-pill{margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#1f2a4a;font-size:11px;width:max-content}
+    .stat-note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.3}
+    .tsb-high{background:rgba(239,68,68,0.2);color:#ef4444}
+    .tsb-med{background:rgba(245,158,11,0.2);color:#f59e0b}
+    .tsb-low{background:rgba(148,163,184,0.2);color:#cbd5f5}
+    .tsb-good{background:rgba(34,197,94,0.2);color:#22c55e}
+    .comp-good{background:rgba(34,197,94,0.2);color:#22c55e}
+    .comp-mid{background:rgba(245,158,11,0.2);color:#f59e0b}
+    .comp-low{background:rgba(239,68,68,0.2);color:#ef4444}
+    .comp-neutral{background:rgba(148,163,184,0.2);color:#cbd5f5}
+    .race-card{display:flex;align-items:center;gap:18px;background:#151f3b;border-radius:14px;padding:16px;margin-bottom:12px;border-left:4px solid transparent}
+    .race-card.priority-A{border-left-color:var(--accent-3)}
+    .race-card.priority-B{border-left-color:var(--accent)}
+    .race-card.priority-C{border-left-color:var(--accent-2)}
+    .race-days{width:70px;text-align:center}
+    .race-days .days{font-size:26px;font-weight:700;color:#7dd3fc}
+    .race-days .label{font-size:10px;color:var(--muted)}
+    .race-days .sub{font-size:10px;color:var(--muted)}
+    .race-name{font-weight:600}
+    .race-meta{color:var(--muted);font-size:12px}
+    .race-estimate{color:#34d399;font-size:12px;margin-top:4px}
+    .race-status{margin-top:6px;font-size:11px;color:#facc15}
+    .race-badge{margin-left:auto;background:#1f2a4a;padding:6px 12px;border-radius:999px;font-size:11px}
+    .wellness-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+    .wellness-card{background:#151f3b;border-radius:12px;padding:14px;text-align:center}
+    .wellness-card .value{font-size:22px;font-weight:700}
+    .wellness-card .label{font-size:11px;color:var(--muted)}
+    .delta{margin-top:6px;font-size:10px}
+    .delta.pos{color:#22c55e}
+    .delta.neg{color:#ef4444}
+    .delta.neu{color:var(--muted)}
+    .well-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:6px}
+    .well-icon svg{width:14px;height:14px}
+    .info-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1f2a4a;color:#cbd5f5;text-decoration:none;margin-left:6px}
+    .info-icon svg{width:10px;height:10px}
+    .phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .phase-grid ul{margin:10px 0 0 18px;color:var(--muted)}
+    .timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:12px}
+    .timeline .step{background:#151f3b;padding:14px;border-radius:12px;text-align:center}
+    .activity-card{background:#141f3a;border-radius:16px;padding:18px;margin-top:16px;border:1px solid rgba(148,163,184,0.12)}
+    .activity-card.activity-run{border-left:4px solid var(--accent-run)}
+    .activity-card.activity-ride{border-left:4px solid var(--accent-ride)}
+    .activity-card.activity-swim{border-left:4px solid var(--accent-swim)}
+    .activity-card.activity-strength{border-left:4px solid var(--accent-strength)}
+    .activity-title{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+    .activity-icon{width:42px;height:42px;border-radius:12px;background:#1f2a4a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;letter-spacing:.6px}
+    .activity-icon svg,.rec-icon svg{width:20px;height:20px}
+    .activity-icon.run{background:rgba(34,197,94,0.2);color:#22c55e}
+    .activity-icon.ride{background:rgba(245,158,11,0.2);color:#f59e0b}
+    .activity-icon.swim{background:rgba(56,189,248,0.2);color:#38bdf8}
+    .activity-icon.strength{background:rgba(168,85,247,0.2);color:#a855f7}
+    .activity-badge{margin-left:auto;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600}
+    .quality-ok{background:rgba(34,197,94,0.2);color:#22c55e}
+    .quality-low{background:rgba(148,163,184,0.2);color:#cbd5f5}
+    .quality-high{background:rgba(245,158,11,0.2);color:#f59e0b}
+    .quality-risk{background:rgba(239,68,68,0.2);color:#ef4444}
+    .activity-name{font-weight:600}
+    .activity-date{font-size:12px;color:var(--muted)}
+    .activity-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
+    .analysis-block{background:#111827;border-left:4px solid #f59e0b;padding:12px;border-radius:12px}
+    .analysis-title{font-weight:600;margin-bottom:6px}
+    .analysis-summary{margin:0 0 10px 0;color:#e2e8f0;font-size:13px}
+    .analysis-block ul{margin:0 0 0 18px;color:var(--muted)}
+    .analysis-block li{margin-bottom:8px}
+    .coach-card{background:linear-gradient(180deg,#0f274a 0%, #0f1f39 100%);border:1px solid rgba(94,163,255,0.25)}
+    .coach-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+    .coach-icon{width:44px;height:44px;border-radius:50%;background:#38bdf8;display:flex;align-items:center;justify-content:center;color:#0b1020}
+    .coach-icon svg{width:22px;height:22px}
+    .coach-subtitle{font-size:12px;color:var(--muted)}
+    .coach-block{margin-top:14px}
+    .coach-title{font-weight:600;margin-bottom:6px}
+    .coach-block ul,.coach-block ol{margin:6px 0 0 18px;color:var(--muted)}
+    .rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .rec-card{background:#151f3b;border-radius:14px;padding:16px}
+    .rec-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .rec-icon.strength{background:rgba(168,85,247,0.2);color:#e9d5ff}
+    .rec-icon.ride{background:rgba(245,158,11,0.2);color:#fde68a}
+    .rec-icon.run{background:rgba(34,197,94,0.2);color:#bbf7d0}
+    .rec-icon.swim{background:rgba(56,189,248,0.2);color:#bae6fd}
+    .back-link{display:inline-block;margin-bottom:10px;font-size:12px;color:#7dd3fc;text-decoration:none}
+    .rec-title{font-weight:600;margin-bottom:8px}
+    .rec-card ul{margin:0 0 0 16px;color:var(--muted)}
+    .glossary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;color:var(--muted)}
+    .trend-score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}
+    .score-card{background:#151f3b;border-radius:14px;padding:16px}
+    .score-title{font-size:12px;color:var(--muted)}
+    .score-value{font-size:24px;font-weight:700;margin-top:6px;color:var(--accent)}
+    .score-note{font-size:11px;color:var(--muted);margin-top:6px}
+    .lt-meta{margin-top:12px;font-size:12px;color:var(--muted)}
+    .lt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
+    .lt-panel{background:#151f3b;border-radius:14px;padding:16px}
+    .lt-panel h3{margin:0 0 8px 0;font-size:13px}
+    .lt-list{margin:0 0 0 16px;color:var(--muted)}
+    .lt-list li{margin-bottom:6px}
+    .lt-alert li{color:#fca5a5}
+    .lt-empty{font-size:12px;color:var(--muted)}
+    .lt-blocks{display:grid;gap:8px}
+    .lt-block{background:#0f1a33;border-radius:10px;padding:10px;font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Relatório de Coaching</h1>
+      <p>$athleteName | Semana $range</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="hero-pill">$phaseTitle</div>
+      <div class="hero-status status-$classCss">$classification</div>
+    </div>
+  </div>
+
+  <section class="card section">
+    <h2>Calendário de Provas</h2>
+    $($raceCards -join "`n")
+  </section>
+
+  <section class="card section">
+    <h2>Performance da Semana</h2>
+    $performanceCards
+  </section>
+
+  <section class="card section" id="wellness">
+    <h2>Wellness da Semana</h2>
+    $wellnessCards
+  </section>
+
+  <section class="card section">
+    <h2>$trendTitle</h2>
+    $trendCards
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card"><canvas id="trend-load-chart"></canvas></div>
+      <div class="card"><canvas id="trend-tss-chart"></canvas></div>
+      <div class="card"><canvas id="trend-well-chart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="card section">
+    <h2>Fase do Ciclo: $phaseTitle</h2>
+    <div class="phase-grid">
+      <div>
+        <h3>Objetivo desta fase</h3>
+        <ul>$phaseObjectiveItems</ul>
+      </div>
+      <div>
+        <h3>Transição para Build</h3>
+        <ul>$phaseTransitionItems</ul>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="step">Esta semana<br><strong>$classification</strong></div>
+      <div class="step">Semana +1<br><strong>Normal</strong></div>
+      <div class="step">Semana +2<br><strong>Volume</strong></div>
+      <div class="step">Semana +3<br><strong>Deload</strong></div>
+    </div>
+  </section>
+
+  <section class="card section">
+    <div class="grid grid-4">
+      <div class="metric"><div class="value">$totalTime h</div><div class="label">Tempo total</div></div>
+      <div class="metric"><div class="value">$totalDist km</div><div class="label">Distância</div></div>
+      <div class="metric"><div class="value">$totalTss</div><div class="label">Carga (TSS)</div></div>
+      <div class="metric"><div class="value">$ramp</div><div class="label">RampRate</div></div>
+    </div>
+    <div class="grid grid-4" style="margin-top:12px">
+      <div class="metric"><div class="value">$activityCount</div><div class="label">Atividades</div></div>
+      <div class="metric"><div class="value">$pesoText</div><div class="label">Peso</div></div>
+      <div class="metric"><div class="value">$monotony</div><div class="label">Monotonia</div></div>
+      <div class="metric"><div class="value">$strain</div><div class="label">Strain</div></div>
+    </div>
+  </section>
+
+  $notesBlock
+
+  $feedbackBlock
+
+  <section class="card section">
+    <h2>Gráficos</h2>
+    <div class="grid grid-2">
+      <div class="card"><canvas id="dist-chart"></canvas></div>
+      <div class="card"><canvas id="pmc-chart"></canvas></div>
+      <div class="card"><canvas id="well-chart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Análise das Atividades</h2>
+    $($activityCards -join "`n")
+  </section>
+
+  $recommendationsBlock
+
+  $wellnessGlossary
+</div>
+<script>
+  new Chart(document.getElementById('dist-chart'),{type:'doughnut',data:{labels:$distLabels,datasets:[{data:$distValues,backgroundColor:['#60a5fa','#22c55e','#f59e0b','#94a3b8']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
+  new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:$wellDates,datasets:[{label:'CTL',data:$ctlVals,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:$atlVals,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('well-chart'),{type:'line',data:{labels:$wellDates,datasets:[{label:'Sono (h)',data:$sleepVals,borderColor:'#22c55e',tension:.3},{label:'HRV',data:$hrvVals,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:$rhrVals,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'CTL',data:$trendCtl,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:$trendAtl,borderColor:'#f59e0b',tension:.3},{label:'TSB',data:$trendTsb,borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:$trendLabels,datasets:[{type:'bar',label:'TSS',data:$trendTss,backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:$trendHours,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Sono',data:$trendSleep,borderColor:'#22c55e',tension:.3},{label:'HRV',data:$trendHrv,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:$trendRhr,borderColor:'#ef4444',tension:.3},{label:'Peso',data:$trendWeight,borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+</script>
+</body>
+</html>
+"@
+
+  Set-Content -Path $OutputPath -Value $html -Encoding UTF8
+}
+
 foreach ($report in $reportFiles) {
   $outputName = $report.Name -replace "\.json$", ".html"
   $outputPath = Join-Path $siteReports $outputName
-  Build-ReportHtml -ReportPath $report.FullName -OutputPath $outputPath
+  Build-ReportHtmlModern -ReportPath $report.FullName -OutputPath $outputPath
 }
 
 $lines = @()
@@ -477,6 +1909,15 @@ $lines += "    <section>"
 $lines += "      <h2>Planejado</h2>"
 $lines += "      <ul>"
 foreach ($file in $plannedFiles) {
+  $name = $file.Name
+  $lines += "        <li><a href=`"reports/$name`">$name</a></li>"
+}
+$lines += "      </ul>"
+$lines += "    </section>"
+$lines += "    <section>"
+$lines += "      <h2>Longterm</h2>"
+$lines += "      <ul>"
+foreach ($file in $longtermFiles) {
   $name = $file.Name
   $lines += "        <li><a href=`"reports/$name`">$name</a></li>"
 }
