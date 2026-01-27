@@ -1214,6 +1214,22 @@ function Build-ReportHtmlModern {
           sleep = $w.sono_medio
           hrv = $w.hrv_medio
           rhr = $w.fc_repouso_media
+          bike_pct = $w.bike_pct
+          run_pct = $w.run_pct
+          swim_pct = $w.swim_pct
+          strength_pct = $w.strength_pct
+          bike_if = $w.bike_analise.avg_if
+          bike_vi = $w.bike_analise.avg_vi
+          bike_dec = $w.bike_analise.avg_decoupling
+          run_cad = $w.run_analise.avg_cadence
+          run_dec = $w.run_analise.avg_decoupling
+          swim_swolf = $w.swim_analise.avg_swolf
+          bike_z1 = if ($w.bike_zones) { $w.bike_zones.z1_pct } else { $null }
+          bike_z2 = if ($w.bike_zones) { $w.bike_zones.z2_pct } else { $null }
+          bike_z3 = if ($w.bike_zones) { $w.bike_zones.z3_pct } else { $null }
+          run_z1 = if ($w.run_zones) { $w.run_zones.z1_pct } else { $null }
+          run_z2 = if ($w.run_zones) { $w.run_zones.z2_pct } else { $null }
+          run_z3 = if ($w.run_zones) { $w.run_zones.z3_pct } else { $null }
         }
       }
     }
@@ -1257,6 +1273,22 @@ function Build-ReportHtmlModern {
   $trendHrv = ConvertTo-Json ($trendReports | ForEach-Object { $_.hrv }) -Compress
   $trendRhr = ConvertTo-Json ($trendReports | ForEach-Object { $_.rhr }) -Compress
   $trendWeight = ConvertTo-Json ($trendReports | ForEach-Object { $_.weight }) -Compress
+  $trendBikePct = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_pct }) -Compress
+  $trendRunPct = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_pct }) -Compress
+  $trendSwimPct = ConvertTo-Json ($trendReports | ForEach-Object { $_.swim_pct }) -Compress
+  $trendStrengthPct = ConvertTo-Json ($trendReports | ForEach-Object { $_.strength_pct }) -Compress
+  $trendBikeIf = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_if }) -Compress
+  $trendBikeVi = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_vi }) -Compress
+  $trendBikeDec = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_dec }) -Compress
+  $trendRunCad = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_cad }) -Compress
+  $trendRunDec = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_dec }) -Compress
+  $trendSwimSwolf = ConvertTo-Json ($trendReports | ForEach-Object { $_.swim_swolf }) -Compress
+  $trendBikeZ1 = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_z1 }) -Compress
+  $trendBikeZ2 = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_z2 }) -Compress
+  $trendBikeZ3 = ConvertTo-Json ($trendReports | ForEach-Object { $_.bike_z3 }) -Compress
+  $trendRunZ1 = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_z1 }) -Compress
+  $trendRunZ2 = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_z2 }) -Compress
+  $trendRunZ3 = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_z3 }) -Compress
 
   $trendWeeks = $trendReports.Count
   $trendWeeksLabel = if ($trendWeeks -eq 1) { "1 semana" } else { "$trendWeeks semanas" }
@@ -1279,6 +1311,7 @@ function Build-ReportHtmlModern {
   $recoveryScore = if ($recovery) { $recovery.score } else { "n/a" }
 
   $longtermInsightsBlock = ""
+  $predictionBlock = ""
   if ($longterm) {
     $insights = @($longterm.insights)
     $alerts = @($longterm.alertas)
@@ -1294,6 +1327,23 @@ function Build-ReportHtmlModern {
     }
     $blocksHtml = if ($blockCards.Count -gt 0) { ($blockCards -join "") } else { "<div class=""lt-empty"">Sem blocos suficientes.</div>" }
     $periodo = if ($longterm.relatorio) { "$($longterm.relatorio.inicio) a $($longterm.relatorio.fim)" } else { "" }
+    if ($longterm.predicao_evento) {
+      $p = $longterm.predicao_evento
+      $predictionBlock = @"
+<div class="trend-score">
+  <div class="score-card">
+    <div class="score-title">Predicao Prova A</div>
+    <div class="score-value">$($p.status_preparacao)</div>
+    <div class="score-note">Dias: $($p.dias_restantes) | CTL atual: $($p.ctl_atual) | CTL proj: $($p.ctl_projetado)</div>
+  </div>
+  <div class="score-card">
+    <div class="score-title">Taper sugerido</div>
+    <div class="score-value">$($p.tsb_ideal_prova)</div>
+    <div class="score-note">$($p.recomendacao_taper)</div>
+  </div>
+</div>
+"@
+    }
     $longtermInsightsBlock = @"
 <div class="lt-meta">Longo prazo: $periodo</div>
 <div class="lt-grid">
@@ -1352,6 +1402,7 @@ function Build-ReportHtmlModern {
     <div class="score-note">Sono, HRV, FC repouso e TSB</div>
   </div>
 </div>
+$predictionBlock
 $longtermInsightsBlock
 "@
 
@@ -1787,16 +1838,6 @@ $longtermInsightsBlock
   </section>
 
   <section class="card section">
-    <h2>$trendTitle</h2>
-    $trendCards
-    <div class="grid grid-2" style="margin-top:16px">
-      <div class="card"><canvas id="trend-load-chart"></canvas></div>
-      <div class="card"><canvas id="trend-tss-chart"></canvas></div>
-      <div class="card"><canvas id="trend-well-chart"></canvas></div>
-    </div>
-  </section>
-
-  <section class="card section">
     <h2>Fase do Ciclo: $phaseTitle</h2>
     <div class="phase-grid">
       <div>
@@ -1849,6 +1890,22 @@ $longtermInsightsBlock
     $($activityCards -join "`n")
   </section>
 
+  <section class="card section">
+    <h2>$trendTitle</h2>
+    $trendCards
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card"><canvas id="trend-load-chart"></canvas></div>
+      <div class="card"><canvas id="trend-tss-chart"></canvas></div>
+      <div class="card"><canvas id="trend-well-chart"></canvas></div>
+      <div class="card"><canvas id="trend-modality-chart"></canvas></div>
+      <div class="card"><canvas id="trend-bike-chart"></canvas></div>
+      <div class="card"><canvas id="trend-run-chart"></canvas></div>
+      <div class="card"><canvas id="trend-swim-chart"></canvas></div>
+      <div class="card"><canvas id="trend-zone-bike"></canvas></div>
+      <div class="card"><canvas id="trend-zone-run"></canvas></div>
+    </div>
+  </section>
+
   $recommendationsBlock
 
   $wellnessGlossary
@@ -1860,6 +1917,12 @@ $longtermInsightsBlock
   new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'CTL',data:$trendCtl,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:$trendAtl,borderColor:'#f59e0b',tension:.3},{label:'TSB',data:$trendTsb,borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
   new Chart(document.getElementById('trend-tss-chart'),{data:{labels:$trendLabels,datasets:[{type:'bar',label:'TSS',data:$trendTss,backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:$trendHours,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
   new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Sono',data:$trendSleep,borderColor:'#22c55e',tension:.3},{label:'HRV',data:$trendHrv,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:$trendRhr,borderColor:'#ef4444',tension:.3},{label:'Peso',data:$trendWeight,borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-modality-chart'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Bike %',data:$trendBikePct,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Run %',data:$trendRunPct,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Swim %',data:$trendSwimPct,backgroundColor:'rgba(56,189,248,0.35)'},{label:'Forca %',data:$trendStrengthPct,backgroundColor:'rgba(168,85,247,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
+  new Chart(document.getElementById('trend-bike-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Bike IF',data:$trendBikeIf,borderColor:'#f59e0b',tension:.3},{label:'Bike VI',data:$trendBikeVi,borderColor:'#94a3b8',tension:.3},{label:'Bike Decoupling %',data:$trendBikeDec,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-run-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Cadencia Run',data:$trendRunCad,borderColor:'#22c55e',tension:.3},{label:'Decoupling Run %',data:$trendRunDec,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-swim-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Swolf',data:$trendSwimSwolf,borderColor:'#38bdf8',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-zone-bike'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Z1',data:$trendBikeZ1,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:$trendBikeZ2,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:$trendBikeZ3,backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
+  new Chart(document.getElementById('trend-zone-run'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Z1',data:$trendRunZ1,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:$trendRunZ2,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:$trendRunZ3,backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
 </script>
 </body>
 </html>

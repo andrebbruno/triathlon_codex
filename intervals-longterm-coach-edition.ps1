@@ -63,6 +63,35 @@ if ($config.athlete_id -eq "0") {
     }
 }
 
+if (-not $EventDate) {
+    $memoryPath = Join-Path -Path $PSScriptRoot -ChildPath "COACHING_MEMORY.md"
+    if (Test-Path $memoryPath) {
+        $lines = Get-Content $memoryPath
+        $startIdx = ($lines | Select-String -Pattern "^\| Data \| Prova" | Select-Object -First 1).LineNumber
+        if ($startIdx) {
+            for ($i = $startIdx; $i -lt $lines.Count; $i++) {
+                $line = $lines[$i].Trim()
+                if (-not $line.StartsWith("|")) { break }
+                if ($line -match "^\|\s*-") { continue }
+                $cols = $line.Trim("|") -split "\|"
+                if ($cols.Count -lt 5) { continue }
+                $dateText = $cols[0].Trim()
+                $priority = ($cols[3].Trim() -replace "\*","")
+                if ($priority -eq "A") {
+                    $parts = $dateText -split "/"
+                    if ($parts.Count -eq 2) {
+                        $year = (Get-Date).Year
+                        $dt = Get-Date -Year $year -Month $parts[1] -Day $parts[0]
+                        if ($dt -lt (Get-Date).AddDays(-1)) { $dt = $dt.AddYears(1) }
+                        $EventDate = $dt.ToString("yyyy-MM-dd")
+                    }
+                    break
+                }
+            }
+        }
+    }
+}
+
 if (-not $OutputDir) {
     $OutputDir = Join-Path -Path $PSScriptRoot -ChildPath "Relatorios_Intervals"
 }
@@ -125,6 +154,38 @@ function Get-FieldValue {
         if ($null -ne $value -and $value -ne 0 -and $value -ne "") { return $value }
     }
     return $Default
+}
+
+function Sum-SeilerZones {
+    param(
+        [array]$Activities,
+        [string]$PropertyName
+    )
+
+    if (-not $Activities -or $Activities.Count -eq 0) { return $null }
+
+    $z1 = 0.0; $z2 = 0.0; $z3 = 0.0; $has = $false
+    foreach ($act in $Activities) {
+        $zones = $act.$PropertyName
+        if ($zones) {
+            if ($zones.Seiler_Z1_Easy_min -ne $null) { $z1 += [double]$zones.Seiler_Z1_Easy_min; $has = $true }
+            if ($zones.Seiler_Z2_Moderate_min -ne $null) { $z2 += [double]$zones.Seiler_Z2_Moderate_min; $has = $true }
+            if ($zones.Seiler_Z3_Hard_min -ne $null) { $z3 += [double]$zones.Seiler_Z3_Hard_min; $has = $true }
+        }
+    }
+
+    if (-not $has) { return $null }
+
+    $total = $z1 + $z2 + $z3
+    $result = @{
+        z1_min = [math]::Round($z1, 1)
+        z2_min = [math]::Round($z2, 1)
+        z3_min = [math]::Round($z3, 1)
+        z1_pct = if ($total -gt 0) { [math]::Round(($z1 / $total) * 100, 1) } else { $null }
+        z2_pct = if ($total -gt 0) { [math]::Round(($z2 / $total) * 100, 1) } else { $null }
+        z3_pct = if ($total -gt 0) { [math]::Round(($z3 / $total) * 100, 1) } else { $null }
+    }
+    return $result
 }
 
 function Get-ZoneTimesFormatted {
@@ -551,7 +612,7 @@ while ($currentWeekStart -lt $endDate) {
         avg_hr = ($bikeActivities | Where-Object { $_.average_hr } | Measure-Object -Property average_hr -Average).Average
         avg_decoupling = ($bikeActivities | Where-Object { $_.decoupling_pct } | Measure-Object -Property decoupling_pct -Average).Average
     }
-    
+
     $runAnalysis = @{
         total = $runActivities.Count
         tss = ($runActivities | Where-Object { $_.tss } | Measure-Object -Property tss -Sum).Sum
@@ -570,6 +631,9 @@ while ($currentWeekStart -lt $endDate) {
         avg_hr = ($swimActivities | Where-Object { $_.average_hr } | Measure-Object -Property average_hr -Average).Average
         avg_swolf = ($swimActivities | Where-Object { $_.average_swolf } | Measure-Object -Property average_swolf -Average).Average
     }
+
+    $bikeZones = Sum-SeilerZones -Activities $bikeActivities -PropertyName "power_zones"
+    $runZones = Sum-SeilerZones -Activities $runActivities -PropertyName "pace_zones"
     
     $weeklyAnalysis += [PSCustomObject]@{
         semana = $currentWeekStart.ToString("dd/MM")
@@ -601,6 +665,8 @@ while ($currentWeekStart -lt $endDate) {
         bike_analise = $bikeAnalysis
         run_analise = $runAnalysis
         swim_analise = $swimAnalysis
+        bike_zones = $bikeZones
+        run_zones = $runZones
     }
     
     $currentWeekStart = $currentWeekStart.AddDays(7)
