@@ -76,9 +76,7 @@ function To-Ascii {
 function Clean-DisplayText {
   param([string]$Text)
   if (-not $Text) { return "" }
-  $fixed = $Text
-  $fixed = $fixed -replace "Â·", "-" -replace "Ã§", "c" -replace "Ã£", "a" -replace "Ã¡", "a" -replace "Ã©", "e" -replace "Ãª", "e" -replace "Ã­", "i" -replace "Ã³", "o" -replace "Ã´", "o" -replace "Ãµ", "o" -replace "Ãº", "u" -replace "Ã‡", "C" -replace "Ã‰", "E" -replace "Ã“", "O"
-  $fixed = Fix-TextEncoding -Text $fixed
+  $fixed = Fix-TextEncoding -Text $Text
   $ascii = To-Ascii -Text $fixed
   $ascii = ($ascii -replace "[^A-Za-z0-9\s\-\(\)\/]", "")
   $ascii = ($ascii -replace "\s+", " ").Trim()

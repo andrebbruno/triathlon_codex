@@ -65,7 +65,6 @@ jobs:
           to: ${{ secrets.SMTP_TO }}
           from: ${{ secrets.SMTP_FROM }}
           secure: true
-          content_type: text/plain
           body: |
             Status: ${{ job.status }}
             Report: https://andrebbruno.github.io/triathlon_codex/
