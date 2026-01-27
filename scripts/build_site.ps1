@@ -31,6 +31,54 @@ function Html-Escape {
   return [System.Net.WebUtility]::HtmlEncode($Text)
 }
 
+function Get-MemorySectionLines {
+  param(
+    [string]$Text,
+    [string]$HeaderPattern
+  )
+  if (-not $Text) { return @() }
+  $match = [regex]::Match($Text, "$HeaderPattern\s*([\s\S]*?)(?:\n---|\n## )")
+  if (-not $match.Success) { return @() }
+  $block = $match.Groups[1].Value
+  return @($block -split "`n" | Where-Object { $_ -match "^\s*-\s+" } | ForEach-Object { ($_ -replace "^\s*-\s*", "").Trim() } | Where-Object { $_ })
+}
+
+function Get-MemoryCalendar {
+  param([string]$Text)
+  if (-not $Text) { return @() }
+  $match = [regex]::Match($Text, "## 2\. CALENDÁRIO 2026([\s\S]*?)(?:\n---|\n## )")
+  if (-not $match.Success) { return @() }
+  $block = $match.Groups[1].Value
+  $lines = $block -split "`n" | Where-Object { $_ -match "^\|" }
+  $rows = @()
+  foreach ($line in $lines) {
+    if ($line -match "^\|\s*Data\s*\|") { continue }
+    if ($line -match "^\|\s*-+") { continue }
+    $cols = $line.Trim("|") -split "\|"
+    if ($cols.Count -lt 5) { continue }
+    $dateRaw = $cols[0].Trim()
+    $name = $cols[1].Trim()
+    $type = $cols[2].Trim()
+    $priority = $cols[3].Trim()
+    $status = $cols[4].Trim()
+    $dateObj = $null
+    if ($dateRaw -match "\d{2}/\d{2}/\d{4}") {
+      try { $dateObj = [DateTime]::ParseExact($dateRaw, "dd/MM/yyyy", $null) } catch { $dateObj = $null }
+    } elseif ($dateRaw -match "\d{2}/\d{2}") {
+      try { $dateObj = [DateTime]::ParseExact("$dateRaw/2026", "dd/MM/yyyy", $null) } catch { $dateObj = $null }
+    }
+    $rows += [PSCustomObject]@{
+      date_raw = $dateRaw
+      date = $dateObj
+      name = $name
+      type = $type
+      priority = $priority
+      status = $status
+    }
+  }
+  return $rows
+}
+
 function Get-WellnessForDate {
   param(
     [object[]]$Wellness,
@@ -770,6 +818,36 @@ function Build-ReportHtmlModern {
     "Tiros curtos na corrida (se joelho permitir)",
     "Natação: aumentar volume + séries de ritmo"
   )
+
+  $futurePhases = Get-MemorySectionLines -Text $memoryText -HeaderPattern "### Próximas Fases \(planejado\)"
+  $calendarEvents = Get-MemoryCalendar -Text $memoryText
+  $mainEvent = $calendarEvents | Where-Object { $_.priority -match "A" -or $_.status -match "PROVA PRINCIPAL" } | Select-Object -First 1
+  $mainEventName = if ($mainEvent) { $mainEvent.name } else { "Prova A" }
+  $mainEventDateText = if ($mainEvent -and $mainEvent.date) { $mainEvent.date.ToString("dd/MM/yyyy") } elseif ($mainEvent) { $mainEvent.date_raw } else { "" }
+  $daysToMain = if ($mainEvent -and $mainEvent.date) { ($mainEvent.date.Date - $referenceDate.Date).Days } else { $null }
+  $daysToMainText = if ($daysToMain -ne $null) { "$daysToMain dias" } else { "n/a" }
+
+  $phaseList = if ($futurePhases.Count -gt 0) { ($futurePhases | ForEach-Object { "<li>$_</li>" }) -join "" } else { "<li>Sem fases futuras cadastradas.</li>" }
+  $longTermPlanBlock = ""
+  if ($futurePhases.Count -gt 0 -or $mainEvent) {
+    $longTermPlanBlock = @"
+  <section class="card section">
+    <h2>Plano de Longo Prazo</h2>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <h3>Rota até Prova A</h3>
+        <div><strong>$mainEventName</strong> ${mainEventDateText}</div>
+        <div style="margin-top:6px">Faltam <strong>$daysToMainText</strong> (referência: semana atual)</div>
+      </div>
+      <div class="plan-card">
+        <h3>Calendário de fases</h3>
+        <ul>$phaseList</ul>
+      </div>
+    </div>
+    <div class="plan-note">As transições tendem a ocorrer nos períodos acima e podem ser ajustadas conforme resposta do corpo, joelho e proximidade da prova principal.</div>
+  </section>
+"@
+  }
 
   $totalTime = $report.semana.tempo_total_horas
   $totalDist = $report.semana.distancia_total_km
@@ -1828,6 +1906,10 @@ $longtermInsightsBlock
     .rec-card ul{margin:0 0 0 16px;color:var(--muted)}
     .glossary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;color:var(--muted)}
     .trend-score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}
+    .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+    .plan-card{background:#151f3b;border-radius:14px;padding:14px;border:1px solid rgba(148,163,184,0.12)}
+    .plan-card h3{margin:0 0 8px 0;font-size:16px}
+    .plan-note{margin-top:10px;color:var(--muted);font-size:13px}
     .score-card{background:#151f3b;border-radius:14px;padding:16px}
     .score-title{font-size:12px;color:var(--muted)}
     .score-value{font-size:24px;font-weight:700;margin-top:6px;color:var(--accent)}
@@ -1933,6 +2015,8 @@ $longtermInsightsBlock
     </div>
   </section>
 
+  $longTermPlanBlock
+
   $recommendationsBlock
 
   $wellnessGlossary
@@ -1956,59 +2040,172 @@ foreach ($report in $reportFiles) {
   Build-ReportHtmlModern -ReportPath $report.FullName -OutputPath $outputPath
 }
 
-$lines = @()
-$lines += "<!doctype html>"
-$lines += "<html lang=`"pt-BR`">"
-$lines += "<head>"
-$lines += "  <meta charset=`"utf-8`">"
-$lines += "  <meta name=`"viewport`" content=`"width=device-width, initial-scale=1`">"
-$lines += "  <title>Relatorios Intervals</title>"
-$lines += "  <style>"
-$lines += "    body { font-family: Arial, sans-serif; margin: 24px; color: #111; }"
-$lines += "    h1 { margin-bottom: 4px; }"
-$lines += "    .meta { color: #666; margin-top: 0; }"
-$lines += "    ul { padding-left: 18px; }"
-$lines += "    a { color: #0b63ce; text-decoration: none; }"
-$lines += "    a:hover { text-decoration: underline; }"
-$lines += "    section { margin-top: 24px; }"
-$lines += "  </style>"
-$lines += "</head>"
-$lines += "<body>"
-$lines += "  <main>"
-$lines += "    <h1>Relatorios Intervals</h1>"
-$lines += "    <p class=`"meta`">Atualizado: $(Get-Date -Format "yyyy-MM-dd HH:mm")</p>"
-$lines += "    <section>"
-$lines += "      <h2>Relatorios</h2>"
-$lines += "      <ul>"
-foreach ($file in $reportFiles) {
-  $name = $file.Name
-  $htmlName = ($file.Name -replace "\.json$", ".html")
-  $lines += "        <li><a href=`"reports/$htmlName`">$htmlName</a> | <a href=`"reports/$name`">json</a></li>"
-}
-$lines += "      </ul>"
-$lines += "    </section>"
-$lines += "    <section>"
-$lines += "      <h2>Planejado</h2>"
-$lines += "      <ul>"
-foreach ($file in $plannedFiles) {
-  $name = $file.Name
-  $lines += "        <li><a href=`"reports/$name`">$name</a></li>"
-}
-$lines += "      </ul>"
-$lines += "    </section>"
-$lines += "    <section>"
-$lines += "      <h2>Longterm</h2>"
-$lines += "      <ul>"
-foreach ($file in $longtermFiles) {
-  $name = $file.Name
-  $lines += "        <li><a href=`"reports/$name`">$name</a></li>"
-}
-$lines += "      </ul>"
-$lines += "    </section>"
-$lines += "  </main>"
-$lines += "</body>"
-$lines += "</html>"
+  $memoryPath = Join-Path $repoRoot "COACHING_MEMORY.md"
+  $memoryText = if (Test-Path $memoryPath) { Get-Content $memoryPath -Raw } else { "" }
+  $athleteName = if ($memoryText -match "\*\*Nome:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Atleta" }
+  $athleteAge = if ($memoryText -match "\*\*Idade:\*\*\s*([0-9]+)") { $matches[1].Trim() } else { "" }
+  $athleteHeight = if ($memoryText -match "\*\*Altura:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $athleteWeight = if ($memoryText -match "\*\*Peso atual:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $athleteExp = if ($memoryText -match "\*\*Experiência:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $athleteLevel = if ($memoryText -match "\*\*Nível:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $phaseTitle = if ($memoryText -match "\*\*Fase:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Base Geral" }
+  $phaseFocus = if ($memoryText -match "\*\*Foco principal:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
 
-Set-Content -Path (Join-Path $SiteDir "index.html") -Value $lines -Encoding UTF8
+  $futurePhases = Get-MemorySectionLines -Text $memoryText -HeaderPattern "### Próximas Fases \(planejado\)"
+  $futurePhaseItems = if ($futurePhases.Count -gt 0) { ($futurePhases | ForEach-Object { "<li>$_</li>" }) -join "" } else { "<li>Sem fases cadastradas.</li>" }
+
+  $calendarEvents = Get-MemoryCalendar -Text $memoryText | Sort-Object date
+  $today = (Get-Date).Date
+  $calendarCards = @()
+  foreach ($ev in $calendarEvents) {
+    $days = if ($ev.date) { ($ev.date.Date - $today).Days } else { $null }
+    $daysText = if ($days -ne $null) { [math]::Max($days, 0) } else { "n/a" }
+    $prioClass = if ($ev.priority -match "A") { "tag-a" } elseif ($ev.priority -match "B") { "tag-b" } else { "tag-c" }
+    $calendarCards += @"
+      <div class="event-card $prioClass">
+        <div class="event-days">$daysText<span>dias</span></div>
+        <div class="event-info">
+          <div class="event-name">$(Html-Escape $ev.name)</div>
+          <div class="event-meta">$(Html-Escape $ev.type) | Prioridade $(Html-Escape $ev.priority)</div>
+          <div class="event-date">$(Html-Escape $ev.date_raw)</div>
+        </div>
+        <div class="event-tag">$([string]$ev.status)</div>
+      </div>
+"@
+  }
+  $calendarHtml = if ($calendarCards.Count -gt 0) { ($calendarCards -join "`n") } else { "<div class=""muted"">Sem provas cadastradas.</div>" }
+
+  $latestReport = if ($reportFiles.Count -gt 0) { $reportFiles[0] } else { $null }
+  $latestData = if ($latestReport) { Get-Content $latestReport.FullName -Raw | ConvertFrom-Json } else { $null }
+  $ctl = if ($latestData) { $latestData.metricas.CTL } else { $null }
+  $atl = if ($latestData) { $latestData.metricas.ATL } else { $null }
+  $tsb = if ($latestData) { $latestData.metricas.TSB } else { $null }
+  $ctlText = if ($ctl -ne $null) { [math]::Round($ctl,1) } else { "n/a" }
+  $atlText = if ($atl -ne $null) { [math]::Round($atl,1) } else { "n/a" }
+  $tsbText = if ($tsb -ne $null) { [math]::Round($tsb,1) } else { "n/a" }
+
+  $plannedEvents = if ($latestData -and $latestData.PSObject.Properties.Name -contains "treinos_planejados") { @($latestData.treinos_planejados) } else { @() }
+  $plannedCount = $plannedEvents.Count
+  $matchedCount = if ($latestData) { (@($latestData.atividades) | Where-Object { $_.planejado }).Count } else { 0 }
+  $complianceValue = if ($plannedCount -gt 0) { [math]::Round((($matchedCount / $plannedCount) * 100), 1) } else { $null }
+  $complianceText = if ($complianceValue -ne $null) { "{0:0.0}%" -f $complianceValue } else { "n/a" }
+
+  $reportsList = @()
+  foreach ($file in $reportFiles) {
+    $name = $file.Name
+    $htmlName = ($file.Name -replace "\.json$", ".html")
+    $reportsList += "<div class=""link-card""><a href=""reports/$htmlName"">$htmlName</a><span><a href=""reports/$name"">json</a></span></div>"
+  }
+  $plannedList = @()
+  foreach ($file in $plannedFiles) {
+    $name = $file.Name
+    $plannedList += "<div class=""link-card""><a href=""reports/$name"">$name</a></div>"
+  }
+  $longtermList = @()
+  foreach ($file in $longtermFiles) {
+    $name = $file.Name
+    $longtermList += "<div class=""link-card""><a href=""reports/$name"">$name</a></div>"
+  }
+
+  $indexHtml = @"
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatórios Intervals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1022;--card:#121a33;--card-2:#10172b;--text:#e5e7eb;--muted:#94a3b8;--accent:#60a5fa;--accent-2:#22c55e;--accent-3:#f59e0b;--accent-4:#a855f7}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 20% 20%, #1b2550 0%, #0b1022 55%, #090d1b 100%);color:var(--text);font-family:"Sora",sans-serif}
+    .wrap{max-width:1200px;margin:28px auto;padding:0 22px}
+    .hero{background:linear-gradient(135deg,#4f5bd5 0%,#6b4ca3 60%,#7a5ccf 100%);border-radius:20px;padding:24px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:6px 0 0 0;color:#eef2ff}
+    .pill{background:rgba(15,23,42,0.3);padding:8px 14px;border-radius:999px;font-weight:600}
+    .grid{display:grid;gap:14px}
+    .grid-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .grid-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .card{background:var(--card);border-radius:16px;padding:16px;border:1px solid rgba(148,163,184,0.12)}
+    .metric{background:var(--card-2);border-radius:14px;padding:14px}
+    .metric .value{font-size:22px;font-weight:700}
+    .metric .label{font-size:12px;color:var(--muted)}
+    h2{margin:22px 0 12px 0;font-size:18px}
+    .event-card{display:flex;gap:12px;align-items:center;background:var(--card-2);border-radius:14px;padding:12px;border-left:4px solid var(--accent)}
+    .event-card.tag-b{border-left-color:var(--accent-3)}
+    .event-card.tag-c{border-left-color:#38bdf8}
+    .event-days{width:70px;text-align:center;font-weight:700;font-size:20px}
+    .event-days span{display:block;font-size:11px;color:var(--muted)}
+    .event-info{flex:1}
+    .event-name{font-weight:700}
+    .event-meta,.event-date{font-size:12px;color:var(--muted)}
+    .event-tag{font-size:12px;background:#1f2a4a;padding:6px 10px;border-radius:999px}
+    .link-card{display:flex;justify-content:space-between;align-items:center;background:var(--card-2);padding:10px 12px;border-radius:12px}
+    a{color:#93c5fd;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Relatório de Coaching</h1>
+        <p>$athleteName · Temporada 2026</p>
+      </div>
+      <div class="pill">Atualizado: $(Get-Date -Format "yyyy-MM-dd HH:mm")</div>
+    </section>
+
+    <section class="grid grid-3" style="margin-top:16px">
+      <div class="card">
+        <strong>Perfil do Atleta</strong>
+        <div class="muted" style="margin-top:8px">$athleteAge anos · $athleteHeight · $athleteWeight</div>
+        <div class="muted">$athleteExp · $athleteLevel</div>
+      </div>
+      <div class="card">
+        <strong>Fase Atual</strong>
+        <div style="margin-top:8px">$phaseTitle</div>
+        <div class="muted">$phaseFocus</div>
+      </div>
+      <div class="card">
+        <strong>Métricas (última semana)</strong>
+        <div class="muted" style="margin-top:8px">CTL $ctlText · ATL $atlText · TSB $tsbText</div>
+        <div class="muted">Compliance: $complianceText</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Calendário de Provas</h2>
+      <div class="grid">$calendarHtml</div>
+    </section>
+
+    <section>
+      <h2>Fases do Ano</h2>
+      <div class="card">
+        <ul>$futurePhaseItems</ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Relatórios Semanais</h2>
+      <div class="grid grid-2">$($reportsList -join "`n")</div>
+    </section>
+
+    <section>
+      <h2>Planejado</h2>
+      <div class="grid grid-2">$($plannedList -join "`n")</div>
+    </section>
+
+    <section>
+      <h2>Longterm</h2>
+      <div class="grid grid-2">$($longtermList -join "`n")</div>
+    </section>
+  </div>
+</body>
+</html>
+"@
+
+Set-Content -Path (Join-Path $SiteDir "index.html") -Value $indexHtml -Encoding UTF8
 Set-Content -Path (Join-Path $SiteDir ".nojekyll") -Value "" -Encoding ASCII
 
