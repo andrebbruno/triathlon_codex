@@ -52,3 +52,20 @@ jobs:
           git add Relatorios_Intervals docs
           git commit -m "Weekly report" || echo "No changes to commit"
           git push
+
+      - name: Send notification email
+        uses: dawidd6/action-send-mail@v4
+        if: always()
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Weekly export - ${{ job.status }}"
+          to: ${{ secrets.SMTP_TO }}
+          from: ${{ secrets.SMTP_FROM }}
+          secure: true
+          content_type: text/plain
+          body: |
+            Status: ${{ job.status }}
+            Report: https://andrebbruno.github.io/triathlon_codex/
