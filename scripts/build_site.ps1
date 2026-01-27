@@ -2045,7 +2045,8 @@ foreach ($report in $reportFiles) {
   $athleteName = if ($memoryText -match "\*\*Nome:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Atleta" }
   $athleteAge = if ($memoryText -match "\*\*Idade:\*\*\s*([0-9]+)") { $matches[1].Trim() } else { "" }
   $athleteHeight = if ($memoryText -match "\*\*Altura:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
-  $athleteWeight = if ($memoryText -match "\*\*Peso atual:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $athleteWeightRaw = if ($memoryText -match "\*\*Peso atual:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $athleteWeight = if ($athleteWeightRaw) { ($athleteWeightRaw -replace "\s*\(.*\)\s*", "").Trim() } else { "" }
   $athleteExp = if ($memoryText -match "\*\*Experiência:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
   $athleteLevel = if ($memoryText -match "\*\*Nível:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
   $phaseTitle = if ($memoryText -match "\*\*Fase:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Base Geral" }
@@ -2230,14 +2231,17 @@ foreach ($report in $reportFiles) {
     </section>
 
     <section>
-      <h2>Calendário de Provas</h2>
-      <div class="grid">$calendarHtml</div>
-    </section>
-
-    <section>
-      <h2>Fases do Ano</h2>
-      <div class="card">
-        <ul>$futurePhaseItems</ul>
+      <div class="grid grid-2">
+        <div>
+          <h2>Calendário de Provas</h2>
+          <div class="grid">$calendarHtml</div>
+        </div>
+        <div>
+          <h2>Fases do Ano</h2>
+          <div class="card">
+            <ul>$futurePhaseItems</ul>
+          </div>
+        </div>
       </div>
     </section>
 
