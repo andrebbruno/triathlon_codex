@@ -229,14 +229,15 @@ foreach ($p in $planned) {
   $newStart = $start.AddDays($WeekShiftDays)
   $newDate = $newStart.ToString("yyyy-MM-dd")
   $type = Map-Type -Type $p.type
-  $trainings += [ordered]@{
-    external_id = (Shift-ExternalId -ExternalId $p.external_id -NewDate $newStart)
-    category = "WORKOUT"
-    start_date_local = $newStart.ToString("yyyy-MM-ddTHH:mm:ss")
-    type = $type
-    name = $p.name
-    description = $p.description
-  }
+    $desc = if ($p.description -and $p.description.Trim() -ne "") { $p.description } else { "Sessao planejada" }
+    $trainings += [ordered]@{
+      external_id = (Shift-ExternalId -ExternalId $p.external_id -NewDate $newStart)
+      category = "WORKOUT"
+      start_date_local = $newStart.ToString("yyyy-MM-ddTHH:mm:ss")
+      type = $type
+      name = $p.name
+      description = $desc
+    }
 }
 
 $trainingsPath = Join-Path $OutputDir ("trainings_{0}_{1}.json" -f $nextStart.ToString("yyyy-MM-dd"), $nextEnd.ToString("yyyy-MM-dd"))

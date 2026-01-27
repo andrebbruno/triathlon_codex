@@ -5,7 +5,7 @@
         "start_date_local":  "2026-02-02T00:00:00",
         "type":  "WeightTraining",
         "name":  "Forca - Membros Superiores",
-        "description":  ""
+        "description":  "Sessao planejada"
     },
     {
         "external_id":  "2026-02-03-bike-ss-controlado",
@@ -53,7 +53,7 @@
         "start_date_local":  "2026-02-05T00:00:00",
         "type":  "WeightTraining",
         "name":  "Forca - Membros Inferiores",
-        "description":  ""
+        "description":  "Sessao planejada"
     },
     {
         "external_id":  "training_20260205_ride",
