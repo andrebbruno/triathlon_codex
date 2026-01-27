@@ -11,24 +11,22 @@ permissions:
 jobs:
   export:
     runs-on: ubuntu-latest
+    env:
+      INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Write api_key.txt
+      - name: Validate Intervals API key
         shell: pwsh
-        env:
-          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
         run: |
           if (-not $env:INTERVALS_API_KEY) { throw "Missing INTERVALS_API_KEY secret." }
-          Set-Content -Path ./api_key.txt -Value $env:INTERVALS_API_KEY -Encoding ASCII
 
       - name: Export Intervals reports
         shell: pwsh
         run: |
-          ./export-intervals-week-com-notas.ps1 -ApiKeyPath ./api_key.txt
-          ./intervals-longterm-coach-edition.ps1 -ApiKeyPath ./api_key.txt -WeeksBack 12
-          Remove-Item ./api_key.txt -Force
+          ./export-intervals-week-com-notas.ps1
+          ./intervals-longterm-coach-edition.ps1 -WeeksBack 12
 
       - name: Build static site
         shell: pwsh

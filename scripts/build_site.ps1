@@ -1291,8 +1291,40 @@ function Build-ReportHtmlModern {
   $trendRunZ3 = ConvertTo-Json ($trendReports | ForEach-Object { $_.run_z3 }) -Compress
 
   $trendWeeks = $trendReports.Count
+  $trendWeeksRaw = if ($longterm -and $longterm.analise_semanal) { $longterm.analise_semanal.Count } else { $trendWeeks }
   $trendWeeksLabel = if ($trendWeeks -eq 1) { "1 semana" } else { "$trendWeeks semanas" }
+  if ($trendWeeksRaw -gt $trendWeeks) { $trendWeeksLabel = "$trendWeeks semanas completas (de $trendWeeksRaw)" }
   $trendTitle = if ($longterm) { "Tendencias Longo Prazo ($trendWeeksLabel)" } else { "Tendencias ($trendWeeksLabel)" }
+  $hasBikeMetrics = ($trendReports | Where-Object { $_.bike_if -gt 0 -or $_.bike_vi -gt 0 -or $_.bike_dec -ne $null }).Count -gt 0
+  $hasRunMetrics = ($trendReports | Where-Object { $_.run_cad -gt 0 -or $_.run_dec -ne $null }).Count -gt 0
+  $hasSwimMetrics = ($trendReports | Where-Object { $_.swim_swolf -gt 0 }).Count -gt 0
+  $hasBikeZones = ($trendReports | Where-Object { $_.bike_z1 -gt 0 -or $_.bike_z2 -gt 0 -or $_.bike_z3 -gt 0 }).Count -gt 0
+  $hasRunZones = ($trendReports | Where-Object { $_.run_z1 -gt 0 -or $_.run_z2 -gt 0 -or $_.run_z3 -gt 0 }).Count -gt 0
+
+  $trendChartCards = @(
+    '      <div class="card"><canvas id="trend-load-chart"></canvas></div>',
+    '      <div class="card"><canvas id="trend-tss-chart"></canvas></div>',
+    '      <div class="card"><canvas id="trend-well-chart"></canvas></div>',
+    '      <div class="card"><canvas id="trend-modality-chart"></canvas></div>'
+  )
+  if ($hasBikeMetrics) { $trendChartCards += '      <div class="card"><canvas id="trend-bike-chart"></canvas></div>' }
+  if ($hasRunMetrics) { $trendChartCards += '      <div class="card"><canvas id="trend-run-chart"></canvas></div>' }
+  if ($hasSwimMetrics) { $trendChartCards += '      <div class="card"><canvas id="trend-swim-chart"></canvas></div>' }
+  if ($hasBikeZones) { $trendChartCards += '      <div class="card"><canvas id="trend-zone-bike"></canvas></div>' }
+  if ($hasRunZones) { $trendChartCards += '      <div class="card"><canvas id="trend-zone-run"></canvas></div>' }
+
+  $trendChartScripts = @(
+    "  new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'CTL',data:$trendCtl,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:$trendAtl,borderColor:'#f59e0b',tension:.3},{label:'TSB',data:$trendTsb,borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});",
+    "  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:$trendLabels,datasets:[{type:'bar',label:'TSS',data:$trendTss,backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:$trendHours,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});",
+    "  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Sono',data:$trendSleep,borderColor:'#22c55e',tension:.3},{label:'HRV',data:$trendHrv,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:$trendRhr,borderColor:'#ef4444',tension:.3},{label:'Peso',data:$trendWeight,borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});",
+    "  new Chart(document.getElementById('trend-modality-chart'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Bike %',data:$trendBikePct,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Run %',data:$trendRunPct,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Swim %',data:$trendSwimPct,backgroundColor:'rgba(56,189,248,0.35)'},{label:'Forca %',data:$trendStrengthPct,backgroundColor:'rgba(168,85,247,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});"
+  )
+  if ($hasBikeMetrics) { $trendChartScripts += "  new Chart(document.getElementById('trend-bike-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Bike IF',data:$trendBikeIf,borderColor:'#f59e0b',tension:.3},{label:'Bike VI',data:$trendBikeVi,borderColor:'#94a3b8',tension:.3},{label:'Bike Decoupling %',data:$trendBikeDec,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});" }
+  if ($hasRunMetrics) { $trendChartScripts += "  new Chart(document.getElementById('trend-run-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Cadencia Run',data:$trendRunCad,borderColor:'#22c55e',tension:.3},{label:'Decoupling Run %',data:$trendRunDec,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});" }
+  if ($hasSwimMetrics) { $trendChartScripts += "  new Chart(document.getElementById('trend-swim-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Swolf',data:$trendSwimSwolf,borderColor:'#38bdf8',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});" }
+  if ($hasBikeZones) { $trendChartScripts += "  new Chart(document.getElementById('trend-zone-bike'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Z1',data:$trendBikeZ1,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:$trendBikeZ2,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:$trendBikeZ3,backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});" }
+  if ($hasRunZones) { $trendChartScripts += "  new Chart(document.getElementById('trend-zone-run'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Z1',data:$trendRunZ1,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:$trendRunZ2,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:$trendRunZ3,backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});" }
+
   $trendCtlDelta = if ($trendWeeks -gt 1) { [math]::Round(($trendReports[-1].ctl - $trendReports[0].ctl), 1) } else { 0 }
   $trendWeightDelta = if ($trendWeeks -gt 1 -and $trendReports[-1].weight -ne $null -and $trendReports[0].weight -ne $null) { [math]::Round(($trendReports[-1].weight - $trendReports[0].weight), 1) } else { $null }
 
@@ -1894,15 +1926,7 @@ $longtermInsightsBlock
     <h2>$trendTitle</h2>
     $trendCards
     <div class="grid grid-2" style="margin-top:16px">
-      <div class="card"><canvas id="trend-load-chart"></canvas></div>
-      <div class="card"><canvas id="trend-tss-chart"></canvas></div>
-      <div class="card"><canvas id="trend-well-chart"></canvas></div>
-      <div class="card"><canvas id="trend-modality-chart"></canvas></div>
-      <div class="card"><canvas id="trend-bike-chart"></canvas></div>
-      <div class="card"><canvas id="trend-run-chart"></canvas></div>
-      <div class="card"><canvas id="trend-swim-chart"></canvas></div>
-      <div class="card"><canvas id="trend-zone-bike"></canvas></div>
-      <div class="card"><canvas id="trend-zone-run"></canvas></div>
+      $($trendChartCards -join "`n")
     </div>
   </section>
 
@@ -1914,15 +1938,7 @@ $longtermInsightsBlock
   new Chart(document.getElementById('dist-chart'),{type:'doughnut',data:{labels:$distLabels,datasets:[{data:$distValues,backgroundColor:['#60a5fa','#22c55e','#f59e0b','#94a3b8']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
   new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:$wellDates,datasets:[{label:'CTL',data:$ctlVals,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:$atlVals,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
   new Chart(document.getElementById('well-chart'),{type:'line',data:{labels:$wellDates,datasets:[{label:'Sono (h)',data:$sleepVals,borderColor:'#22c55e',tension:.3},{label:'HRV',data:$hrvVals,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:$rhrVals,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'CTL',data:$trendCtl,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:$trendAtl,borderColor:'#f59e0b',tension:.3},{label:'TSB',data:$trendTsb,borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:$trendLabels,datasets:[{type:'bar',label:'TSS',data:$trendTss,backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:$trendHours,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Sono',data:$trendSleep,borderColor:'#22c55e',tension:.3},{label:'HRV',data:$trendHrv,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:$trendRhr,borderColor:'#ef4444',tension:.3},{label:'Peso',data:$trendWeight,borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-modality-chart'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Bike %',data:$trendBikePct,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Run %',data:$trendRunPct,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Swim %',data:$trendSwimPct,backgroundColor:'rgba(56,189,248,0.35)'},{label:'Forca %',data:$trendStrengthPct,backgroundColor:'rgba(168,85,247,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
-  new Chart(document.getElementById('trend-bike-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Bike IF',data:$trendBikeIf,borderColor:'#f59e0b',tension:.3},{label:'Bike VI',data:$trendBikeVi,borderColor:'#94a3b8',tension:.3},{label:'Bike Decoupling %',data:$trendBikeDec,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-run-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Cadencia Run',data:$trendRunCad,borderColor:'#22c55e',tension:.3},{label:'Decoupling Run %',data:$trendRunDec,borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-swim-chart'),{type:'line',data:{labels:$trendLabels,datasets:[{label:'Swolf',data:$trendSwimSwolf,borderColor:'#38bdf8',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-zone-bike'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Z1',data:$trendBikeZ1,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:$trendBikeZ2,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:$trendBikeZ3,backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
-  new Chart(document.getElementById('trend-zone-run'),{type:'bar',data:{labels:$trendLabels,datasets:[{label:'Z1',data:$trendRunZ1,backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:$trendRunZ2,backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:$trendRunZ3,backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
+  $($trendChartScripts -join "`n")
 </script>
 </body>
 </html>

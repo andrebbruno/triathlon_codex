@@ -10,7 +10,8 @@ param(
     [string]$EventDate = "",
     [string]$AthleteId = "0",
     [string]$ApiKeyPath = "$PSScriptRoot\\api_key.txt",
-    [string]$OutputDir = ""
+    [string]$OutputDir = "",
+    [switch]$EnableStreams
 )
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -26,6 +27,13 @@ function Get-ApiKey {
     if ($env:INTERVALS_API_KEY) { return $env:INTERVALS_API_KEY }
     if (Test-Path $Path) {
         return (Get-Content $Path -Raw).Trim()
+    }
+
+    $localPath = $null
+    if ($env:USERPROFILE) { $localPath = Join-Path $env:USERPROFILE ".intervals\\api_key.txt" }
+    elseif ($env:HOME) { $localPath = Join-Path $env:HOME ".intervals\\api_key.txt" }
+    if ($localPath -and (Test-Path $localPath)) {
+        return (Get-Content $localPath -Raw).Trim()
     }
 
     $secureKey = Read-Host "Enter your Intervals.icu API Key" -AsSecureString
@@ -98,6 +106,8 @@ if (-not $OutputDir) {
 if (-not (Test-Path $OutputDir)) {
     New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 }
+
+$useStreams = if ($PSBoundParameters.ContainsKey("EnableStreams")) { [bool]$EnableStreams } else { $true }
 
 function Get-AuthHeader {
     $pair = "API_KEY:$apiKey"
@@ -232,6 +242,110 @@ function Get-ZoneTimesFormatted {
         }
     }
     return $result
+}
+
+function Get-StreamData {
+    param([object]$Streams, [string[]]$Keys)
+    if (-not $Streams) { return $null }
+
+    if ($Streams -is [System.Collections.IEnumerable] -and -not ($Streams -is [string])) {
+        foreach ($key in $Keys) {
+            $item = $Streams | Where-Object { $_.type -eq $key -or $_.key -eq $key } | Select-Object -First 1
+            if ($item) {
+                if ($item.data) { return ,$item.data }
+                if ($item.values) { return ,$item.values }
+                if ($item.value) { return ,$item.value }
+            }
+        }
+    }
+
+    foreach ($key in $Keys) {
+        if ($Streams.PSObject.Properties.Name -contains $key) {
+            $val = $Streams.$key
+            if ($val.data) { return ,$val.data }
+            if ($val.values) { return ,$val.values }
+            return ,$val
+        }
+    }
+
+    return $null
+}
+
+function Get-SampleInterval {
+    param([double[]]$Time)
+    if (-not $Time -or $Time.Count -lt 2) { return 1 }
+    $diffs = @()
+    for ($i = 1; $i -lt $Time.Count; $i++) {
+        $delta = $Time[$i] - $Time[$i - 1]
+        if ($delta -gt 0) { $diffs += $delta }
+    }
+    if ($diffs.Count -eq 0) { return 1 }
+    return [math]::Max(1, [math]::Round(($diffs | Measure-Object -Average).Average))
+}
+
+function Get-NormalizedPowerFromStream {
+    param([double[]]$Power, [double[]]$Time)
+    if (-not $Power -or $Power.Count -lt 30) { return $null }
+    $sampleInterval = Get-SampleInterval -Time $Time
+    $window = [math]::Max(1, [math]::Round(30 / $sampleInterval))
+    if ($Power.Count -lt $window) { return $null }
+
+    $sum = 0.0; $count = 0
+    $rollingSum = 0.0
+    for ($i = 0; $i -lt $Power.Count; $i++) {
+        $rollingSum += [double]$Power[$i]
+        if ($i -ge $window) { $rollingSum -= [double]$Power[$i - $window] }
+        if ($i -ge ($window - 1)) {
+            $avg = $rollingSum / $window
+            $sum += [math]::Pow($avg, 4)
+            $count++
+        }
+    }
+    if ($count -eq 0) { return $null }
+    return [math]::Round([math]::Pow(($sum / $count), 0.25), 0)
+}
+
+function Get-ZoneTimesFromStream {
+    param([double[]]$Values, [double]$FTP, [double[]]$Time)
+    if (-not $Values -or $Values.Count -eq 0 -or -not $FTP -or $FTP -le 0) { return $null }
+    $dt = @()
+    if ($Time -and $Time.Count -eq $Values.Count) {
+        for ($i = 0; $i -lt $Values.Count; $i++) {
+            if ($i -eq 0) { $dt += 1 } else { $dt += [math]::Max(1, [int]([double]$Time[$i] - [double]$Time[$i - 1])) }
+        }
+    } else {
+        $dt = 1..$Values.Count | ForEach-Object { 1 }
+    }
+
+    $zones = @(0,0,0,0,0,0,0)
+    for ($i = 0; $i -lt $Values.Count; $i++) {
+        $v = [double]$Values[$i]
+        if ($v -le 0) { continue }
+        $pct = ($v / $FTP) * 100
+        $idx = if ($pct -lt 55) { 0 }
+               elseif ($pct -lt 75) { 1 }
+               elseif ($pct -lt 90) { 2 }
+               elseif ($pct -lt 105) { 3 }
+               elseif ($pct -lt 120) { 4 }
+               elseif ($pct -lt 150) { 5 }
+               else { 6 }
+        $zones[$idx] += $dt[$i]
+    }
+    return $zones
+}
+
+function Get-DecouplingFromStreams {
+    param([double[]]$Power, [double[]]$Hr)
+    if (-not $Power -or -not $Hr) { return $null }
+    $len = [math]::Min($Power.Count, $Hr.Count)
+    if ($len -lt 60) { return $null }
+    $half = [math]::Floor($len / 2)
+    $p1 = ($Power[0..($half-1)] | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average
+    $p2 = ($Power[$half..($len-1)] | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average
+    $h1 = ($Hr[0..($half-1)] | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average
+    $h2 = ($Hr[$half..($len-1)] | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average
+    if (-not $p1 -or -not $p2 -or -not $h1 -or -not $h2) { return $null }
+    return [math]::Round((($h2 / $p2) / ($h1 / $p1) - 1) * 100, 2)
 }
 
 function Calculate-Monotony {
@@ -388,13 +502,18 @@ foreach ($activity in $activities) {
     # FC
     $avgHr = Get-FieldValue $activityDetail @("average_hr", "avg_hr")
     $maxHr = Get-FieldValue $activityDetail @("max_hr")
+    if (-not $avgHr) { $avgHr = Get-FieldValue $activity @("average_hr", "avg_hr") }
+    if (-not $maxHr) { $maxHr = Get-FieldValue $activity @("max_hr") }
     
     # TSS e Calorias
     $tss = Get-FieldValue $activityDetail @("icu_training_load", "tss")
+    if (-not $tss) { $tss = Get-FieldValue $activity @("icu_training_load", "tss") }
     $calories = Get-FieldValue $activityDetail @("calories", "kilojoules")
+    if (-not $calories) { $calories = Get-FieldValue $activity @("calories", "kilojoules") }
     
     # Elevacao
     $elevationGain = Get-FieldValue $activityDetail @("total_elevation_gain", "elevation_gain")
+    if (-not $elevationGain) { $elevationGain = Get-FieldValue $activity @("total_elevation_gain", "elevation_gain") }
     
     # Metricas especificas por modalidade
     $avgPower = $null; $maxPower = $null; $normalizedPower = $null
@@ -402,13 +521,18 @@ foreach ($activity in $activities) {
     $avgPace = $null; $avgSpeed = $null; $avgCadence = $null
     $decouplingPct = $null; $avgSwolf = $null
     $powerZones = $null; $hrZones = $null; $paceZones = $null
+    $streams = $null; $powerStream = $null; $hrStream = $null; $timeStream = $null; $cadenceStream = $null; $speedStream = $null
     
     if ($type -eq "Ride" -or $type -eq "VirtualRide") {
         # BIKE METRICS
         $avgPower = Get-FieldValue $activityDetail @("icu_average_watts", "average_watts", "avg_watts")
+        if (-not $avgPower) { $avgPower = Get-FieldValue $activity @("icu_average_watts", "average_watts", "avg_watts") }
         $maxPower = Get-FieldValue $activityDetail @("max_watts")
-        $normalizedPower = Get-FieldValue $activityDetail @("np", "normalized_power")
+        if (-not $maxPower) { $maxPower = Get-FieldValue $activity @("max_watts") }
+        $normalizedPower = Get-FieldValue $activityDetail @("np", "normalized_power", "icu_weighted_avg_watts", "weighted_avg_watts")
+        if (-not $normalizedPower) { $normalizedPower = Get-FieldValue $activity @("icu_weighted_avg_watts", "weighted_avg_watts", "np", "normalized_power") }
         $avgCadence = Get-FieldValue $activityDetail @("average_cadence", "avg_cadence")
+        if (-not $avgCadence) { $avgCadence = Get-FieldValue $activity @("average_cadence", "avg_cadence") }
         
         if ($normalizedPower -and $avgPower -and $avgPower -gt 0) {
             $variabilityIndex = [math]::Round($normalizedPower / $avgPower, 3)
@@ -418,23 +542,66 @@ foreach ($activity in $activities) {
         }
         
         # Decoupling
-        if ($activityDetail.icu_hr_load -and $activityDetail.icu_training_load -and $activityDetail.icu_training_load -gt 0) {
-            $decouplingPct = [math]::Round((($activityDetail.icu_hr_load / $activityDetail.icu_training_load) - 1) * 100, 2)
+        $hrLoad = Get-FieldValue $activityDetail @("icu_hr_load")
+        $tssLoad = Get-FieldValue $activityDetail @("icu_training_load")
+        if (-not $hrLoad) { $hrLoad = Get-FieldValue $activity @("icu_hr_load") }
+        if (-not $tssLoad) { $tssLoad = Get-FieldValue $activity @("icu_training_load") }
+        if ($hrLoad -and $tssLoad -and $tssLoad -gt 0) {
+            $decouplingPct = [math]::Round((($hrLoad / $tssLoad) - 1) * 100, 2)
         }
         
         # Zonas de power
         if ($activityDetail.icu_power_zone_times) {
             $powerZones = Get-ZoneTimesFormatted -ZoneTimes $activityDetail.icu_power_zone_times -Type "power"
+        } elseif ($activity.icu_power_zone_times) {
+            $powerZones = Get-ZoneTimesFormatted -ZoneTimes $activity.icu_power_zone_times -Type "power"
+        }
+
+        if ($useStreams -and (-not $avgPower -or -not $normalizedPower -or -not $powerZones -or -not $decouplingPct)) {
+            $streams = Invoke-IntervalsAPI -Endpoint "/activity/$($activity.id)/streams"
+        }
+        if ($streams) {
+            $powerStream = Get-StreamData -Streams $streams -Keys @("power", "watts", "pwr")
+            $hrStream = Get-StreamData -Streams $streams -Keys @("hr", "heartrate", "heart_rate")
+            $timeStream = Get-StreamData -Streams $streams -Keys @("time", "seconds", "timestamp")
+            $cadenceStream = Get-StreamData -Streams $streams -Keys @("cadence", "cad")
+
+            if (-not $avgPower -and $powerStream) {
+                $avgPower = [math]::Round((($powerStream | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average), 0)
+            }
+            if (-not $normalizedPower -and $powerStream) {
+                $normalizedPower = Get-NormalizedPowerFromStream -Power ([double[]]$powerStream) -Time ([double[]]$timeStream)
+            }
+            if (-not $variabilityIndex -and $normalizedPower -and $avgPower -and $avgPower -gt 0) {
+                $variabilityIndex = [math]::Round($normalizedPower / $avgPower, 3)
+            }
+            if (-not $intensityFactor -and $normalizedPower -and $ftp -gt 0) {
+                $intensityFactor = [math]::Round($normalizedPower / $ftp, 3)
+            }
+            if (-not $decouplingPct -and $powerStream -and $hrStream) {
+                $decouplingPct = Get-DecouplingFromStreams -Power ([double[]]$powerStream) -Hr ([double[]]$hrStream)
+            }
+            if (-not $powerZones -and $powerStream -and $ftp -gt 0) {
+                $zoneTimes = Get-ZoneTimesFromStream -Values ([double[]]$powerStream) -FTP $ftp -Time ([double[]]$timeStream)
+                if ($zoneTimes) { $powerZones = Get-ZoneTimesFormatted -ZoneTimes $zoneTimes -Type "power" }
+            }
+            if (-not $avgCadence -and $cadenceStream) {
+                $avgCadence = [math]::Round((($cadenceStream | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average), 0)
+            }
         }
     }
     elseif ($type -eq "Run") {
         # RUN METRICS
         $avgPower = Get-FieldValue $activityDetail @("icu_average_watts", "average_watts")
-        $normalizedPower = Get-FieldValue $activityDetail @("np", "normalized_power")
+        if (-not $avgPower) { $avgPower = Get-FieldValue $activity @("icu_average_watts", "average_watts") }
+        $normalizedPower = Get-FieldValue $activityDetail @("np", "normalized_power", "icu_weighted_avg_watts", "weighted_avg_watts")
+        if (-not $normalizedPower) { $normalizedPower = Get-FieldValue $activity @("icu_weighted_avg_watts", "weighted_avg_watts", "np", "normalized_power") }
         $avgCadence = Get-FieldValue $activityDetail @("average_cadence", "avg_cadence")
+        if (-not $avgCadence) { $avgCadence = Get-FieldValue $activity @("average_cadence", "avg_cadence") }
         
         # Pace
         $paceMs = Get-FieldValue $activityDetail @("icu_pace", "pace", "average_pace")
+        if (-not $paceMs) { $paceMs = Get-FieldValue $activity @("icu_pace", "pace", "average_pace") }
         if ($paceMs) { 
             $avgPace = Convert-PaceToMinKm -MetersPerSecond $paceMs
             $avgSpeed = Convert-SpeedToKmh -MetersPerSecond $paceMs
@@ -448,18 +615,66 @@ foreach ($activity in $activities) {
         }
         
         # Decoupling
-        if ($activityDetail.icu_hr_load -and $activityDetail.icu_training_load -and $activityDetail.icu_training_load -gt 0) {
-            $decouplingPct = [math]::Round((($activityDetail.icu_hr_load / $activityDetail.icu_training_load) - 1) * 100, 2)
+        $hrLoad = Get-FieldValue $activityDetail @("icu_hr_load")
+        $tssLoad = Get-FieldValue $activityDetail @("icu_training_load")
+        if (-not $hrLoad) { $hrLoad = Get-FieldValue $activity @("icu_hr_load") }
+        if (-not $tssLoad) { $tssLoad = Get-FieldValue $activity @("icu_training_load") }
+        if ($hrLoad -and $tssLoad -and $tssLoad -gt 0) {
+            $decouplingPct = [math]::Round((($hrLoad / $tssLoad) - 1) * 100, 2)
         }
         
         # Zonas de pace
         if ($activityDetail.icu_pace_zone_times) {
             $paceZones = Get-ZoneTimesFormatted -ZoneTimes $activityDetail.icu_pace_zone_times -Type "pace"
+        } elseif ($activity.icu_pace_zone_times) {
+            $paceZones = Get-ZoneTimesFormatted -ZoneTimes $activity.icu_pace_zone_times -Type "pace"
+        }
+
+        if ($useStreams -and (-not $avgPower -or -not $normalizedPower -or -not $paceZones -or -not $decouplingPct -or -not $avgPace)) {
+            $streams = Invoke-IntervalsAPI -Endpoint "/activity/$($activity.id)/streams"
+        }
+        if ($streams) {
+            $powerStream = Get-StreamData -Streams $streams -Keys @("power", "watts", "pwr")
+            $hrStream = Get-StreamData -Streams $streams -Keys @("hr", "heartrate", "heart_rate")
+            $timeStream = Get-StreamData -Streams $streams -Keys @("time", "seconds", "timestamp")
+            $cadenceStream = Get-StreamData -Streams $streams -Keys @("cadence", "cad")
+            $speedStream = Get-StreamData -Streams $streams -Keys @("speed", "velocity", "pace")
+
+            if (-not $avgPower -and $powerStream) {
+                $avgPower = [math]::Round((($powerStream | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average), 0)
+            }
+            if (-not $normalizedPower -and $powerStream) {
+                $normalizedPower = Get-NormalizedPowerFromStream -Power ([double[]]$powerStream) -Time ([double[]]$timeStream)
+            }
+            if (-not $variabilityIndex -and $normalizedPower -and $avgPower -and $avgPower -gt 0) {
+                $variabilityIndex = [math]::Round($normalizedPower / $avgPower, 3)
+            }
+            if (-not $intensityFactor -and $normalizedPower -and $ftpRun -gt 0) {
+                $intensityFactor = [math]::Round($normalizedPower / $ftpRun, 3)
+            }
+            if (-not $decouplingPct -and $powerStream -and $hrStream) {
+                $decouplingPct = Get-DecouplingFromStreams -Power ([double[]]$powerStream) -Hr ([double[]]$hrStream)
+            }
+            if (-not $paceZones -and $powerStream -and $ftpRun -gt 0) {
+                $zoneTimes = Get-ZoneTimesFromStream -Values ([double[]]$powerStream) -FTP $ftpRun -Time ([double[]]$timeStream)
+                if ($zoneTimes) { $paceZones = Get-ZoneTimesFormatted -ZoneTimes $zoneTimes -Type "power" }
+            }
+            if (-not $avgCadence -and $cadenceStream) {
+                $avgCadence = [math]::Round((($cadenceStream | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average), 0)
+            }
+            if (-not $avgPace -and $speedStream) {
+                $avgSpeedMs = [math]::Round((($speedStream | Where-Object { $_ -gt 0 } | Measure-Object -Average).Average), 3)
+                if ($avgSpeedMs -and $avgSpeedMs -gt 0) {
+                    $avgSpeed = Convert-SpeedToKmh -MetersPerSecond $avgSpeedMs
+                    $avgPace = Convert-PaceToMinKm -MetersPerSecond $avgSpeedMs
+                }
+            }
         }
     }
     elseif ($type -eq "Swim") {
         # SWIM METRICS
         $paceMs = Get-FieldValue $activityDetail @("icu_pace", "pace", "average_pace")
+        if (-not $paceMs) { $paceMs = Get-FieldValue $activity @("icu_pace", "pace", "average_pace") }
         if ($paceMs -and $paceMs -gt 0) {
             $pace100m = 100 / $paceMs
             $minutes = [int][math]::Floor($pace100m / 60)
@@ -468,11 +683,14 @@ foreach ($activity in $activities) {
         }
         
         $avgSwolf = Get-FieldValue $activityDetail @("average_swolf", "avg_swolf")
+        if (-not $avgSwolf) { $avgSwolf = Get-FieldValue $activity @("average_swolf", "avg_swolf") }
     }
     
     # Zonas de FC (para todos os tipos)
     if ($activityDetail.icu_hr_zone_times) {
         $hrZones = Get-ZoneTimesFormatted -ZoneTimes $activityDetail.icu_hr_zone_times -Type "hr"
+    } elseif ($activity.icu_hr_zone_times) {
+        $hrZones = Get-ZoneTimesFormatted -ZoneTimes $activity.icu_hr_zone_times -Type "hr"
     }
     
     # RPE e Feel

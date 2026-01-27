@@ -11,8 +11,16 @@ param (
 function Get-ApiKey {
     param ([string]$Path)
 
+    if ($env:INTERVALS_API_KEY) { return $env:INTERVALS_API_KEY }
     if (Test-Path $Path) {
         return (Get-Content $Path -Raw).Trim()
+    }
+
+    $localPath = $null
+    if ($env:USERPROFILE) { $localPath = Join-Path $env:USERPROFILE ".intervals\\api_key.txt" }
+    elseif ($env:HOME) { $localPath = Join-Path $env:HOME ".intervals\\api_key.txt" }
+    if ($localPath -and (Test-Path $localPath)) {
+        return (Get-Content $localPath -Raw).Trim()
     }
 
     $secureKey = Read-Host "Enter your Intervals.icu API Key" -AsSecureString
