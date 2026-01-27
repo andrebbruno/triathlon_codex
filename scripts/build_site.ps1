@@ -22,6 +22,9 @@ $reportFiles = Get-ChildItem $ReportsDir -Filter "report_*.json" | Sort-Object N
 $plannedFiles = Get-ChildItem $ReportsDir -Filter "planned_*.md" | Sort-Object Name -Descending
 $longtermFiles = Get-ChildItem $ReportsDir -Filter "intervals_longterm_*coach_edition.json" | Sort-Object Name -Descending
 
+# Notas semanais são usadas para a análise interna, não devem aparecer no relatório público.
+$IncludeWeekNotesInReport = $false
+
 function Html-Escape {
   param([string]$Text)
   if ($null -eq $Text) { return "" }
@@ -274,7 +277,7 @@ function Build-ReportHtml {
   }
 
   $notesBlock = ""
-  if ($notesWeek.Count -gt 0) {
+  if ($IncludeWeekNotesInReport -and $notesWeek.Count -gt 0) {
     $lines = @()
     foreach ($n in $notesWeek) {
       $lines += "<div class=""note-item""><strong>$(Html-Escape $n.name)</strong><div>$(Html-Escape $n.description)</div></div>"
@@ -1034,7 +1037,7 @@ function Build-ReportHtmlModern {
     $notesWeek = @($report.notas_semana)
   }
   $notesBlock = ""
-  if ($notesWeek.Count -gt 0) {
+  if ($IncludeWeekNotesInReport -and $notesWeek.Count -gt 0) {
     $noteLines = @()
     foreach ($n in $notesWeek) {
       $noteLines += "<div class=""note-item""><strong>$(Html-Escape $n.name)</strong><div>$(Html-Escape $n.description)</div></div>"
