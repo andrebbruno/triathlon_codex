@@ -298,30 +298,30 @@
   </section>
 
   <section class="card section">
-    <h2>Tendencias (1 semana)</h2>
+    <h2>Tendencias Longo Prazo (11 semanas)</h2>
     <div class="performance-grid">
   <div class="stat-card">
     <div class="stat-value">58.7</div>
     <div class="stat-label">CTL atual</div>
-    <div class="stat-pill">0</div>
-    <div class="stat-note">Evolucao nas ultimas 1 semanas.</div>
+    <div class="stat-pill">+19.9</div>
+    <div class="stat-note">Evolucao nas ultimas 11 semanas.</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value"></div>
+    <div class="stat-value">375</div>
     <div class="stat-label">TSS medio 4s</div>
-    <div class="stat-pill">0</div>
+    <div class="stat-pill">+31</div>
     <div class="stat-note">Comparado com as 4 semanas anteriores.</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value"> h</div>
+    <div class="stat-value">7.05 h</div>
     <div class="stat-label">Sono medio 4s</div>
-    <div class="stat-pill">0h</div>
+    <div class="stat-pill">-0.3h</div>
     <div class="stat-note">Tendencia recente de recuperacao.</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">111.6</div>
+    <div class="stat-value">111.7</div>
     <div class="stat-label">Peso atual</div>
-    <div class="stat-pill">n/a</div>
+    <div class="stat-pill">-1.4kg</div>
     <div class="stat-note">Variacao desde o inicio do periodo.</div>
   </div>
 </div>
@@ -337,7 +337,21 @@
     <div class="score-note">Sono, HRV, FC repouso e TSB</div>
   </div>
 </div>
-
+<div class="lt-meta">Longo prazo: 2025-11-04 a 2026-01-27</div>
+<div class="lt-grid">
+  <div class="lt-panel">
+    <h3>Insights</h3>
+    <ul class="lt-list"><li>OK Excelente progressao de fitness: CTL aumentou 73.6%</li><li>Consistencia: 100% (12/12 semanas ativas)</li><li>Proporcao media: Bike 54% | Run 18% | Swim 13%</li></ul>
+  </div>
+  <div class="lt-panel">
+    <h3>Alertas</h3>
+    <div class="lt-empty">Sem alertas.</div>
+  </div>
+  <div class="lt-panel">
+    <h3>Blocos 4 semanas</h3>
+    <div class="lt-blocks"><div class="lt-block"><strong>Bloco 1</strong><div>04/11 - 25/11</div><div>TSS: 354</div><div>CTL: 39.1 | TSB: 0</div></div><div class="lt-block"><strong>Bloco 2</strong><div>02/12 - 23/12</div><div>TSS: 365</div><div>CTL: 49.5 | TSB: 0</div></div><div class="lt-block"><strong>Bloco 3</strong><div>30/12 - 20/01</div><div>TSS: 377</div><div>CTL: 54.5 | TSB: 0</div></div></div>
+  </div>
+</div>
     <div class="grid grid-2" style="margin-top:16px">
       <div class="card"><canvas id="trend-load-chart"></canvas></div>
       <div class="card"><canvas id="trend-tss-chart"></canvas></div>
@@ -693,9 +707,9 @@
   new Chart(document.getElementById('dist-chart'),{type:'doughnut',data:{labels:["Ride","Run","Swim","WeightTraining"],datasets:[{data:[5.86,1.42,1.41,2.75],backgroundColor:['#60a5fa','#22c55e','#f59e0b','#94a3b8']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
   new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:["2026-01-19","2026-01-20","2026-01-21","2026-01-22","2026-01-23","2026-01-24","2026-01-25"],datasets:[{label:'CTL',data:[51.3,51.4,51.7,52.4,51.8,53.3,58.7],borderColor:'#60a5fa',tension:.3},{label:'ATL',data:[60.9,60.6,61.0,64.8,59.9,67.5,95.9],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
   new Chart(document.getElementById('well-chart'),{type:'line',data:{labels:["2026-01-19","2026-01-20","2026-01-21","2026-01-22","2026-01-23","2026-01-24","2026-01-25"],datasets:[{label:'Sono (h)',data:[8.2,7.6,6.9,7.5,7.4,6,7.6],borderColor:'#22c55e',tension:.3},{label:'HRV',data:[43.0,46.0,51.0,49.0,51.0,48.0,43.0],borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:[50,48,49,51,49,50,49],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:"25/01",datasets:[{label:'CTL',data:58.7,borderColor:'#60a5fa',tension:.3},{label:'ATL',data:95.9,borderColor:'#f59e0b',tension:.3},{label:'TSB',data:-37.2,borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:"25/01",datasets:[{type:'bar',label:'TSS',data:140,backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:11.4,borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:"25/01",datasets:[{label:'Sono',data:7.31,borderColor:'#22c55e',tension:.3},{label:'HRV',data:47.3,borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:49.4,borderColor:'#ef4444',tension:.3},{label:'Peso',data:111.6,borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:["04/11","11/11","18/11","25/11","02/12","09/12","16/12","23/12","30/12","06/01","13/01"],datasets:[{label:'CTL',data:[31.4,37.0,36.6,39.1,43.3,44.0,44.0,49.5,49.0,49.9,51.3],borderColor:'#60a5fa',tension:.3},{label:'ATL',data:[57.7,63.8,46.0,54.7,63.9,53.0,52.4,76.7,59.6,58.0,60.9],borderColor:'#f59e0b',tension:.3},{label:'TSB',data:[0,0,0,0,0,0,0,0,0,0,0],borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:["04/11","11/11","18/11","25/11","02/12","09/12","16/12","23/12","30/12","06/01","13/01"],datasets:[{type:'bar',label:'TSS',data:[368,447,220,379,394,291,313,462,310,352,376],backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:[10,9.6,6,8.8,10.3,5.2,7.8,9,7.5,8.5,7.2],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:["04/11","11/11","18/11","25/11","02/12","09/12","16/12","23/12","30/12","06/01","13/01"],datasets:[{label:'Sono',data:[6.7,7,7.2,7.4,7.5,7.3,7.1,7.1,7,7,7.1],borderColor:'#22c55e',tension:.3},{label:'HRV',data:[43.8,44.2,45,45.2,43.2,44.7,46.8,48.8,45.8,43.5,47.4],borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:[51.3,46.3,50.5,51.7,52.3,50.7,49.5,51.3,51,51.2,48],borderColor:'#ef4444',tension:.3},{label:'Peso',data:[113.1,111.8,null,111.2,111.3,null,112.2,null,111.1,110.7,111.7],borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
 </script>
 </body>
 </html>

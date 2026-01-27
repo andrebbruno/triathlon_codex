@@ -17,6 +17,24 @@ param(
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 # =============================================================================
+# FUNCOES AUXILIARES
+# =============================================================================
+
+function Get-ApiKey {
+    param ([string]$Path)
+
+    if ($env:INTERVALS_API_KEY) { return $env:INTERVALS_API_KEY }
+    if (Test-Path $Path) {
+        return (Get-Content $Path -Raw).Trim()
+    }
+
+    $secureKey = Read-Host "Enter your Intervals.icu API Key" -AsSecureString
+    return [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
+        [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureKey)
+    )
+}
+
+# =============================================================================
 # CONFIGURACOES
 # =============================================================================
 
@@ -52,36 +70,10 @@ if (-not (Test-Path $OutputDir)) {
     New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 }
 
-$requiredFields = @{
-    "Ride" = @("average_power", "normalized_power", "average_hr", "tss", "calories")
-    "VirtualRide" = @("average_power", "normalized_power", "average_hr", "tss", "calories")
-    "Run" = @("average_pace", "average_hr", "tss", "calories", "average_cadence")
-    "Swim" = @("average_pace", "tss", "calories")
-    "WeightTraining" = @("average_hr", "calories")
-}
-
-# =============================================================================
-# FUNCOES AUXILIARES
-# =============================================================================
-
 function Get-AuthHeader {
     $pair = "API_KEY:$apiKey"
     $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($pair))
     return @{ "Authorization" = "Basic $base64"; "Accept" = "application/json" }
-}
-
-function Get-ApiKey {
-    param ([string]$Path)
-
-    if ($env:INTERVALS_API_KEY) { return $env:INTERVALS_API_KEY }
-    if (Test-Path $Path) {
-        return (Get-Content $Path -Raw).Trim()
-    }
-
-    $secureKey = Read-Host "Enter your Intervals.icu API Key" -AsSecureString
-    return [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
-        [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureKey)
-    )
 }
 
 function Invoke-IntervalsAPI {
