@@ -28,6 +28,11 @@ jobs:
           ./export-intervals-week-com-notas.ps1
           ./intervals-longterm-coach-edition.ps1 -WeeksBack 12
 
+      - name: Weekly analysis + plan
+        shell: pwsh
+        run: |
+          ./weekly-analysis.ps1
+
       - name: Build static site
         shell: pwsh
         run: |

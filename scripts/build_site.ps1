@@ -19,6 +19,7 @@ Copy-Item -Path (Join-Path $ReportsDir "*.json") -Destination $siteReports -Forc
 Copy-Item -Path (Join-Path $ReportsDir "*.md") -Destination $siteReports -Force -ErrorAction SilentlyContinue
 
 $reportFiles = Get-ChildItem $ReportsDir -Filter "report_*.json" | Sort-Object Name -Descending
+$analysisFiles = Get-ChildItem $ReportsDir -Filter "analysis_*.md" -ErrorAction SilentlyContinue | Sort-Object Name -Descending
 $plannedFiles = Get-ChildItem $ReportsDir -Filter "planned_*.md" | Sort-Object Name -Descending
 $longtermFiles = Get-ChildItem $ReportsDir -Filter "intervals_longterm_*coach_edition.json" | Sort-Object Name -Descending
 
@@ -29,6 +30,18 @@ function Html-Escape {
   param([string]$Text)
   if ($null -eq $Text) { return "" }
   return [System.Net.WebUtility]::HtmlEncode($Text)
+}
+
+function Read-AnalysisForWeek {
+  param(
+    [object[]]$Files,
+    [string]$WeekStart,
+    [string]$WeekEnd
+  )
+  if (-not $Files -or -not $WeekStart -or -not $WeekEnd) { return "" }
+  $match = $Files | Where-Object { $_.Name -eq ("analysis_{0}_{1}.md" -f $WeekStart, $WeekEnd) } | Select-Object -First 1
+  if (-not $match) { return "" }
+  return (Get-Content $match.FullName -Raw)
 }
 
 function Get-MemorySectionLines {
@@ -769,6 +782,27 @@ function Build-ReportHtmlModern {
   $report = Get-Content $ReportPath -Raw | ConvertFrom-Json
   $range = "$($report.semana.inicio) a $($report.semana.fim)"
   $referenceDate = [DateTime]::Parse($report.semana.fim)
+  $analysisMd = Read-AnalysisForWeek -Files $analysisFiles -WeekStart $report.semana.inicio -WeekEnd $report.semana.fim
+  $analysisBlock = ""
+  if ($analysisMd) {
+    $lines = $analysisMd -split "`n"
+    $section = @()
+    foreach ($line in $lines) {
+      $trim = $line.Trim()
+      if ($trim -match "^#") { continue }
+      if ($trim -match "^\-\s+") {
+        $item = $trim -replace '^\-\s*',''
+        $itemEscaped = Html-Escape $item
+        if ($itemEscaped -match "\*\*") {
+          $itemEscaped = $itemEscaped -replace "\*\*(.+?)\*\*", '<strong>$1</strong>'
+        }
+        $section += "<li>$itemEscaped</li>"
+      }
+    }
+    if ($section.Count -gt 0) {
+      $analysisBlock = "<section class=""card section""><h2>Analise Semanal (resumo)</h2><ul>$($section -join '')</ul></section>"
+    }
+  }
 
   $activities = @($report.atividades)
   $wellness = @($report.bem_estar)
@@ -1990,6 +2024,8 @@ $longtermInsightsBlock
   </section>
 
   $notesBlock
+
+  $analysisBlock
 
   $feedbackBlock
 
