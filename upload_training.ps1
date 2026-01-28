@@ -155,7 +155,7 @@ $base64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($pair))
 $headers = @{
   Authorization = "Basic $base64"
   Accept        = "application/json"
-  "Content-Type"= "application/json"
+  "Content-Type"= "application/json; charset=utf-8"
 }
 
 $uri = "https://intervals.icu/api/v1/athlete/0/events/bulk?upsert=true"
@@ -201,44 +201,157 @@ if ($WriteBackNormalized -and $hasChanges) {
   Write-Log -Level "info" -Message "Arquivo normalizado" -Data @{ file = $TrainingsFile }
 }
 
+$supportsSkip = $false
+try {
+  $supportsSkip = (Get-Command Invoke-WebRequest).Parameters.ContainsKey("SkipHttpErrorCheck")
+} catch { }
+
+function Invoke-IntervalsUpload {
+  param(
+    [string]$Body
+  )
+
+  $bodyBytes = [Text.Encoding]::UTF8.GetBytes($Body)
+
+  if ($PSVersionTable.PSVersion.Major -lt 6) {
+    try {
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    } catch { }
+  }
+
+  if ($supportsSkip) {
+    $response = Invoke-WebRequest -Uri $uri -Method Post -Headers $headers -Body $bodyBytes -SkipHttpErrorCheck
+    return @{
+      StatusCode = [int]$response.StatusCode
+      Reason     = $response.StatusDescription
+      Content    = $response.Content
+      Error      = $null
+    }
+  }
+
+  try {
+    $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $bodyBytes
+    $content = $null
+    try { $content = $response | ConvertTo-Json -Depth 12 } catch { }
+    return @{
+      StatusCode = 200
+      Reason     = "OK"
+      Content    = $content
+      Error      = $null
+    }
+  } catch {
+    $errorBody = $null
+    $statusCode = $null
+    $reasonPhrase = $null
+    try {
+      if ($_.Exception.Response) {
+        $statusCode = $_.Exception.Response.StatusCode.value__
+        $reasonPhrase = $_.Exception.Response.StatusDescription
+        if ($_.Exception.Response.GetResponseStream()) {
+          $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+          $errorBody = $reader.ReadToEnd()
+        }
+      }
+    } catch { }
+
+    if (-not $errorBody -and $_.ErrorDetails -and $_.ErrorDetails.Message) {
+      $errorBody = $_.ErrorDetails.Message
+    }
+
+    return @{
+      StatusCode = $statusCode
+      Reason     = $reasonPhrase
+      Content    = $errorBody
+      Error      = $_.Exception.Message
+    }
+  }
+}
+
 try {
   $body = ($normalizedEvents | ConvertTo-Json -Depth 12)
   if ($body.TrimStart().StartsWith("{")) { $body = "[$body]" }
-  $resp = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body
-  Write-Host "Upload OK. Eventos criados/atualizados: $($resp.Count)"
-  Write-Log -Level "info" -Message "Upload OK" -Data @{ count = $resp.Count; file = $TrainingsFile }
+
+  $bulkResult = Invoke-IntervalsUpload -Body $body
+  $statusCode = $bulkResult.StatusCode
+  $statusDescription = $bulkResult.Reason
+  $content = $bulkResult.Content
+
+  $bulkFailed = (-not $statusCode) -or ($statusCode -lt 200 -or $statusCode -ge 300)
+  if ($bulkFailed) {
+    Write-Host "Failed to upload trainings (bulk):"
+    if ($statusCode) {
+      Write-Host "HTTP status: $statusCode $statusDescription"
+    } else {
+      Write-Host $bulkResult.Error
+    }
+    if ($content) {
+      Write-Host "Server response body:"
+      Write-Host $content
+    }
+    Write-Log -Level "error" -Message "Upload falhou (bulk)" -Data @{
+      status = $statusCode
+      reason = $statusDescription
+      body   = $content
+      file   = $TrainingsFile
+    }
+
+    Write-Host "Tentando upload individual para identificar erro..."
+    $singleFailures = @()
+    foreach ($event in $normalizedEvents) {
+      $singleBody = ($event | ConvertTo-Json -Depth 12)
+      if ($singleBody.TrimStart().StartsWith("{")) { $singleBody = "[$singleBody]" }
+      $singleResult = Invoke-IntervalsUpload -Body $singleBody
+      $singleStatus = $singleResult.StatusCode
+      $singleReason = $singleResult.Reason
+      $singleContent = $singleResult.Content
+
+      $singleFailed = (-not $singleStatus) -or ($singleStatus -lt 200 -or $singleStatus -ge 300)
+      if ($singleFailed) {
+        $failure = [ordered]@{
+          external_id = $event.external_id
+          status      = $singleStatus
+          reason      = $singleReason
+          body        = $singleContent
+        }
+        $singleFailures += $failure
+        Write-Host "Falha no evento: $($event.external_id)"
+        if ($singleStatus) {
+          Write-Host "HTTP status: $singleStatus $singleReason"
+        }
+        if ($singleContent) {
+          Write-Host "Server response body:"
+          Write-Host $singleContent
+        }
+      }
+    }
+
+    if ($singleFailures.Count -gt 0) {
+      Write-Log -Level "error" -Message "Upload falhou (single)" -Data @{ failures = $singleFailures }
+      exit 1
+    }
+
+    Write-Host "Bulk falhou, mas todos os uploads individuais foram OK."
+    Write-Log -Level "warn" -Message "Bulk falhou, single OK" -Data @{ file = $TrainingsFile }
+    $content = $null
+  }
+
+  $parsed = $null
+  $count = $null
+  if ($content) {
+    try { $parsed = $content | ConvertFrom-Json } catch { }
+  }
+  if ($parsed -ne $null) { $count = $parsed.Count }
+
+  if ($count -ne $null) {
+    Write-Host "Upload OK. Eventos criados/atualizados: $count"
+  } else {
+    Write-Host "Upload OK."
+  }
+  Write-Log -Level "info" -Message "Upload OK" -Data @{ count = $count; file = $TrainingsFile }
 }
 catch {
   Write-Host "Failed to upload trainings:"
   Write-Host $_.Exception.Message
-
-  $errorBody = $null
-  $statusCode = $null
-  $reasonPhrase = $null
-  try {
-    if ($_.Exception.Response) {
-      $statusCode = $_.Exception.Response.StatusCode.value__
-      $reasonPhrase = $_.Exception.Response.StatusDescription
-      if ($_.Exception.Response.GetResponseStream()) {
-        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
-        $errorBody = $reader.ReadToEnd()
-        if ($errorBody) {
-          Write-Host "Server response body:"
-          Write-Host $errorBody
-        }
-      }
-    }
-  } catch { }
-
-  if ($statusCode) {
-    Write-Host "HTTP status: $statusCode $reasonPhrase"
-  }
-
-  Write-Log -Level "error" -Message "Upload falhou" -Data @{
-    message = $_.Exception.Message
-    status = $statusCode
-    reason = $reasonPhrase
-    body   = $errorBody
-  }
+  Write-Log -Level "error" -Message "Upload falhou" -Data @{ message = $_.Exception.Message }
   exit 1
 }
