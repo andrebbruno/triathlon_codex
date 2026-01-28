@@ -213,17 +213,32 @@ catch {
   Write-Host $_.Exception.Message
 
   $errorBody = $null
+  $statusCode = $null
+  $reasonPhrase = $null
   try {
-    if ($_.Exception.Response -and $_.Exception.Response.GetResponseStream()) {
-      $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
-      $errorBody = $reader.ReadToEnd()
-      if ($errorBody) {
-        Write-Host "Server response body:"
-        Write-Host $errorBody
+    if ($_.Exception.Response) {
+      $statusCode = $_.Exception.Response.StatusCode.value__
+      $reasonPhrase = $_.Exception.Response.StatusDescription
+      if ($_.Exception.Response.GetResponseStream()) {
+        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+        $errorBody = $reader.ReadToEnd()
+        if ($errorBody) {
+          Write-Host "Server response body:"
+          Write-Host $errorBody
+        }
       }
     }
   } catch { }
 
-  Write-Log -Level "error" -Message "Upload falhou" -Data @{ message = $_.Exception.Message; body = $errorBody }
+  if ($statusCode) {
+    Write-Host "HTTP status: $statusCode $reasonPhrase"
+  }
+
+  Write-Log -Level "error" -Message "Upload falhou" -Data @{
+    message = $_.Exception.Message
+    status = $statusCode
+    reason = $reasonPhrase
+    body   = $errorBody
+  }
   exit 1
 }
