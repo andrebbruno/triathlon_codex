@@ -1,19 +1,77 @@
 {
   "semana": {
+    "tempo_total_horas": 2.7,
     "inicio": "2026-01-26",
-    "tempo_total_horas": 0.0,
-    "distancia_total_km": 0.0,
     "fim": "2026-02-01",
-    "carga_total_tss": 0
+    "distancia_total_km": 22.1,
+    "carga_total_tss": 69.0
   },
   "metricas": {
-    "ATL": 76.1,
-    "RampRate": 3.5,
-    "TSB": -18.1,
-    "CTL": 58.0,
-    "peso_atual": null
+    "peso_atual": null,
+    "TSB": -26.9,
+    "ATL": 86.9,
+    "CTL": 60.0,
+    "RampRate": 5.5
   },
-  "atividades": [],
+  "atividades": [
+    {
+      "id": "i121037972",
+      "name": "Força",
+      "type": "WeightTraining",
+      "start_date_local": "2026-01-27",
+      "distance_km": 0,
+      "moving_time_min": 40.0,
+      "average_hr": 79.0,
+      "average_watts": null,
+      "suffer_score": 6.0,
+      "normalized_power": null,
+      "variabilidade": null,
+      "notas": "",
+      "planejado": null
+    },
+    {
+      "id": "i120888182",
+      "name": "Bike - Sweet Spot Controlado",
+      "type": "Ride",
+      "start_date_local": "2026-01-27",
+      "distance_km": 22.1,
+      "moving_time_min": 65.1,
+      "average_hr": 121.0,
+      "average_watts": 160.0,
+      "suffer_score": 49.0,
+      "normalized_power": 168.0,
+      "variabilidade": 1.05,
+      "notas": "Treino tranquilo, porém fiquei mais em z2 do que imaginava. Fico pensando se meu FTP não precisa ser ajustado? Talvez um novo teste de FTP?",
+      "planejado": {
+        "event_id": "90391188",
+        "external_id": "2026-01-27-bike-ss-controlado",
+        "name": "Bike - Sweet Spot Controlado",
+        "type": "Ride",
+        "start_date_local": "2026-01-27T00:00:00",
+        "moving_time_min": 65.0,
+        "distance_km": null,
+        "description": "Warmup\n- 15m 138-170W power=3s 90-95rpm\n\nMain Set Repeat 2x\n- 10m 195-210W power=3s 90-95rpm\n- 4m 140-160W power=3s\n\nEndurance\n- 12m 165-175W power=3s 90-95rpm\n\nCooldown\n- 10m 138-155W power=3s",
+        "match_method": "paired_activity_id",
+        "delta_time_min": 0.1,
+        "delta_distance_km": null
+      }
+    },
+    {
+      "id": "i120745100",
+      "name": "Força - Membros Superiores",
+      "type": "WeightTraining",
+      "start_date_local": "2026-01-26",
+      "distance_km": 0,
+      "moving_time_min": 57.1,
+      "average_hr": 92.0,
+      "average_watts": null,
+      "suffer_score": 14.0,
+      "normalized_power": null,
+      "variabilidade": null,
+      "notas": "",
+      "planejado": null
+    }
+  ],
   "treinos_planejados": [
     {
       "event_id": "90351303",
@@ -29,6 +87,19 @@
       "paired_activity_id": null
     },
     {
+      "event_id": "90823771",
+      "external_id": "training_20260126_strength",
+      "start_date_local": "2026-01-26T00:00:00",
+      "end_date_local": "2026-01-27T00:00:00",
+      "start_date": "2026-01-26",
+      "type": "Workout",
+      "name": "Forca - Membros Superiores",
+      "description": "",
+      "moving_time_min": null,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
       "event_id": "90391188",
       "external_id": "2026-01-27-bike-ss-controlado",
       "start_date_local": "2026-01-27T00:00:00",
@@ -38,6 +109,19 @@
       "name": "Bike - Sweet Spot Controlado",
       "description": "Warmup\n- 15m 138-170W power=3s 90-95rpm\n\nMain Set Repeat 2x\n- 10m 195-210W power=3s 90-95rpm\n- 4m 140-160W power=3s\n\nEndurance\n- 12m 165-175W power=3s 90-95rpm\n\nCooldown\n- 10m 138-155W power=3s",
       "moving_time_min": 65.0,
+      "distance_km": null,
+      "paired_activity_id": "i120888182"
+    },
+    {
+      "event_id": "90823772",
+      "external_id": "training_20260127_ride",
+      "start_date_local": "2026-01-27T00:00:00",
+      "end_date_local": "2026-01-28T00:00:00",
+      "start_date": "2026-01-27",
+      "type": "Ride",
+      "name": "Bike - Sweet Spot",
+      "description": "- Aquecimento\n  15m Z2\n\n- Sweet Spot 88-94% FTP\n  3x8m Z4\n\n- Desaquecimento\n  15m Z1",
+      "moving_time_min": 30.0,
       "distance_km": null,
       "paired_activity_id": null
     },
@@ -55,14 +139,14 @@
       "paired_activity_id": null
     },
     {
-      "event_id": "90396137",
-      "external_id": "2026-01-28-swim-tecnica-aerobio",
+      "event_id": "90823774",
+      "external_id": "training_20260128_swim",
       "start_date_local": "2026-01-28T00:00:00",
       "end_date_local": "2026-01-29T00:00:00",
       "start_date": "2026-01-28",
       "type": "Swim",
-      "name": "Swim - Tecnica + Aerobio",
-      "description": "Warmup\n- 300meters Z1 pace\n\nTecnica Repeat 4x\n- 50meters Z1 pace\n- Rest 15s\n\nSerie Principal Repeat 6x\n- 100meters Z2 pace\n- Rest 15s\n\nCooldown\n- 200meters Z1 pace",
+      "name": "Natacao - Tecnico Base",
+      "description": "Warmup\n- 300meters Z1 pace\n\nTecnica crawl Repeat 8x\n- 50meters Z2 pace\n- Rest 15s\n\nEndurance aerobio Repeat 4x\n- 100meters Z2 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace",
       "moving_time_min": 37.1,
       "distance_km": 1.3,
       "paired_activity_id": null
@@ -81,16 +165,16 @@
       "paired_activity_id": null
     },
     {
-      "event_id": "90532593",
-      "external_id": "2026-01-28-run-teste-tiros-30s",
+      "event_id": "90823773",
+      "external_id": "training_20260128_run",
       "start_date_local": "2026-01-28T08:00:00",
-      "end_date_local": "2026-01-28T09:00:00",
+      "end_date_local": "2026-01-28T08:40:00",
       "start_date": "2026-01-28",
       "type": "Run",
-      "name": "Run - Teste Tiros 30s",
-      "description": "Warmup\n- 10m 06:45/km pace\n\nTiros 8x\n- 30s Z4 pace\n- 1m20s Z1 pace",
-      "moving_time_min": 24.7,
-      "distance_km": 3.6,
+      "name": "Corrida - Easy Aerobico",
+      "description": "- Aquecimento caminhada\n  5m Z1 Pace\n\n- Easy pace - 7:00-7:30/km\n  30m Z2 Pace\n\n- Volta a calma\n  5m Z1 Pace",
+      "moving_time_min": 40.0,
+      "distance_km": 5.8,
       "paired_activity_id": null
     },
     {
@@ -99,23 +183,10 @@
       "start_date_local": "2026-01-29T00:00:00",
       "end_date_local": "2026-01-30T00:00:00",
       "start_date": "2026-01-29",
-      "type": "WeightTraining",
-      "name": "Força - Membros Inferiores",
+      "type": "Workout",
+      "name": "Forca - Membros Inferiores",
       "description": "",
       "moving_time_min": null,
-      "distance_km": null,
-      "paired_activity_id": null
-    },
-    {
-      "event_id": "90351311",
-      "external_id": "training_20260201_ride",
-      "start_date_local": "2026-01-29T00:00:00",
-      "end_date_local": "2026-01-30T00:00:00",
-      "start_date": "2026-01-29",
-      "type": "Ride",
-      "name": "Bike - Volume Aeróbio",
-      "description": "- Aquecimento\n  15m Z1\n\n- Tempo sustentado\n  45m Z2\n\n- Tempo moderado\n  2x5m Z3\n\n- Desaquecimento\n  15m Z1",
-      "moving_time_min": 80.0,
       "distance_km": null,
       "paired_activity_id": null
     },
@@ -133,13 +204,26 @@
       "paired_activity_id": null
     },
     {
+      "event_id": "90823775",
+      "external_id": "training_20260129_ride",
+      "start_date_local": "2026-01-29T00:00:00",
+      "end_date_local": "2026-01-30T00:00:00",
+      "start_date": "2026-01-29",
+      "type": "Ride",
+      "name": "Bike - Endurance Z2",
+      "description": "- Aquecimento\n  15m Z1\n\n- Endurance aerobio sustentado\n  50m Z2\n\n- Desaquecimento\n  10m Z1",
+      "moving_time_min": 75.0,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
       "event_id": "90351309",
       "external_id": "training_20260130_swim",
       "start_date_local": "2026-01-30T00:00:00",
       "end_date_local": "2026-01-31T00:00:00",
       "start_date": "2026-01-30",
       "type": "Swim",
-      "name": "Natação - Volume Base",
+      "name": "Natacao - Volume Base",
       "description": "Warmup\n- 200meters Z1 pace\n\nEndurance base Repeat 6x\n- 100meters Z2 pace\n- Rest 15s\n\nRitmo moderado Repeat 4x\n- 50meters Z3 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace",
       "moving_time_min": 24.0,
       "distance_km": 1.2,
@@ -172,6 +256,19 @@
       "paired_activity_id": null
     },
     {
+      "event_id": "90351311",
+      "external_id": "training_20260201_ride",
+      "start_date_local": "2026-02-01T00:00:00",
+      "end_date_local": "2026-02-02T00:00:00",
+      "start_date": "2026-02-01",
+      "type": "Ride",
+      "name": "Bike - Longao Base",
+      "description": "- Aquecimento progressivo\n  20m Z1\n\n- Endurance aerobio sustentado\n  60m Z2\n\n- Desaquecimento\n  10m Z1",
+      "moving_time_min": 90.0,
+      "distance_km": null,
+      "paired_activity_id": null
+    },
+    {
       "event_id": "90391195",
       "external_id": "2026-02-01-bike-longao-limpo",
       "start_date_local": "2026-02-01T00:00:00",
@@ -192,76 +289,76 @@
       "fc_reposo": 46,
       "sono_h": 8.6,
       "hrv": 43.0,
-      "passos": 2339,
+      "passos": 6190,
       "ctl": 54.5,
-      "atl": 69.1,
+      "atl": 71.0,
       "rampRate": 3.2
     },
     {
       "data": "2026-01-27",
       "peso": null,
-      "fc_reposo": 46,
-      "sono_h": 8.6,
-      "hrv": 43.0,
-      "passos": null,
-      "ctl": 54.5,
-      "atl": 66.9,
-      "rampRate": 3.1
+      "fc_reposo": 45,
+      "sono_h": 7.6,
+      "hrv": 48.0,
+      "passos": 4544,
+      "ctl": 54.8,
+      "atl": 71.1,
+      "rampRate": 3.4
     },
     {
       "data": "2026-01-28",
       "peso": null,
-      "fc_reposo": 46,
-      "sono_h": 8.6,
-      "hrv": 43.0,
+      "fc_reposo": 45,
+      "sono_h": 7.6,
+      "hrv": 48.0,
       "passos": null,
-      "ctl": 56.0,
-      "atl": 74.0,
-      "rampRate": 4.4
+      "ctl": 56.8,
+      "atl": 80.1,
+      "rampRate": 5.1
     },
     {
       "data": "2026-01-29",
       "peso": null,
-      "fc_reposo": 46,
-      "sono_h": 8.6,
-      "hrv": 43.0,
+      "fc_reposo": 45,
+      "sono_h": 7.6,
+      "hrv": 48.0,
       "passos": null,
-      "ctl": 57.1,
-      "atl": 77.9,
-      "rampRate": 4.7
+      "ctl": 57.9,
+      "atl": 83.3,
+      "rampRate": 5.5
     },
     {
       "data": "2026-01-30",
       "peso": null,
-      "fc_reposo": 46,
-      "sono_h": 8.6,
-      "hrv": 43.0,
+      "fc_reposo": 45,
+      "sono_h": 7.6,
+      "hrv": 48.0,
       "passos": null,
-      "ctl": 56.9,
-      "atl": 73.8,
-      "rampRate": 5.1
+      "ctl": 57.6,
+      "atl": 78.5,
+      "rampRate": 5.8
     },
     {
       "data": "2026-01-31",
       "peso": null,
-      "fc_reposo": 46,
-      "sono_h": 8.6,
-      "hrv": 43.0,
+      "fc_reposo": 45,
+      "sono_h": 7.6,
+      "hrv": 48.0,
       "passos": null,
-      "ctl": 56.6,
-      "atl": 69.8,
-      "rampRate": 3.2
+      "ctl": 57.3,
+      "atl": 73.9,
+      "rampRate": 4.0
     },
     {
       "data": "2026-02-01",
       "peso": null,
-      "fc_reposo": 46,
-      "sono_h": 8.6,
-      "hrv": 43.0,
+      "fc_reposo": 45,
+      "sono_h": 7.6,
+      "hrv": 48.0,
       "passos": null,
-      "ctl": 58.0,
-      "atl": 76.1,
-      "rampRate": 2.2
+      "ctl": 60.0,
+      "atl": 86.9,
+      "rampRate": 4.2
     }
   ],
   "notas_semana": [
