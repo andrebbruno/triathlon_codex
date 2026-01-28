@@ -127,11 +127,13 @@ function Apply-StartTime {
     [string]$StartTime
   )
 
-  if ([string]::IsNullOrWhiteSpace($StartTime)) { return $StartDateLocal }
   try {
-    $date = [DateTime]::Parse($StartDateLocal)
-    $time = [TimeSpan]::Parse($StartTime)
-    return (Get-Date ($date.Date + $time) -Format "yyyy-MM-ddTHH:mm:ss")
+    $date = [DateTime]$StartDateLocal
+    if (-not [string]::IsNullOrWhiteSpace($StartTime)) {
+      $time = [TimeSpan]::Parse($StartTime)
+      $date = $date.Date + $time
+    }
+    return $date.ToString("yyyy-MM-ddTHH:mm:ss")
   } catch {
     return $StartDateLocal
   }
