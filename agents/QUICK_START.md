@@ -7,11 +7,11 @@ Open one agent per window (recommended):
 4) Copy the prefix and start the chat
 
 Agent shortcuts:
-- Head (geral): agents/head/START.md   prefix: /head
-- CoachTri (treino): agents/coachTri/START.md   prefix: /coachTri
-- IT Tech (scripts): agents/IT_tech/START.md   prefix: /IT_tech
-- Nutricao: agents/nutricao/START.md   prefix: /nutricao
-- Fisio: agents/fisio/START.md   prefix: /fisio
+- Head (geral): agents/head/START.md   prefix: @head
+- CoachTri (treino): agents/coachTri/START.md   prefix: @coachtri
+- IT Tech (scripts): agents/IT_tech/START.md   prefix: @it_tech
+- Nutricao: agents/nutricao/START.md   prefix: @nutricao
+- Fisio: agents/fisio/START.md   prefix: @fisio
 
 Tip (same window):
 - Split editor: Ctrl+\

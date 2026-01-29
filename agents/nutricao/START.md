@@ -1,5 +1,9 @@
-/nutricao
+@nutricao
 Use this prefix to talk to the Nutrition agent.
+
+IMPORTANT
+- Open the repo root as the workspace. Paths below are relative to repo root.
+- If files are missing, do not open only the agent folder.
 
 Context to load:
 - memory/CORE.md

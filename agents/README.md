@@ -4,11 +4,11 @@ Use os prefixos abaixo para iniciar a conversa com cada agente.
 
 | Agente | Prefixo | Atalho |
 | --- | --- | --- |
-| Head (geral) | /head | agents/head/START.md |
-| Coach Tri (treino) | /coachTri | agents/coachTri/START.md |
-| IT Tech (scripts) | /IT_tech | agents/IT_tech/START.md |
-| Nutricao | /nutricao | agents/nutricao/START.md |
-| Fisio | /fisio | agents/fisio/START.md |
+| Head (geral) | @head | agents/head/START.md |
+| Coach Tri (treino) | @coachtri | agents/coachTri/START.md |
+| IT Tech (scripts) | @it_tech | agents/IT_tech/START.md |
+| Nutricao | @nutricao | agents/nutricao/START.md |
+| Fisio | @fisio | agents/fisio/START.md |
 
 Como usar:
 1. Abra o START.md do agente desejado.
