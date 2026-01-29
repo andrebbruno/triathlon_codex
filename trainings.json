@@ -1,4 +1,4 @@
-﻿[
+[
     {
         "external_id":  "training_20260202_strength",
         "category":  "WORKOUT",
@@ -10,10 +10,10 @@
     {
         "external_id":  "2026-02-03-bike-ss-controlado",
         "category":  "WORKOUT",
-        "start_date_local":  "2026-02-03T00:00:00",
+        "start_date_local":  "2026-02-03T07:00:00",
         "type":  "Ride",
-        "name":  "Bike - Sweet Spot Controlado",
-        "description":  "Warmup\n- 15m 138-170W power=3s 90-95rpm\n\nMain Set Repeat 2x\n- 10m 195-210W power=3s 90-95rpm\n- 4m 140-160W power=3s\n\nEndurance\n- 12m 165-175W power=3s 90-95rpm\n\nCooldown\n- 10m 138-155W power=3s"
+        "name":  "Bike - Teste FTP 20m",
+        "description":  "Warmup\n- 15m Z1\n\nOpeners Repeat 3x\n- 1m Z4\n- 2m Z1\n\nTeste FTP 20m\n- 20m Maximo sustentavel\n\nCooldown\n- 10m Z1"
     },
     {
         "external_id":  "training_20260204_swim",
@@ -21,7 +21,7 @@
         "start_date_local":  "2026-02-04T00:00:00",
         "type":  "Swim",
         "name":  "Natacao - Tecnico Base",
-        "description":  "Warmup\n- 300meters Z1 pace\n\nTécnica crawl Repeat 8x\n- 50meters Z2 pace\n- Rest 15s\n\nEndurance aeróbio Repeat 4x\n- 100meters Z2 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace"
+        "description":  "Warmup\n- 300meters Z1 pace\n\nTecnica crawl Repeat 8x\n- 50meters Z2 pace\n- Rest 15s\n\nEndurance aerobio Repeat 4x\n- 100meters Z2 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace"
     },
     {
         "external_id":  "2026-02-04-swim-tecnica-aerobio",
