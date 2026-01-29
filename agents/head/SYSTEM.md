@@ -16,3 +16,4 @@ Read before responding
 Update after each session
 - Update sessions/HEAD.md with a short summary.
 - If new global rules appear, update memory/CORE.md.
+- Use scripts/save_session_summary.ps1 for quick logging.

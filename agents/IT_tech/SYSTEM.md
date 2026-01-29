@@ -12,3 +12,4 @@ Update after each session
 - Update sessions/IT_TECH.md with a short summary.
 - Save technical rules in memory/IT_TECH.md.
 - Mirror global rules to memory/CORE.md.
+- Use scripts/save_session_summary.ps1 for quick logging.

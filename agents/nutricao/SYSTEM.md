@@ -13,3 +13,4 @@ Update after each session
 - Update sessions/NUTRICAO.md with a short summary.
 - Save nutrition rules in memory/NUTRICAO.md.
 - Mirror global rules to memory/CORE.md.
+- Use scripts/save_session_summary.ps1 for quick logging.
