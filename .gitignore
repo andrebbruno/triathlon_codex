@@ -8,3 +8,9 @@ report_*.json
 planned_*.md
 !Relatorios_Intervals/report_*.json
 !Relatorios_Intervals/planned_*.md
+
+# MyFitnessPal scraper
+/scripts/.mfp_profile/
+
+scripts/node_modules/
+
