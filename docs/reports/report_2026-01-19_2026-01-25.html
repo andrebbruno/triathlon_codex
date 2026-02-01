@@ -594,25 +594,25 @@
   <div class="stat-card">
     <div class="stat-value">58.7</div>
     <div class="stat-label">CTL atual</div>
-    <div class="stat-pill">+19.9</div>
+    <div class="stat-pill">+16</div>
     <div class="stat-note">Evolucao nas ultimas 11 semanas.</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">378</div>
+    <div class="stat-value">336</div>
     <div class="stat-label">TSS medio 4s</div>
-    <div class="stat-pill">+20</div>
+    <div class="stat-pill">+62</div>
     <div class="stat-note">Comparado com as 4 semanas anteriores.</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">7.02 h</div>
+    <div class="stat-value">7.08 h</div>
     <div class="stat-label">Sono medio 4s</div>
     <div class="stat-pill">-0.3h</div>
     <div class="stat-note">Tendencia recente de recuperacao.</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">111.7</div>
+    <div class="stat-value">111.6</div>
     <div class="stat-label">Peso atual</div>
-    <div class="stat-pill">-1.4kg</div>
+    <div class="stat-pill">-0.2kg</div>
     <div class="stat-note">Variacao desde o inicio do periodo.</div>
   </div>
 </div>
@@ -629,11 +629,11 @@
   </div>
 </div>
 
-<div class="lt-meta">Longo prazo: 2025-11-05 a 2026-01-28</div>
+<div class="lt-meta">Longo prazo: 2025-11-09 a 2026-02-01</div>
 <div class="lt-grid">
   <div class="lt-panel">
     <h3>Insights</h3>
-    <ul class="lt-list"><li>OK Excelente progressao de fitness: CTL aumentou 74%</li><li>Consistencia: 100% (12/12 semanas ativas)</li><li>Proporcao media: Bike 60% | Run 9% | Swim 10%</li></ul>
+    <ul class="lt-list"><li>OK Excelente progressao de fitness: CTL aumentou 49.9%</li><li>Consistencia: 100% (12/12 semanas ativas)</li><li>Proporcao media: Bike 47% | Run 15% | Swim 15%</li></ul>
   </div>
   <div class="lt-panel">
     <h3>Alertas</h3>
@@ -641,7 +641,7 @@
   </div>
   <div class="lt-panel">
     <h3>Blocos 4 semanas</h3>
-    <div class="lt-blocks"><div class="lt-block"><strong>Bloco 1</strong><div>05/11 - 26/11</div><div>TSS: 352</div><div>CTL: 40.3 | TSB: 0</div></div><div class="lt-block"><strong>Bloco 2</strong><div>03/12 - 24/12</div><div>TSS: 370</div><div>CTL: 48.9 | TSB: 0</div></div><div class="lt-block"><strong>Bloco 3</strong><div>31/12 - 21/01</div><div>TSS: 382</div><div>CTL: 54.8 | TSB: 0</div></div></div>
+    <div class="lt-blocks"><div class="lt-block"><strong>Bloco 1</strong><div>09/11 - 30/11</div><div>TSS: 354</div><div>CTL: 43.5 | TSB: 0</div></div><div class="lt-block"><strong>Bloco 2</strong><div>07/12 - 28/12</div><div>TSS: 278</div><div>CTL: 48.3 | TSB: 0</div></div><div class="lt-block"><strong>Bloco 3</strong><div>04/01 - 25/01</div><div>TSS: 314</div><div>CTL: 55.9 | TSB: 0</div></div></div>
   </div>
 </div>
     <div class="grid grid-2" style="margin-top:16px">
@@ -735,14 +735,14 @@
   new Chart(document.getElementById('dist-chart'),{type:'doughnut',data:{labels:["Ride","Run","Swim","WeightTraining"],datasets:[{data:[5.86,1.42,1.41,2.75],backgroundColor:['#60a5fa','#22c55e','#f59e0b','#94a3b8']}]},options:{plugins:{legend:{position:'bottom'}},cutout:'60%'}});
   new Chart(document.getElementById('pmc-chart'),{type:'line',data:{labels:["2026-01-19","2026-01-20","2026-01-21","2026-01-22","2026-01-23","2026-01-24","2026-01-25"],datasets:[{label:'CTL',data:[51.3,51.4,51.7,52.4,51.8,53.3,58.7],borderColor:'#60a5fa',tension:.3},{label:'ATL',data:[60.9,60.6,61.0,64.8,59.9,67.5,95.9],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
   new Chart(document.getElementById('well-chart'),{type:'line',data:{labels:["2026-01-19","2026-01-20","2026-01-21","2026-01-22","2026-01-23","2026-01-24","2026-01-25"],datasets:[{label:'Sono (h)',data:[8.2,7.6,6.9,7.5,7.4,6,7.6],borderColor:'#22c55e',tension:.3},{label:'HRV',data:[43.0,46.0,51.0,49.0,51.0,48.0,43.0],borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:[50,48,49,51,49,50,49],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-    new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'CTL',data:[31.5,36.9,36.2,40.3,43.5,43.0,45.0,48.9,48.7,49.9,51.4],borderColor:'#60a5fa',tension:.3},{label:'ATL',data:[55.6,60.9,42.9,60.2,62.3,45.9,56.7,69.5,57.8,58.2,60.6],borderColor:'#f59e0b',tension:.3},{label:'TSB',data:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{type:'bar',label:'TSS',data:[362.0,437.0,210.0,400.0,401.0,232.0,398.0,447.0,321.0,348.0,397.0],backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:[10.7,9.8,6.9,9.6,9.9,4.1,10.1,9.2,8.8,9.0,8.5],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'Sono',data:[6.7,6.9,7.1,7.6,7.4,7.3,7.0,6.9,7.0,7.0,7.2],borderColor:'#22c55e',tension:.3},{label:'HRV',data:[44.7,42.8,44.7,44.0,42.3,44.5,48.0,46.8,46.2,43.3,48.6],borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:[49.0,47.7,51.2,52.2,52.2,50.8,50.2,52.2,50.3,51.3,48.8],borderColor:'#ef4444',tension:.3},{label:'Peso',data:[113.1,111.8,null,111.2,111.3,null,112.2,null,111.1,110.7,111.7],borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-modality-chart'),{type:'bar',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'Bike %',data:[75.2,69.1,37.3,50.7,70.8,53.5,51.4,72.9,57.9,64.2,61.8],backgroundColor:'rgba(245,158,11,0.35)'},{label:'Run %',data:[5.4,8.4,20.5,11.2,0.0,16.0,10.6,9.5,10.0,0.0,6.9],backgroundColor:'rgba(34,197,94,0.35)'},{label:'Swim %',data:[5.2,7.5,9.9,7.1,7.4,11.8,16.9,17.6,10.0,11.6,10.1],backgroundColor:'rgba(56,189,248,0.35)'},{label:'Forca %',data:[14.2,15.1,32.3,30.9,21.8,18.7,21.1,0.0,22.2,24.2,21.2],backgroundColor:'rgba(168,85,247,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
-  new Chart(document.getElementById('trend-bike-chart'),{type:'line',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'Bike IF',data:[0.7478571428571428,0.8883333333333333,0.75,0.8787499999999999,0.7883333333333334,1.05,0.8916666666666666,0.7933333333333333,0.8266666666666667,0.8866666666666667,0.9700000000000001],borderColor:'#f59e0b',tension:.3},{label:'Bike VI',data:[1.0885714285714285,1.2278333333333336,1.24,1.12225,1.1258333333333335,1.107,1.1376666666666668,1.265,1.1206666666666667,1.1700000000000002,1.149],borderColor:'#94a3b8',tension:.3},{label:'Bike Decoupling %',data:[4.702857142857143,7.528333333333333,13.875,12.75,11.198333333333332,-1.6149999999999998,14.233333333333334,14.069999999999999,8.39,11.683333333333335,9.333333333333334],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-run-chart'),{type:'line',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'Cadencia Run',data:[90.50411,87.27535,86.47855200000001,87.330894,null,89.1048,82.861336,86.65358499999999,84.24502,null,87.32306],borderColor:'#22c55e',tension:.3},{label:'Decoupling Run %',data:[2.04,13.04,0.645,11.2,null,-1.0,17.33,9.285,14.21,null,12.41],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
-  new Chart(document.getElementById('trend-zone-bike'),{type:'bar',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'Z1',data:[58.5,39.5,39.1,30.6,37.4,7.2,23.3,33.8,24.2,25.6,21.3],backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:[28.2,31.5,40.5,34.0,41.0,33.4,54.6,30.9,52.2,48.9,43.3],backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:[13.3,29.0,20.4,35.4,21.6,59.4,22.1,35.3,23.6,25.5,35.4],backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
-  new Chart(document.getElementById('trend-zone-run'),{type:'bar',data:{labels:["05/11","12/11","19/11","26/11","03/12","10/12","17/12","24/12","31/12","07/01","14/01"],datasets:[{label:'Z1',data:[0.3,2.1,3.4,2.8,null,0.8,12.5,0.8,8.5,null,3.0],backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:[0.3,1.0,3.9,2.2,null,1.7,19.1,3.9,11.1,null,1.9],backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:[99.4,96.9,92.7,95.0,null,97.5,68.3,95.3,80.4,null,95.1],backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
+    new Chart(document.getElementById('trend-load-chart'),{type:'line',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'CTL',data:[37.3,37.5,37.8,43.5,43.1,41.8,45.1,48.3,48.9,50.0,53.3],borderColor:'#60a5fa',tension:.3},{label:'ATL',data:[74.6,53.3,48.3,70.8,51.2,40.3,53.2,57.5,54.2,54.7,67.5],borderColor:'#f59e0b',tension:.3},{label:'TSB',data:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],borderColor:'#22c55e',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-tss-chart'),{data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{type:'bar',label:'TSS',data:[466.0,240.0,286.0,424.0,260.0,125.0,288.0,437.0,264.0,274.0,368.0],backgroundColor:'rgba(94,163,255,0.4)'},{type:'line',label:'Horas',data:[11.3,7.3,8.8,11.0,6.8,3.8,8.0,9.1,7.8,6.7,9.4],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-well-chart'),{type:'line',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'Sono',data:[7.2,7.1,7.5,7.7,7.4,7.2,7.3,6.8,7.1,7.1,7.3],borderColor:'#22c55e',tension:.3},{label:'HRV',data:[46.2,44.0,45.8,44.2,45.0,46.8,49.7,45.0,44.0,47.8,48.0],borderColor:'#60a5fa',tension:.3},{label:'FC Repouso',data:[44.5,49.8,50.8,51.5,50.3,49.2,51.0,52.2,49.8,48.0,49.5],borderColor:'#ef4444',tension:.3},{label:'Peso',data:[111.8,null,111.2,111.3,null,112.2,null,111.1,110.7,111.7,111.6],borderColor:'#a855f7',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-modality-chart'),{type:'bar',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'Bike %',data:[70.3,49.8,23.4,49.7,53.8,31.2,48.3,64.3,36.6,37.4,47.3],backgroundColor:'rgba(245,158,11,0.35)'},{label:'Run %',data:[0.0,19.8,30.8,9.2,15.8,26.2,13.7,17.1,10.0,20.2,8.4],backgroundColor:'rgba(34,197,94,0.35)'},{label:'Swim %',data:[12.2,8.8,14.4,12.1,6.5,18.3,23.4,18.6,24.9,12.9,15.0],backgroundColor:'rgba(56,189,248,0.35)'},{label:'Forca %',data:[17.5,21.6,31.4,29.0,23.9,24.2,14.7,0.0,28.5,29.5,29.4],backgroundColor:'rgba(168,85,247,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
+  new Chart(document.getElementById('trend-bike-chart'),{type:'line',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'Bike IF',data:[0.845,0.7433333333333333,0.7166666666666667,0.9016666666666667,0.7969999999999999,0.81,0.7616666666666667,0.885,0.8300000000000001,0.975,0.9199999999999999],borderColor:'#f59e0b',tension:.3},{label:'Bike VI',data:[1.1681428571428571,1.1536666666666666,1.2073333333333334,1.1736666666666666,1.0976,1.08,1.157,1.251,1.109,1.1150000000000002,1.1326666666666665],borderColor:'#94a3b8',tension:.3},{label:'Bike Decoupling %',data:[0.04857142857142852,18.503333333333334,24.543333333333333,12.633333333333333,6.902000000000001,11.38,16.669999999999998,5.3999999999999995,11.785,14.725000000000001,8.120000000000001],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-run-chart'),{type:'line',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'Cadencia Run',data:[null,85.80297999999999,86.46636266666667,77.737625,86.9823,82.861336,85.291305,85.09142,87.985634,85.80193000000001,88.711842],borderColor:'#22c55e',tension:.3},{label:'Decoupling Run %',data:[null,6.574999999999999,6.116666666666666,12.97,5.12,17.33,17.565,16.05,6.73,15.693333333333335,6.865],borderColor:'#ef4444',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false}}}});
+  new Chart(document.getElementById('trend-zone-bike'),{type:'bar',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'Z1',data:[43.1,54.5,78.0,28.5,30.6,17.4,46.4,19.5,29.7,21.9,21.1],backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:[31.4,30.9,19.0,36.2,49.2,82.0,33.8,44.8,50.1,40.5,51.3],backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:[25.5,14.6,3.0,35.4,20.2,0.6,19.9,35.8,20.1,37.6,27.6],backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
+  new Chart(document.getElementById('trend-zone-run'),{type:'bar',data:{labels:["09/11","16/11","23/11","30/11","07/12","14/12","21/12","28/12","04/01","11/01","18/01"],datasets:[{label:'Z1',data:[null,6.4,4.2,27.7,3.3,12.5,5.5,8.6,0.4,7.5,1.0],backgroundColor:'rgba(34,197,94,0.35)'},{label:'Z2',data:[null,6.1,4.1,49.1,7.2,19.1,8.8,11.7,3.7,6.1,3.5],backgroundColor:'rgba(245,158,11,0.35)'},{label:'Z3',data:[null,87.5,91.7,23.2,89.6,68.3,85.7,79.7,95.9,86.4,95.5],backgroundColor:'rgba(239,68,68,0.35)'}]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{display:false},y:{beginAtZero:true,max:100}}}});
 </script>
 </body>
 </html>
