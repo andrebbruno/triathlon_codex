@@ -1,0 +1,98 @@
+[
+  {
+    "external_id": "training_20260216_strength",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-16T17:30:00",
+    "type": "WeightTraining",
+    "name": "Forca - Membros Superiores",
+    "description": "Sessao de forca (superiores). RPE 7-8. Evitar falha. Finalizar com 5-10m mobilidade ombro/toracica."
+  },
+  {
+    "external_id": "2026-02-17-bike-ss-controlado",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-17T07:00:00",
+    "type": "Ride",
+    "name": "Bike - Endurance Z2 Cadencia",
+    "description": "Warmup\n- 10m Z1\n\nEndurance\n- 55m Z2 (165-175W) power=3s 90-95rpm\n\nCadencia (neuromuscular) Repeat 6x\n- 30s 105-115rpm (Z2 leve)\n- 2m Z1\n\nCooldown\n- 10m Z1\n\nRegra do sono: se <6h, fazer somente 60m Z2 leve (sem blocos)."
+  },
+  {
+    "external_id": "training_20260217_strength",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-17T17:30:00",
+    "type": "WeightTraining",
+    "name": "Forca - Mobilidade Core (curto)",
+    "description": "20-30m. Core anti-rotacao + glute med + mobilidade quadril/tornozelo. Objetivo: suporte para corrida/joelho."
+  },
+  {
+    "external_id": "2026-02-18-swim-tecnica-aerobio",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-18T06:30:00",
+    "type": "Swim",
+    "name": "Swim - Tecnica Aerobio",
+    "description": "Warmup\n- 300meters Z1 pace\n\nTecnica Repeat 6x\n- 50meters Z1 pace\n- Rest 15s\n\nSerie Principal Repeat 8x\n- 100meters Z2 pace\n- Rest 15s\n\nCooldown\n- 200meters Z1 pace"
+  },
+  {
+    "external_id": "2026-02-18-run-tiros-curtos",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-18T08:00:00",
+    "type": "Run",
+    "name": "Run - Tiros Curtos (controlado)",
+    "description": "Warmup\n- 15m 06:20-06:40/km pace\n\nTiros Repeat 8x\n- 30s 05:00-05:15/km pace\n- 1m30s 06:40-07:10/km pace\n\nOpcional (se joelho 0-2/10)\nStrides Repeat 4x\n- 15s 04:40-05:00/km pace\n- 45s 06:50-07:20/km pace\n\nCooldown\n- 10m 06:30-06:50/km pace\n\nRegra do joelho: parar se dor >2/10."
+  },
+  {
+    "external_id": "2026-02-19-bike-endurance-z2",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-19T07:00:00",
+    "type": "Ride",
+    "name": "Bike - Sweet Spot Controlado",
+    "description": "Warmup\n- 15m Z1-Z2\n\nSweet Spot Repeat 3x\n- 10m 88-92% FTP (233-244W se FTP=265W) power=3s\n- 4m Z1\n\nCooldown\n- 10m Z1\n\nRegra do sono: se <6h, trocar por 60m Z2 leve."
+  },
+  {
+    "external_id": "training_20260219_strength",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-19T17:30:00",
+    "type": "WeightTraining",
+    "name": "Forca - Membros Inferiores",
+    "description": "Sessao de forca (inferiores) com foco em estabilidade/joelho. RPE 7-8. Sem dor. Priorizar: hinge + unilateral + panturrilha + glute med."
+  },
+  {
+    "external_id": "training_20260220_swim",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-20T06:30:00",
+    "type": "Swim",
+    "name": "Natacao - Volume Base",
+    "description": "Warmup\n- 200meters Z1 pace\n\nEndurance base Repeat 8x\n- 100meters Z2 pace\n- Rest 15s\n\nRitmo moderado Repeat 6x\n- 50meters Z3 pace\n- Rest 20s\n\nCooldown\n- 200meters Z1 pace"
+  },
+  {
+    "external_id": "training_20260220_strength",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-20T17:30:00",
+    "type": "WeightTraining",
+    "name": "Forca - Core Focus",
+    "description": "20-30m. Core (anti-extensao/anti-rotacao) + glute med + panturrilha. Manter leve/moderado."
+  },
+  {
+    "external_id": "training_20260221_ride",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-21T08:00:00",
+    "type": "Run",
+    "name": "Run - Longao Base Protegida",
+    "description": "Warmup\n- 10m 06:30-06:50/km pace\n\nBase\n- 50m 06:15-06:45/km pace (protegido) - terreno plano\n\nCooldown\n- 5m 06:40-07:10/km pace\n\nRegra do joelho:\n- Se dor >2/10, virar run/walk (3-4m corre + 1m caminha).\n\nRegra do sono: se <6h, reduzir para 45-55m total."
+  },
+  {
+    "external_id": "2026-02-22-bike-longao-limpo",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-22T07:00:00",
+    "type": "Ride",
+    "name": "Bike - Longao Endurance Limpo",
+    "description": "Endurance\n- 2h20m a 2h40m Z2 (165-180W) power=3s 90-95rpm\n\nCooldown\n- 10m Z1\n\nRegra do sono: se muito quebrado, reduzir 20-30% do tempo."
+  },
+  {
+    "external_id": "training_20260222_run",
+    "category": "WORKOUT",
+    "start_date_local": "2026-02-22T10:00:00",
+    "type": "Run",
+    "name": "Corrida - T2 Brick Suave",
+    "description": "Warmup\n- 5m 06:40-07:10/km pace\n\nT2\n- 20m 06:20-06:50/km pace (controlado) - monitor joelho\n\nCooldown\n- 5m 06:50-07:20/km pace\n\nRegra do joelho: parar se dor >2/10."
+  }
+]
