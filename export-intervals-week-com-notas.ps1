@@ -97,9 +97,32 @@ function Get-ChatMessages {
     return $Cache[$ChatId]
 }
 
+function Invoke-IntervalsJson {
+    param(
+        [string]$Uri,
+        [hashtable]$Headers
+    )
+
+    try {
+        $response = Invoke-WebRequest -Uri $Uri -Headers $Headers -Method Get -UseBasicParsing -ErrorAction Stop
+        if ($response.RawContentStream) {
+            $bytes = New-Object byte[] $response.RawContentStream.Length
+            $response.RawContentStream.Position = 0
+            $response.RawContentStream.Read($bytes, 0, $bytes.Length) | Out-Null
+            $utf8 = [System.Text.Encoding]::UTF8.GetString($bytes)
+        } else {
+            $bytes = [System.Text.Encoding]::GetEncoding("ISO-8859-1").GetBytes($response.Content)
+            $utf8 = [System.Text.Encoding]::UTF8.GetString($bytes)
+        }
+        return $utf8 | ConvertFrom-Json
+    } catch {
+        throw
+    }
+}
+
 Write-Host "Fetching activities from Intervals.icu..."
 try {
-    $activities = Invoke-RestMethod -Uri $activitiesUrl -Headers $headers -Method Get -ErrorAction Stop
+    $activities = Invoke-IntervalsJson -Uri $activitiesUrl -Headers $headers
 } catch {
     Write-Host "Failed to fetch activities: $($_.Exception.Message)"
     exit 1
@@ -115,7 +138,7 @@ if ($activities.Count -gt 0) {
 
 Write-Host "Fetching wellness data..."
 try {
-    $wellness = Invoke-RestMethod -Uri $wellnessUrl -Headers $headers -Method Get -ErrorAction Stop
+    $wellness = Invoke-IntervalsJson -Uri $wellnessUrl -Headers $headers
 } catch {
     Write-Host "Failed to fetch wellness: $($_.Exception.Message)"
     $wellness = @()
@@ -123,7 +146,7 @@ try {
 
 Write-Host "Fetching weekly notes..."
 try {
-    $events = Invoke-RestMethod -Uri $eventsUrl -Headers $headers -Method Get -ErrorAction Stop
+    $events = Invoke-IntervalsJson -Uri $eventsUrl -Headers $headers
 } catch {
     Write-Host "Failed to fetch events: $($_.Exception.Message)"
     $events = @()
@@ -220,6 +243,8 @@ foreach ($a in $activities) {
         }
     }
 
+    $ftpUsed = Get-FirstValue @($a.icu_ftp, $a.ftp, $a.pm_ftp)
+
     $activitiesProcessed += [PSCustomObject]@{
         id               = $a.id
         name             = $a.name
@@ -232,6 +257,7 @@ foreach ($a in $activities) {
         suffer_score     = if ($load -ne $null) { [math]::Round($load, 1) } else { $null }
         normalized_power = if ($npWatts -ne $null) { [math]::Round($npWatts, 0) } else { $null }
         variabilidade    = if ($vi -ne $null) { [math]::Round($vi, 2) } else { $null }
+        icu_ftp          = if ($ftpUsed -ne $null) { [math]::Round($ftpUsed, 0) } else { $null }
         notas            = $notes
         planejado        = $planSummary
     }

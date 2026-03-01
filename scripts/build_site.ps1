@@ -929,9 +929,20 @@ function Build-ReportHtmlModern {
   }
 
   $plannedTimeMin = if ($plannedEvents.Count -gt 0) { ($plannedEvents | Measure-Object moving_time_min -Sum).Sum } else { $null }
-  $plannedDistKm = if ($plannedEvents.Count -gt 0) { ($plannedEvents | Measure-Object distance_km -Sum).Sum } else { $null }
+
+  # Planned distance is often missing for rides. Show sum of *known* distances + count unknown.
+  $plannedDistKnownKm = if ($plannedEvents.Count -gt 0) {
+    ($plannedEvents | Where-Object { $_.distance_km -ne $null } | Measure-Object distance_km -Sum).Sum
+  } else { $null }
+  $plannedDistUnknown = if ($plannedEvents.Count -gt 0) {
+    ($plannedEvents | Where-Object { $_.distance_km -eq $null }).Count
+  } else { 0 }
+
   $plannedTimeText = if ($plannedTimeMin -ne $null) { "{0:0.1}h" -f ($plannedTimeMin / 60) } else { "n/a" }
-  $plannedDistText = if ($plannedDistKm -ne $null) { "{0:0.1}km" -f $plannedDistKm } else { "n/a" }
+  $plannedDistText = if ($plannedDistKnownKm -ne $null) {
+    if ($plannedDistUnknown -gt 0) { "{0:0.1}km (dist n/a em {1} sess.)" -f $plannedDistKnownKm, $plannedDistUnknown }
+    else { "{0:0.1}km" -f $plannedDistKnownKm }
+  } else { "n/a" }
   $executedTimeText = if ($totalTime -ne $null) { "{0:0.1}h" -f $totalTime } else { "n/a" }
   $executedDistText = if ($totalDist -ne $null) { "{0:0.1}km" -f $totalDist } else { "n/a" }
   $complianceDetail = if ($plannedCount -gt 0) {
@@ -1630,9 +1641,23 @@ $longtermInsightsBlock
     $viText = if ($a.variabilidade) { [math]::Round($a.variabilidade,2).ToString() } elseif ($a.normalized_power -and $a.average_watts) { [math]::Round(($a.normalized_power / $a.average_watts),2).ToString() } else { "-" }
 
     $intensityPower = if ($a.normalized_power) { $a.normalized_power } else { $a.average_watts }
+
+    # Prefer per-activity FTP (Intervals icu_ftp) when available; fall back to profile FTP.
+    $ftpForIf = $null
+    if ($a.type -eq "Ride") {
+      if ($a.PSObject.Properties.Name -contains "icu_ftp" -and $a.icu_ftp -ne $null -and $a.icu_ftp -gt 0) {
+        $ftpForIf = [double]$a.icu_ftp
+      } else {
+        $ftpForIf = $ftpBike
+      }
+    } elseif ($a.type -eq "Run") {
+      $ftpForIf = $ftpRun
+    }
+
     $ifValue = $null
-    if ($a.type -eq "Ride") { $ifValue = Safe-Divide -Num $intensityPower -Den $ftpBike }
-    elseif ($a.type -eq "Run") { $ifValue = Safe-Divide -Num $intensityPower -Den $ftpRun }
+    if ($ftpForIf -ne $null -and $ftpForIf -gt 0) {
+      $ifValue = Safe-Divide -Num $intensityPower -Den $ftpForIf
+    }
     $ifText = if ($ifValue) { [math]::Round($ifValue, 2) } else { "-" }
 
     $paceLabel = "Pace"
