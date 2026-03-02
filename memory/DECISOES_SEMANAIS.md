@@ -29,3 +29,15 @@ Regras:
   - Motivo/gatilho: bike respondendo bem; objetivo aumentar estímulo sem subir risco do joelho.
   - Reversão/critério: se sono <6h ou FC/respiração "fugir" no 2º bloco, manter 3º bloco em 10' ou converter para Z2 leve.
 
+---
+
+## Semana 2026-03-02 a 2026-03-08
+
+- [x] 2026-03-02 — MyFitnessPal: lembrar de **registrar alimentos do dia** (teste de captura de totais a partir de terça).
+  - Motivo/gatilho: validar extração automática de Totais/Meta/Restantes.
+  - Reversão/critério: quando o script estiver validado por alguns dias (totais > 0 quando houver registro).
+
+- [ ] 2026-03-03 — MyFitnessPal: rodar script de extração para validar dados de **segunda-feira**.
+  - Motivo/gatilho: confirmar que Totais/Meta/Restantes e exercise_calories estão sendo coletados corretamente.
+  - Reversão/critério: após conferir 1 dia com registros completos.
+
