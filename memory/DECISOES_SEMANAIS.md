@@ -37,7 +37,7 @@ Regras:
   - Motivo/gatilho: validar extração automática de Totais/Meta/Restantes.
   - Reversão/critério: quando o script estiver validado por alguns dias (totais > 0 quando houver registro).
 
-- [ ] 2026-03-03 — MyFitnessPal: rodar script de extração para validar dados de **segunda-feira**.
+- [x] 2026-03-03 — MyFitnessPal: rodar script de extração para validar dados de **segunda-feira**.
   - Motivo/gatilho: confirmar que Totais/Meta/Restantes e exercise_calories estão sendo coletados corretamente.
   - Reversão/critério: após conferir 1 dia com registros completos.
 
