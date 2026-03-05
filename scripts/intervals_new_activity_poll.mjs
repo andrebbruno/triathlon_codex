@@ -198,9 +198,55 @@ async function fetchRecentActivities(apiKey) {
   return json;
 }
 
-async function fetchWellnessToday(apiKey) {
-  const today = yyyyMmDdToday();
-  const url = `https://intervals.icu/api/v1/athlete/${encodeURIComponent(ATHLETE_ID)}/wellness?oldest=${encodeURIComponent(today)}&newest=${encodeURIComponent(today)}`;
+function parseWellnessDate(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  const byIsoDate = raw.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (byIsoDate) return byIsoDate[1];
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString().slice(0, 10);
+}
+
+function getWellnessDate(entry) {
+  return (
+    parseWellnessDate(entry?.id) ??
+    parseWellnessDate(entry?.date) ??
+    parseWellnessDate(entry?.created_at) ??
+    parseWellnessDate(entry?.start_date_local) ??
+    parseWellnessDate(entry?.start_date) ??
+    parseWellnessDate(entry?.updated) ??
+    null
+  );
+}
+
+function pickLatestVo2FromWellness(rows) {
+  if (!Array.isArray(rows)) return null;
+
+  const entries = [];
+  for (const row of rows) {
+    const vo2 = Number(row?.vo2max);
+    const date = getWellnessDate(row);
+    if (!Number.isFinite(vo2) || !date) continue;
+    entries.push({ date, vo2 });
+  }
+
+  if (!entries.length) return null;
+
+  entries.sort((a, b) => {
+    if (a.date > b.date) return -1;
+    if (a.date < b.date) return 1;
+    return 0;
+  });
+
+  return entries[0];
+}
+
+async function fetchWellnessRecent(apiKey, lookbackDays = VO2MAX_HISTORY_DAYS) {
+  const days = Math.max(1, Number(lookbackDays) || 1);
+  const oldest = yyyyMmDdDaysAgo(days);
+  const newest = yyyyMmDdToday();
+  const url = 'https://intervals.icu/api/v1/athlete/' + encodeURIComponent(ATHLETE_ID) + '/wellness?oldest=' + encodeURIComponent(oldest) + '&newest=' + encodeURIComponent(newest);
 
   const res = await fetch(url, {
     method: 'GET',
@@ -210,10 +256,10 @@ async function fetchWellnessToday(apiKey) {
     },
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) return [];
   const json = await res.json().catch(() => null);
-  if (!Array.isArray(json) || !json[0]) return null;
-  return json[0];
+  if (!Array.isArray(json)) return [];
+  return json;
 }
 
 function normalizeType(type) {
@@ -264,34 +310,44 @@ async function main() {
   const state = loadState();
   const seen = new Set((state.seenActivityIds || []).map(String));
 
+
   // --- VO2Max tracking (Intervals wellness) ---
   // VO2Max usually lives in the wellness endpoint (e.g., Garmin VO2Max sync), not in the activity list.
   let vo2maxMsg = null;
   try {
-    const wellness = await fetchWellnessToday(apiKey);
-    const today = yyyyMmDdToday();
-    const vo2 = wellness?.vo2max;
-    if (vo2 != null && Number.isFinite(Number(vo2))) {
+    const wellness = await fetchWellnessRecent(apiKey);
+    const latest = pickLatestVo2FromWellness(wellness);
+    const vo2 = latest?.vo2;
+    const seenDate = latest?.date;
+    if (vo2 != null && Number.isFinite(Number(vo2)) && seenDate) {
       const vo2State = loadVo2maxState();
       const prev = vo2State?.lastVo2max;
+      const prevDate = vo2State?.lastSeenDate;
+      const isNewerDate = prevDate ? seenDate > prevDate : true;
+
       if (prev == null) {
-        vo2maxMsg = `VO2Max registrado: ${Number(vo2)}`;
-      } else if (Number(prev) !== Number(vo2)) {
+        vo2maxMsg = 'VO2Max registrado: ' + Number(vo2);
+      } else if (isNewerDate && Number(prev) !== Number(vo2)) {
         const delta = Number(vo2) - Number(prev);
         const sign = delta > 0 ? '+' : '';
-        vo2maxMsg = `VO2Max mudou: ${Number(prev)} → ${Number(vo2)} (${sign}${delta})`;
+        vo2maxMsg = 'VO2Max mudou: ' + Number(prev) + ' -> ' + Number(vo2) + ' (' + sign + delta + ')';
       }
 
-      // Persist state (keep a rolling history)
-      const history = Array.isArray(vo2State?.history) ? vo2State.history : [];
-      const nextHistory = [...history.filter(h => h?.date !== today), { date: today, vo2max: Number(vo2) }]
-        .slice(-Math.max(14, VO2MAX_HISTORY_DAYS));
+      if (prevDate === seenDate && Number(prev) === Number(vo2)) {
+        vo2maxMsg = null;
+      }
 
-      saveVo2maxState({
-        lastVo2max: Number(vo2),
-        lastSeenDate: today,
-        history: nextHistory,
-      });
+      if (isNewerDate) {
+        const history = Array.isArray(vo2State?.history) ? vo2State.history : [];
+        const nextHistory = [...history.filter(h => h?.date !== seenDate), { date: seenDate, vo2max: Number(vo2) }]
+          .slice(-Math.max(14, VO2MAX_HISTORY_DAYS));
+
+        saveVo2maxState({
+          lastVo2max: Number(vo2),
+          lastSeenDate: seenDate,
+          history: nextHistory,
+        });
+      }
     }
   } catch {
     // Silent: wellness/VO2Max is optional.

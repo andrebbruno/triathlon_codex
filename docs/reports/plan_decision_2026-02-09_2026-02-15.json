@@ -1,0 +1,35 @@
+﻿{
+    "generated_at":  "2026-02-12T14:30:04",
+    "source_report":  "report_2026-02-02_2026-02-08.json",
+    "current_week":  {
+                         "start":  "2026-02-02",
+                         "end":  "2026-02-08"
+                     },
+    "target_week":  {
+                        "start":  "2026-02-09",
+                        "end":  "2026-02-15"
+                    },
+    "selected_plan":  "A",
+    "score":  1,
+    "action":  "Manter progressao normal, monitorando joelho e recuperacao dia a dia.",
+    "reasons":  [
+                    "Sem escala objetiva de dor no joelho; manter registro 0-10.",
+                    "TSB em faixa de fadiga moderada."
+                ],
+    "metrics":  {
+                    "status":  "HOLD",
+                    "compliance":  83.3,
+                    "tsb":  -10.5,
+                    "sleep_avg_h":  7.4,
+                    "hrv_avg":  45.4,
+                    "rhr_avg":  48.1,
+                    "knee_pain_avg":  null,
+                    "knee_pain_peak":  null
+                },
+    "files":  {
+                  "selected":  "trainings_2026-02-09_2026-02-15.json",
+                  "plan_a":  "trainings_planA_2026-02-09_2026-02-15.json",
+                  "plan_b":  "trainings_planB_2026-02-09_2026-02-15.json",
+                  "plan_c":  "trainings_planC_2026-02-09_2026-02-15.json"
+              }
+}

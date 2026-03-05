@@ -1,0 +1,35 @@
+﻿{
+    "generated_at":  "2026-03-01T14:03:24",
+    "source_report":  "report_2026-02-23_2026-03-01.json",
+    "current_week":  {
+                         "start":  "2026-02-23",
+                         "end":  "2026-03-01"
+                     },
+    "target_week":  {
+                        "start":  "2026-03-02",
+                        "end":  "2026-03-08"
+                    },
+    "selected_plan":  "A",
+    "score":  1,
+    "action":  "Manter progressao normal, monitorando joelho e recuperacao dia a dia.",
+    "reasons":  [
+                    "Sem escala objetiva de dor no joelho; manter registro 0-10.",
+                    "Compliance baixa na semana anterior."
+                ],
+    "metrics":  {
+                    "status":  "HOLD",
+                    "compliance":  61.5,
+                    "tsb":  -5.1,
+                    "sleep_avg_h":  7.57,
+                    "hrv_avg":  47,
+                    "rhr_avg":  50,
+                    "knee_pain_avg":  null,
+                    "knee_pain_peak":  null
+                },
+    "files":  {
+                  "selected":  "trainings_2026-03-02_2026-03-08.json",
+                  "plan_a":  "trainings_planA_2026-03-02_2026-03-08.json",
+                  "plan_b":  "trainings_planB_2026-03-02_2026-03-08.json",
+                  "plan_c":  "trainings_planC_2026-03-02_2026-03-08.json"
+              }
+}

@@ -32,6 +32,25 @@ function Html-Escape {
   return [System.Net.WebUtility]::HtmlEncode($Text)
 }
 
+function Get-LatestRecordedWeight {
+  param([object[]]$Files)
+
+  foreach ($file in $Files) {
+    try {
+      $report = Get-Content $file.FullName -Raw | ConvertFrom-Json
+      $weight = $report.metricas.peso_atual
+      if ($null -eq $weight) { continue }
+
+      $weightValue = [double]$weight
+      if ($weightValue -gt 0) {
+        return [math]::Round($weightValue, 1)
+      }
+    } catch {}
+  }
+
+  return $null
+}
+
 function Read-AnalysisForWeek {
   param(
     [object[]]$Files,
@@ -2106,8 +2125,15 @@ foreach ($report in $reportFiles) {
   $athleteName = if ($memoryText -match "\*\*Nome:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Atleta" }
   $athleteAge = if ($memoryText -match "\*\*Idade:\*\*\s*([0-9]+)") { $matches[1].Trim() } else { "" }
   $athleteHeight = if ($memoryText -match "\*\*Altura:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
+  $latestRecordedWeight = Get-LatestRecordedWeight -Files $reportFiles
   $athleteWeightRaw = if ($memoryText -match "\*\*Peso atual:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
-  $athleteWeight = if ($athleteWeightRaw) { ($athleteWeightRaw -replace "\s*\(.*\)\s*", "").Trim() } else { "" }
+  $athleteWeight = if ($latestRecordedWeight -ne $null) {
+    [string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0:0.0} kg", [double]$latestRecordedWeight)
+  } elseif ($athleteWeightRaw) {
+    ($athleteWeightRaw -replace "\s*\(.*\)\s*", "").Trim()
+  } else {
+    ""
+  }
   $athleteExp = if ($memoryText -match "\*\*Experiência:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
   $athleteLevel = if ($memoryText -match "\*\*Nível:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "" }
   $phaseTitle = if ($memoryText -match "\*\*Fase:\*\*\s*([^\r\n]+)") { $matches[1].Trim() } else { "Base Geral" }
