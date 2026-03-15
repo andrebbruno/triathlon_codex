@@ -17,6 +17,9 @@ function Read-Json {
   if (-not (Test-Path $Path)) { return $null }
   $bytes = [System.IO.File]::ReadAllBytes($Path)
   $text = [Text.Encoding]::UTF8.GetString($bytes)
+  if ($text.Length -gt 0 -and $text[0] -eq [char]0xFEFF) {
+    $text = $text.Substring(1)
+  }
   return ($text | ConvertFrom-Json)
 }
 
@@ -116,10 +119,23 @@ function Map-Type {
 }
 
 function Shift-ExternalId {
-  param([string]$ExternalId, [DateTime]$NewDate)
-  if (-not $ExternalId) { return "" }
+  param(
+    [string]$ExternalId,
+    [DateTime]$NewDate,
+    [string]$Type = "",
+    [string]$Name = ""
+  )
+
   $dateIso = $NewDate.ToString("yyyy-MM-dd")
   $dateCompact = $NewDate.ToString("yyyyMMdd")
+
+  if (-not $ExternalId) {
+    $nameSlug = ((Normalize-Text $Name) -replace "\s+", "-").Trim("-")
+    $typeSlug = ((Normalize-Text $Type) -replace "\s+", "-").Trim("-")
+    $suffix = if ($nameSlug) { $nameSlug } elseif ($typeSlug) { $typeSlug } else { "session" }
+    return "training_${dateCompact}_${suffix}"
+  }
+
   if ($ExternalId -match "^\d{4}-\d{2}-\d{2}") {
     return $ExternalId -replace "^\d{4}-\d{2}-\d{2}", $dateIso
   }
@@ -231,7 +247,7 @@ foreach ($p in $planned) {
   $type = Map-Type -Type $p.type
     $desc = if ($p.description -and $p.description.Trim() -ne "") { $p.description } else { "Sessao planejada" }
     $trainings += [ordered]@{
-      external_id = (Shift-ExternalId -ExternalId $p.external_id -NewDate $newStart)
+      external_id = (Shift-ExternalId -ExternalId $p.external_id -NewDate $newStart -Type $type -Name $p.name)
       category = "WORKOUT"
       start_date_local = $newStart.ToString("yyyy-MM-ddTHH:mm:ss")
       type = $type
