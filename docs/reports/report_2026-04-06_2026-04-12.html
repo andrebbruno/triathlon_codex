@@ -72,7 +72,7 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
     </div>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
       <div class="hero-pill">BUILD — pré Troféu Brasil</div>
-      <div class="hero-pill" style="background:rgba(0,0,0,0.3);font-size:12px">Endure.LabbS | 17/04/2026, 21:39:38</div>
+      <div class="hero-pill" style="background:rgba(0,0,0,0.3);font-size:12px">Endure.LabbS | 18/04/2026, 14:49:36</div>
     </div>
   </div>
   <section class="card section"><h2>Calendário de Provas</h2>
@@ -153,7 +153,7 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
         <div class="stat-value">347</div>
         <div class="stat-label">TSS Executado</div>
         <div class="stat-pill">72% aderência</div>
-        <div class="stat-note">13 atividades | 485 planejado.</div>
+        <div class="stat-note">11 atividades | 485 planejado.</div>
       </div>
     </div>
   </section>
@@ -182,8 +182,8 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
   new Chart(document.getElementById("chartDist"), {
     type: "doughnut",
     data: {
-      labels: ["VirtualRide","Run","WeightTraining","Swim","Ride"],
-      datasets: [{ data: [176,134,152,30,87], backgroundColor: ["#f59e0b","#22c55e","#a855f7","#38bdf8","#f59e0b"], borderWidth: 0 }]
+      labels: ["VirtualRide","WeightTraining","Run","Swim","Ride"],
+      datasets: [{ data: [176,152,121,30,87], backgroundColor: ["#f59e0b","#a855f7","#22c55e","#38bdf8","#f59e0b"], borderWidth: 0 }]
     },
     options: { plugins: { legend: { labels: { color: "#e2e8f0" } } } }
   });
@@ -211,35 +211,6 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       </div>
       
     </div>
-    <div class="activity-card activity-run">
-      <div class="activity-title">
-        <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
-        <div>
-          <div class="activity-name">Tremembé - Corrida Teste</div>
-          <div class="activity-date">06/04</div>
-        </div>
-        <div class="activity-badge quality-ok">Carga leve</div>
-      </div>
-      <div class="activity-metrics">
-        <div class="metric"><div class="value">10min</div><div class="label">Duração</div></div><div class="metric"><div class="value">0.0km</div><div class="label">Distância</div></div><div class="metric"><div class="value">2W</div><div class="label">NP</div></div><div class="metric"><div class="value">0.03</div><div class="label">EF</div></div><div class="metric"><div class="value">75bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">106spm</div><div class="label">Cadência</div></div>
-      </div>
-      
-    </div>
-    <div class="activity-card activity-run">
-      <div class="activity-title">
-        <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
-        <div>
-          <div class="activity-name">Tremembé - Corrida Teste 2</div>
-          <div class="activity-date">06/04</div>
-        </div>
-        <div class="activity-badge quality-ok">Carga leve</div>
-      </div>
-      <div class="activity-metrics">
-        <div class="metric"><div class="value">3min</div><div class="label">Duração</div></div><div class="metric"><div class="value">0.0km</div><div class="label">Distância</div></div><div class="metric"><div class="value">66bpm</div><div class="label">FC Média</div></div>
-      </div>
-      <div class="activity-analysis">1. 📝 **Resumo executivo**  
-Atividade de corrida com duração de 3m01s, distância de 0,01 km e ritmo inviável (574:43/km) — indicativo de *não execução real de corrida*, mas sim de um evento pontual (ex.: teste de equipamento, erro de gravação ou início interrompido). FC média (66 bpm) e RPE 1 🟢 confirmam ausência de estímulo fisiológico. TL = 0,2 → carga quase nula. Não representa treino de e...</div>
-    </div>
     <div class="activity-card activity-strength">
       <div class="activity-title">
         <div class="activity-icon strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v4M18 4v4M4 6h4M16 6h4M8 6h8v8a4 4 0 01-8 0V6z"/></svg></div>
@@ -252,14 +223,13 @@ Atividade de corrida com duração de 3m01s, distância de 0,01 km e ritmo invi�
       <div class="activity-metrics">
         <div class="metric"><div class="value">50min</div><div class="label">Duração</div></div><div class="metric"><div class="value">10</div><div class="label">TSS</div></div><div class="metric"><div class="value">89bpm</div><div class="label">FC Média</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;📝 Resumo executivo&lt;/b&gt;  
-Atividade de &lt;b&gt;Força - Upper Body + Core&lt;/b&gt; foi realizada com duração reduzida (50m10s vs 60m previstos) e carga fisiológica significativamente abaixo do planejado (TL 15.2 vs 18). Não é um treino de endurance — é uma sessão de força isolada, fora do escopo técnico da análise de endurance do bloco BUILD. Portanto, &lt;b&gt;não impacta diretamente o volume aeróbio bike,...</div>
+      
     </div>
     <div class="activity-card activity-run">
       <div class="activity-title">
         <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
         <div>
-          <div class="activity-name">Run - Z2 Controlado</div>
+          <div class="activity-name">Tremembé - Run - Z2 Controlado</div>
           <div class="activity-date">07/04</div>
         </div>
         <div class="activity-badge quality-ok">Carga leve</div>
@@ -267,8 +237,7 @@ Atividade de &lt;b&gt;Força - Upper Body + Core&lt;/b&gt; foi realizada com dur
       <div class="activity-metrics">
         <div class="metric"><div class="value">45min</div><div class="label">Duração</div></div><div class="metric"><div class="value">6.2km</div><div class="label">Distância</div></div><div class="metric"><div class="value">35</div><div class="label">TSS</div></div><div class="metric"><div class="value">334W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.37</div><div class="label">EF</div></div><div class="metric"><div class="value">2.8%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">141bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">173spm</div><div class="label">Cadência</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;📝 Resumo executivo&lt;/b&gt;  
-André completou um &lt;b&gt;Run - Z2 Controlado&lt;/b&gt; com excelente aderência fisiológica: FC média de 141 bpm (dentro do Z2 esperado para seu perfil), RPE baixo (2/10), decoupling mínimo (2.8% 🟢) e VI estável (1.02 🟢). O treino cumpriu o foco do bloco BUILD — manter volume aeróbio com controle neuromuscular e preservação articular. Joelho continua 0/10, e os sinais de we...</div>
+      
     </div>
     <div class="activity-card activity-strength">
       <div class="activity-title">
@@ -296,8 +265,7 @@ André completou um &lt;b&gt;Run - Z2 Controlado&lt;/b&gt; com excelente aderên
       <div class="activity-metrics">
         <div class="metric"><div class="value">1h10</div><div class="label">Duração</div></div><div class="metric"><div class="value">20.3km</div><div class="label">Distância</div></div><div class="metric"><div class="value">43</div><div class="label">TSS</div></div><div class="metric"><div class="value">161W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.22</div><div class="label">VI</div></div><div class="metric"><div class="value">1.34</div><div class="label">EF</div></div><div class="metric"><div class="value">17.1%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">120bpm</div><div class="label">FC Média</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;📝 Resumo executivo&lt;/b&gt;
-Andre, a sessão "Bike - Z2 + SS Curto" foi realizada virtualmente com duração de 1h10m. A análise mostra uma execução com baixa aderência (65%) ao plano tático esperado para a fase. Embora a percepção de esforço (RPE 3 🟢) tenha sido baixa, indicando controle, duas métricas de eficiência ficaram comprometidas: a Variabilidade de Intensidade (VI) e o Decoupling. O foco...</div>
+      
     </div>
     <div class="activity-card activity-swim">
       <div class="activity-title">
@@ -311,17 +279,13 @@ Andre, a sessão "Bike - Z2 + SS Curto" foi realizada virtualmente com duração
       <div class="activity-metrics">
         <div class="metric"><div class="value">30min</div><div class="label">Duração</div></div><div class="metric"><div class="value">1500m</div><div class="label">Distância</div></div><div class="metric"><div class="value">20</div><div class="label">TSS</div></div><div class="metric"><div class="value">127bpm</div><div class="label">FC Média</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;📝 Resumo executivo&lt;/b&gt;
-Andre, sessão de natação de base concluída com baixa percepção de esforço (RPE 4 🟢). A execução foi de 1.5km em 30m26s, com pace médio de 20'21"/km e FC média de 127 bpm. A &lt;b&gt;compliance (51% 🔴)&lt;/b&gt; ficou abaixo do esperado, indicando que o volume nadado foi significativamente menor que o prescrito (alvo: ~2000m).
-
-&lt;b&gt;📋 Execução vs planejado&lt;/b&gt;
-Não havia um plano...</div>
+      
     </div>
     <div class="activity-card activity-run">
       <div class="activity-title">
         <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
         <div>
-          <div class="activity-name">Run - Threshold Controlado</div>
+          <div class="activity-name">Tremembé - Run - Threshold Controlado</div>
           <div class="activity-date">09/04</div>
         </div>
         <div class="activity-badge quality-high">Carga moderada</div>
@@ -329,11 +293,7 @@ Não havia um plano...</div>
       <div class="activity-metrics">
         <div class="metric"><div class="value">55min</div><div class="label">Duração</div></div><div class="metric"><div class="value">8.3km</div><div class="label">Distância</div></div><div class="metric"><div class="value">64</div><div class="label">TSS</div></div><div class="metric"><div class="value">405W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.05</div><div class="label">VI</div></div><div class="metric"><div class="value">2.63</div><div class="label">EF</div></div><div class="metric"><div class="value">14.2%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">154bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">172spm</div><div class="label">Cadência</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;📝 Resumo executivo&lt;/b&gt;
-Andre, análise do seu &lt;i&gt;Run - Threshold Controlado&lt;/i&gt; concluída. A sessão foi executada com alta fidelidade (Compliance 103% 🟢) e percepção de esforço leve (RPE 4). No entanto, o alto &lt;b&gt;Decoupling de 14.2% 🔴&lt;/b&gt; indica uma derivação cardíaca significativa, que é o principal ponto para discussão hoje.
-
-&lt;b&gt;📋 Execução vs planejado&lt;/b&gt;
-Não havia um plano específico...</div>
+      
     </div>
     <div class="activity-card activity-strength">
       <div class="activity-title">
@@ -361,11 +321,7 @@ Não havia um plano específico...</div>
       <div class="activity-metrics">
         <div class="metric"><div class="value">46min</div><div class="label">Duração</div></div><div class="metric"><div class="value">20.0km</div><div class="label">Distância</div></div><div class="metric"><div class="value">28</div><div class="label">TSS</div></div><div class="metric"><div class="value">159W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.05</div><div class="label">VI</div></div><div class="metric"><div class="value">1.34</div><div class="label">EF</div></div><div class="metric"><div class="value">7.0%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">119bpm</div><div class="label">FC Média</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;Resumo executivo&lt;/b&gt;
-André, treino cumprido com excelente aderência ao objetivo principal de volume aeróbio. Você entregou uma sessão de Z2 consistente, com um esforço percebido (RPE 2) muito adequado para um dia de fadiga acumulada. Apesar de um pequeno desvio no tempo e na cadência, o treino foi eficiente e cumpriu sua função no bloco de construção.
-
-&lt;b&gt;Execucao vs planejado&lt;/b&gt;
-A execução...</div>
+      
     </div>
     <div class="activity-card activity-ride">
       <div class="activity-title">
@@ -379,13 +335,7 @@ A execução...</div>
       <div class="activity-metrics">
         <div class="metric"><div class="value">1h26</div><div class="label">Duração</div></div><div class="metric"><div class="value">40.6km</div><div class="label">Distância</div></div><div class="metric"><div class="value">75</div><div class="label">TSS</div></div><div class="metric"><div class="value">191W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.12</div><div class="label">VI</div></div><div class="metric"><div class="value">1.41</div><div class="label">EF</div></div><div class="metric"><div class="value">0.1%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">135bpm</div><div class="label">FC Média</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; Endure.LabbS
-&lt;b&gt;📅 Data:&lt;/b&gt; 12/04/26
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; T2 - Bike + Corrida Controlado
-
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-O plano para hoje era um treino de transição (Brick) com foco na execução controlada. Estrutura: 10min Z1 de aquecimento na bike, 20min Z2 de endurance, seguidos por 2 blocos de 10min no Sweet Spot (PZ9) intercal...</div>
+      
     </div>
     <div class="activity-card activity-run">
       <div class="activity-title">
@@ -399,13 +349,7 @@ O plano para hoje era um treino de transição (Brick) com foco na execução co
       <div class="activity-metrics">
         <div class="metric"><div class="value">20min</div><div class="label">Duração</div></div><div class="metric"><div class="value">3.3km</div><div class="label">Distância</div></div><div class="metric"><div class="value">26</div><div class="label">TSS</div></div><div class="metric"><div class="value">434W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.70</div><div class="label">EF</div></div><div class="metric"><div class="value">7.3%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">161bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">171spm</div><div class="label">Cadência</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; Endure.LabbS
-&lt;b&gt;📅 Data:&lt;/b&gt; 12/04/26
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; Tremembé Corrida
-
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-Não foi encontrado um treino planejado no Intervals.icu para a modalidade de corrida nesta data. O briefing matinal indicava um T2 (Bike + Corrida Controlado), com foco em simular transição de prova. A parte da corrida tinha c...</div>
+      
     </div></section>
   
   <section class="card section">
