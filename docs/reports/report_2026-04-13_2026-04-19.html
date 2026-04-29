@@ -22,6 +22,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle
 .card{background:var(--card);padding:18px;border-radius:16px;box-shadow:var(--shadow);border:1px solid rgba(148,163,184,0.12)}
 h2{margin:0 0 14px;font-family:"Space Grotesk",system-ui,sans-serif}
 h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.section-help{margin:-6px 0 12px;color:var(--muted);font-size:12px;line-height:1.45}
 .performance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .stat-card{background:#151f3b;border-radius:14px;padding:16px;display:flex;flex-direction:column;min-height:120px}
 .stat-value{font-size:28px;font-weight:700;color:var(--accent)}
@@ -58,6 +59,11 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
 .metric .value{font-size:16px;font-weight:700}
 .metric .label{font-size:10px;color:var(--muted)}
 .activity-analysis{margin-top:12px;padding:12px;background:#0f1a33;border-radius:10px;font-size:13px;color:#cbd5e1;line-height:1.6;white-space:pre-wrap}
+.muted-analysis{color:#94a3b8;font-style:italic}
+.activity-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 10px}
+.sport-filter{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border-radius:9px;border:1px solid rgba(148,163,184,0.25);background:#132344;color:#cbd5e1;cursor:pointer;font-size:12px}
+.sport-filter svg{width:16px;height:16px}
+.sport-filter.active{border-color:#7dd3fc;background:#1e345b;color:#e2e8f0}
 .strength-card{background:#141f3a;border-radius:14px;padding:16px;border-left:4px solid var(--accent-strength)}
 .strength-total{display:flex;gap:14px;align-items:center;margin-bottom:12px}.strength-list{display:grid;gap:8px}.strength-session{display:flex;justify-content:space-between;gap:12px;background:var(--card-soft);padding:10px 12px;border-radius:10px;font-size:13px;color:#cbd5e1}.strength-session strong{white-space:nowrap}
 .coach-card{background:linear-gradient(180deg,#0f274a 0%,#0f1f39 100%);border:1px solid rgba(94,163,255,0.25);padding:16px;border-radius:12px}
@@ -111,65 +117,18 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       <p>André Bruno | 13/04/2026 a 19/04/2026</p>
     </div>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-      <div class="hero-pill">BUILD — pré Troféu Brasil</div>
-      <div class="hero-pill" style="background:rgba(0,0,0,0.3);font-size:12px">Endure.LabbS | 29/04/2026, 14:03:41</div>
+      
+      <div class="hero-pill" style="background:rgba(0,0,0,0.3);font-size:12px">Endure.LabbS | 29/04/2026, 16:13:16</div>
     </div>
   </div>
   
   <nav class="quick-nav card section" aria-label="Navegacao de secoes do relatorio">
-    <a href="#resumo-semanal" class="quick-link">Resumo</a><a href="#feedback-coach" class="quick-link">Feedback</a><a href="#performance-semana" class="quick-link">Performance</a><a href="#wellness-semana" class="quick-link">Wellness</a><a href="#calendario-provas" class="quick-link">Provas</a><a href="#endurance-semana" class="quick-link">Endurance</a><a href="#graficos-semana" class="quick-link">Graficos</a><a href="#tendencias-semana" class="quick-link">Tendencias</a>
+    <a href="#performance-semana" class="quick-link">Performance</a><a href="#feedback-coach" class="quick-link">Feedback</a><a href="#wellness-semana" class="quick-link">Wellness</a><a href="#calendario-provas" class="quick-link">Provas</a><a href="#endurance-semana" class="quick-link">Endurance</a><a href="#graficos-semana" class="quick-link">Graficos</a><a href="#tendencias-semana" class="quick-link">Tendencias</a>
   </nav>
-  <div id="resumo-semanal" class="anchor-slot">
-  <section class="card section editorial-shell">
-    <h2>Resumo Semanal</h2>
-    <p class="editorial-opening">Semana boa de execucao: 92% de aderencia e 13 sessoes de endurance.</p>
-    <div class="signal-grid">
-      
-      <div class="signal-card">
-        <div class="signal-label">Consistencia</div>
-        <div class="signal-value">0 sessoes</div>
-        <div class="signal-hint">Aderencia boa</div>
-      </div>
-      <div class="signal-card">
-        <div class="signal-label">Carga</div>
-        <div class="signal-value">421 TSS</div>
-        <div class="signal-hint">- de endurance</div>
-      </div>
-      <div class="signal-card">
-        <div class="signal-label">Recuperacao</div>
-        <div class="signal-value">TSB -3.4</div>
-        <div class="signal-hint">Recuperacao moderada</div>
-      </div>
-    </div>
-    <div class="editorial-grid">
-      <div class="editorial-card">
-        <h3>O Que Funcionou</h3>
-        <ul><li>Semana com continuidade de treino e dados suficientes para ajustar o proximo bloco.</li></ul>
-      </div>
-      <div class="editorial-card">
-        <h3>Pontos De Atencao</h3>
-        <ul><li>Sem alertas criticos no bloco semanal.</li></ul>
-      </div>
-      <div class="editorial-card">
-        <h3>Proximo Foco</h3>
-        <ul><li>Proxima prova: Troféu Brasil Santos (26/04/2026).</li><li>Manter consistencia de endurance e preservar recuperacao entre sessoes-chave.</li></ul>
-      </div>
-    </div>
-  </section></div>
-  <div id="feedback-coach" class="anchor-slot">
-  <section class="card section">
-    <h2>Feedback do Coach</h2>
-    <div class="coach-card">
-      <div class="coach-header">
-        <div class="coach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 110 10A5 5 0 0112 2zM4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
-        <div><div style="font-weight:700">Análise detalhada</div><div class="coach-subtitle">Endure.LabbS | 13/04/2026 a 19/04/2026</div></div>
-      </div>
-      <div style="white-space:pre-wrap;line-height:1.7;color:#e2e8f0;font-size:14px">Análise do coach não disponível para esta semana. Execute com --feedback-file para incluir.</div>
-    </div>
-  </section></div>
   <div id="performance-semana" class="anchor-slot">
   <section class="card section">
     <h2>Performance da Semana</h2>
+    <p class="section-help">TSS resume a carga total da semana e TSB indica o saldo de recuperacao no periodo. Veja detalhes no <a href="#glossario-relatorio">Glossario</a>.</p>
     <div class="performance-grid">
       <div class="stat-card">
         <div class="stat-value">53.7</div>
@@ -202,9 +161,26 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       </div>
     </div>
   </section></div>
+  <div id="feedback-coach" class="anchor-slot">
+  <section class="card section">
+    <h2>Feedback do Coach</h2>
+    <div class="coach-card">
+      <div class="coach-header">
+        <div class="coach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 110 10A5 5 0 0112 2zM4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div><div style="font-weight:700">Analise detalhada</div><div class="coach-subtitle">Endure.LabbS | 13/04/2026 a 19/04/2026</div></div>
+      </div>
+      <div style="white-space:pre-wrap;line-height:1.7;color:#e2e8f0;font-size:14px">Analise do coach nao disponivel para esta semana. Execute com --feedback-file para incluir.</div>
+    </div>
+    <div class="editorial-grid">
+      <div class="editorial-card"><h3>O Que Funcionou</h3><ul><li>Semana com continuidade de treino e dados suficientes para ajustar o proximo bloco.</li></ul></div>
+      <div class="editorial-card"><h3>Pontos De Atencao</h3><ul><li>Sem alertas criticos no bloco semanal.</li></ul></div>
+      <div class="editorial-card"><h3>Proximo Foco</h3><ul><li>Proxima prova: Troféu Brasil Santos (26/04/2026).</li><li>Manter consistencia de endurance e preservar recuperacao entre sessoes-chave.</li></ul></div>
+    </div>
+  </section></div>
   <div id="wellness-semana" class="anchor-slot">
   <section class="card section">
     <h2>Wellness da Semana</h2>
+    <p class="section-help">sono limitou parte da recuperação; HRV e FC de repouso ajudaram a monitorar a fadiga do bloco.</p>
     <div class="wellness-grid">
       <div class="wellness-card"><div class="value">42ms</div><div class="label">HRV Médio</div></div><div class="wellness-card"><div class="value">49bpm</div><div class="label">FC Repouso</div></div><div class="wellness-card"><div class="value">6.8h</div><div class="label">Sono Médio</div></div><div class="wellness-card"><div class="value">106.0kg</div><div class="label">Peso</div></div><div class="wellness-card"><div class="value">3.31</div><div class="label">Monotonia</div></div><div class="wellness-card"><div class="value">1392</div><div class="label">Strain</div></div>
     </div>
@@ -218,8 +194,7 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       </div>
       <div class="race-info">
         <div class="race-name">Troféu Brasil Santos</div>
-        <div class="race-meta"> | RACE</div>
-        <div class="race-proj">CTL proj: 45.6 | TSB proj: 24.6</div>
+        <div class="race-meta"></div>
       </div>
       <div class="race-badge">26/04</div>
     </div>
@@ -231,8 +206,7 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       </div>
       <div class="race-info">
         <div class="race-name">DCTA Run Airport SJC 10km</div>
-        <div class="race-meta"> | RACE</div>
-        <div class="race-proj">CTL proj: 32.7 | TSB proj: 29.8</div>
+        <div class="race-meta"></div>
       </div>
       <div class="race-badge">10/05</div>
     </div>
@@ -244,8 +218,7 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       </div>
       <div class="race-info">
         <div class="race-name">Meia Maratona SP</div>
-        <div class="race-meta"> | RACE</div>
-        <div class="race-proj">CTL proj: 5.2 | TSB proj: 5.2</div>
+        <div class="race-meta"></div>
       </div>
       <div class="race-badge">26/07</div>
     </div>
@@ -257,14 +230,21 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
       </div>
       <div class="race-info">
         <div class="race-name">IRONMAN 70.3 Florianópolis</div>
-        <div class="race-meta"> | RACE</div>
-        <div class="race-proj">CTL proj: 0.7 | TSB proj: 0.7</div>
+        <div class="race-meta"></div>
       </div>
       <div class="race-badge">18/10</div>
     </div></section></div>
   
-  <div id="endurance-semana" class="anchor-slot"><section class="card section"><h2>Atividades de Endurance</h2>
-    <div class="activity-card activity-ride">
+  <div id="endurance-semana" class="anchor-slot"><section class="card section">
+    <h2>Atividades Realizadas</h2>
+    <div id="act-filter-andre" class="activity-filters">
+      <button type="button" class="sport-filter active" data-filter="all" title="Todas">Todas</button>
+      <button type="button" class="sport-filter" data-filter="run" title="Corrida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></button>
+      <button type="button" class="sport-filter" data-filter="ride" title="Bike"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></button>
+      <button type="button" class="sport-filter" data-filter="swim" title="Natacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></button>
+    </div>
+    <div id="act-list-andre">
+    <div class="activity-card activity-ride" data-sport="ride">
       <div class="activity-title">
         <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
         <div>
@@ -274,11 +254,11 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">45min</div><div class="label">Duração</div></div><div class="metric"><div class="value">17.0km</div><div class="label">Distância</div></div><div class="metric"><div class="value">27</div><div class="label">TSS</div></div><div class="metric"><div class="value">160W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.06</div><div class="label">VI</div></div><div class="metric"><div class="value">1.28</div><div class="label">EF</div></div><div class="metric"><div class="value">5.6%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">125bpm</div><div class="label">FC Média</div></div>
+        <div class="metric"><div class="value">45min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">17.0km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">27</div><div class="label">TSS</div></div><div class="metric"><div class="value">160W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.06</div><div class="label">VI</div></div><div class="metric"><div class="value">1.28</div><div class="label">EF</div></div><div class="metric"><div class="value">5.6%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">125bpm</div><div class="label">FC media</div></div>
       </div>
-      
+      <div class="activity-analysis muted-analysis">Analise do treino ainda nao disponivel para esta atividade.</div>
     </div>
-    <div class="activity-card activity-run">
+    <div class="activity-card activity-run" data-sport="run">
       <div class="activity-title">
         <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
         <div>
@@ -288,11 +268,11 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">51min</div><div class="label">Duração</div></div><div class="metric"><div class="value">7.4km</div><div class="label">Distância</div></div><div class="metric"><div class="value">49</div><div class="label">TSS</div></div><div class="metric"><div class="value">369W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.58</div><div class="label">EF</div></div><div class="metric"><div class="value">8.5%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">143bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">174spm</div><div class="label">Cadência</div></div>
+        <div class="metric"><div class="value">51min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">7.4km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">49</div><div class="label">TSS</div></div><div class="metric"><div class="value">369W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.58</div><div class="label">EF</div></div><div class="metric"><div class="value">8.5%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">143bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">174spm</div><div class="label">Cadencia</div></div>
       </div>
-      
+      <div class="activity-analysis muted-analysis">Analise do treino ainda nao disponivel para esta atividade.</div>
     </div>
-    <div class="activity-card activity-ride">
+    <div class="activity-card activity-ride" data-sport="ride">
       <div class="activity-title">
         <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
         <div>
@@ -302,11 +282,11 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
         <div class="activity-badge quality-high">Carga moderada</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">1h30</div><div class="label">Duração</div></div><div class="metric"><div class="value">41.7km</div><div class="label">Distância</div></div><div class="metric"><div class="value">69</div><div class="label">TSS</div></div><div class="metric"><div class="value">180W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.13</div><div class="label">VI</div></div><div class="metric"><div class="value">1.34</div><div class="label">EF</div></div><div class="metric"><div class="value">5.6%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">134bpm</div><div class="label">FC Média</div></div>
+        <div class="metric"><div class="value">1h30</div><div class="label">Duracao</div></div><div class="metric"><div class="value">41.7km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">69</div><div class="label">TSS</div></div><div class="metric"><div class="value">180W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.13</div><div class="label">VI</div></div><div class="metric"><div class="value">1.34</div><div class="label">EF</div></div><div class="metric"><div class="value">5.6%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">134bpm</div><div class="label">FC media</div></div>
       </div>
-      
+      <div class="activity-analysis muted-analysis">Analise do treino ainda nao disponivel para esta atividade.</div>
     </div>
-    <div class="activity-card activity-swim">
+    <div class="activity-card activity-swim" data-sport="swim">
       <div class="activity-title">
         <div class="activity-icon swim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></div>
         <div>
@@ -316,11 +296,11 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">34min</div><div class="label">Duração</div></div><div class="metric"><div class="value">1800m</div><div class="label">Distância</div></div><div class="metric"><div class="value">19</div><div class="label">TSS</div></div><div class="metric"><div class="value">123bpm</div><div class="label">FC Média</div></div>
+        <div class="metric"><div class="value">34min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">1800m</div><div class="label">Distancia</div></div><div class="metric"><div class="value">19</div><div class="label">TSS</div></div><div class="metric"><div class="value">123bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">2:01/100m</div><div class="label">Pace</div></div>
       </div>
-      
+      <div class="activity-analysis muted-analysis">Analise do treino ainda nao disponivel para esta atividade.</div>
     </div>
-    <div class="activity-card activity-run">
+    <div class="activity-card activity-run" data-sport="run">
       <div class="activity-title">
         <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
         <div>
@@ -330,24 +310,32 @@ h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">46min</div><div class="label">Duração</div></div><div class="metric"><div class="value">6.8km</div><div class="label">Distância</div></div><div class="metric"><div class="value">48</div><div class="label">TSS</div></div><div class="metric"><div class="value">386W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.04</div><div class="label">VI</div></div><div class="metric"><div class="value">2.68</div><div class="label">EF</div></div><div class="metric"><div class="value">2.0%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">144bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">176spm</div><div class="label">Cadência</div></div>
+        <div class="metric"><div class="value">46min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">6.8km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">48</div><div class="label">TSS</div></div><div class="metric"><div class="value">386W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.04</div><div class="label">VI</div></div><div class="metric"><div class="value">2.68</div><div class="label">EF</div></div><div class="metric"><div class="value">2.0%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">144bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">176spm</div><div class="label">Cadencia</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; endure-labbs
-&lt;b&gt;📅 Data:&lt;/b&gt; Qui, 16/04
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; Run - Threshold Curto Controlado
+      <div class="activity-analysis">👤 Nome do Atleta: André Bruno
+🏢 Assessoria: endure-labbs
+📅 Data: Qui, 16/04
+🏷️ Título do Treino: Run - Threshold Curto Controlado
 
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
+📌 Treino Proposto
 Run - Threshold Curto Controlado — 46min00s | TL: 47
 
-&lt;b&gt;✅ Treino Executado&lt;/b&gt;
+✅ Treino Executado
 - 🏷️ Nome: Run - Threshold Curto Controlado
 - 🏊 Tipo: Run
 - ⏱️ Duração: 46min00s
 - 📍 Distância: 6.78 km
-- 🔄 Pace médio: 6:47...</div>
+- 🔄 Pace médio: 6:47/km
+- ❤️ FC média: 144 bpm
+- 💓 FC máxima: 167 bpm
+- 🔄 Cadência média: 87.8
+- 👟 Passada média: 0.84 m
+- 📈 VI: 1.04 ⚠️
+- 🔗 Decoupling: 2.0% ✅
+- 💪 RPE: 4 ✅
+- �...</div>
     </div>
-    <div class="activity-card activity-ride">
+    <div class="activity-card activity-ride" data-sport="ride">
       <div class="activity-title">
         <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
         <div>
@@ -357,17 +345,20 @@ Run - Threshold Curto Controlado — 46min00s | TL: 47
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">45min</div><div class="label">Duração</div></div><div class="metric"><div class="value">16.1km</div><div class="label">Distância</div></div><div class="metric"><div class="value">26</div><div class="label">TSS</div></div><div class="metric"><div class="value">157W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.03</div><div class="label">VI</div></div><div class="metric"><div class="value">1.25</div><div class="label">EF</div></div><div class="metric"><div class="value">7.2%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">126bpm</div><div class="label">FC Média</div></div>
+        <div class="metric"><div class="value">45min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">16.1km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">26</div><div class="label">TSS</div></div><div class="metric"><div class="value">157W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.03</div><div class="label">VI</div></div><div class="metric"><div class="value">1.25</div><div class="label">EF</div></div><div class="metric"><div class="value">7.2%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">126bpm</div><div class="label">FC media</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; endure-labbs
-&lt;b&gt;📅 Data:&lt;/b&gt; Sex, 17/04
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; Bike - Endurance Solto
+      <div class="activity-analysis">👤 Nome do Atleta: André Bruno
+🏢 Assessoria: endure-labbs
+📅 Data: Sex, 17/04
+🏷️ Título do Treino: Bike - Endurance Solto
 
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-Bloco de 45min para consolidação da base aeróbia na fase BUILD. Estrutura linear: 10min Z1 (ativação), 30min Z2 (zona alvo, cadência 88-92 rpm) e 5min Z1 (recuperação). TL planejado: 28. Foco em eficiência metabólica,...</div>
+📌 Treino Proposto
+Bloco de 45min para consolidação da base aeróbia na fase BUILD. Estrutura linear: 10min Z1 (ativação), 30min Z2 (zona alvo, cadência 88-92 rpm) e 5min Z1 (recuperação). TL planejado: 28. Foco em eficiência metabólica, controle de intensidade e proteção articular, alinhado à prioridade de volume na bike enquanto o joelho permanece em 0/10.
+
+✅ Treino Executado
+VirtualRide...</div>
     </div>
-    <div class="activity-card activity-swim">
+    <div class="activity-card activity-swim" data-sport="swim">
       <div class="activity-title">
         <div class="activity-icon swim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></div>
         <div>
@@ -377,17 +368,19 @@ Bloco de 45min para consolidação da base aeróbia na fase BUILD. Estrutura lin
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">33min</div><div class="label">Duração</div></div><div class="metric"><div class="value">1750m</div><div class="label">Distância</div></div><div class="metric"><div class="value">22</div><div class="label">TSS</div></div><div class="metric"><div class="value">127bpm</div><div class="label">FC Média</div></div>
+        <div class="metric"><div class="value">33min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">1750m</div><div class="label">Distancia</div></div><div class="metric"><div class="value">22</div><div class="label">TSS</div></div><div class="metric"><div class="value">127bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">1:56/100m</div><div class="label">Pace</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; endure-labbs
-&lt;b&gt;📅 Data:&lt;/b&gt; Sex, 17/04
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; Natação - Técnica + Base 1600m
+      <div class="activity-analysis">👤 Nome do Atleta: André Bruno
+🏢 Assessoria: endure-labbs
+📅 Data: Sex, 17/04
+🏷️ Título do Treino: Natação - Técnica + Base 1600m
 
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-Estrutura alinhada à fase BUILD pré-Troféu Brasil: 300m aquecimento Z2, 6x50m técnica (pausa 20s), 6x100m série principal Z2 (pausa 20s) e 400m resfriamento Z1. Objetivo: consolidar volume aeróbio e eficiência...</div>
+📌 Treino Proposto
+Estrutura alinhada à fase BUILD pré-Troféu Brasil: 300m aquecimento Z2, 6x50m técnica (pausa 20s), 6x100m série principal Z2 (pausa 20s) e 400m resfriamento Z1. Objetivo: consolidar volume aeróbio e eficiência de braçada, respeitando intervalos curtos para manter qualidade técnica e controle neuromuscular. Duração alvo: 44min32s | Distância: 1.60km | TL: 33.
+
+✅ T...</div>
     </div>
-    <div class="activity-card activity-ride">
+    <div class="activity-card activity-ride" data-sport="ride">
       <div class="activity-title">
         <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
         <div>
@@ -397,17 +390,20 @@ Estrutura alinhada à fase BUILD pré-Troféu Brasil: 300m aquecimento Z2, 6x50m
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">1h07</div><div class="label">Duração</div></div><div class="metric"><div class="value">32.6km</div><div class="label">Distância</div></div><div class="metric"><div class="value">54</div><div class="label">TSS</div></div><div class="metric"><div class="value">185W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.10</div><div class="label">VI</div></div><div class="metric"><div class="value">1.39</div><div class="label">EF</div></div><div class="metric"><div class="value">3.2%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">133bpm</div><div class="label">FC Média</div></div>
+        <div class="metric"><div class="value">1h07</div><div class="label">Duracao</div></div><div class="metric"><div class="value">32.6km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">54</div><div class="label">TSS</div></div><div class="metric"><div class="value">185W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.10</div><div class="label">VI</div></div><div class="metric"><div class="value">1.39</div><div class="label">EF</div></div><div class="metric"><div class="value">3.2%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">133bpm</div><div class="label">FC media</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; endure-labbs
-&lt;b&gt;📅 Data:&lt;/b&gt; Sáb, 18/04
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; T2 - Bike + Corrida Race Feel
+      <div class="activity-analysis">👤 Nome do Atleta: André Bruno
+🏢 Assessoria: endure-labbs
+📅 Data: Sáb, 18/04
+🏷️ Título do Treino: T2 - Bike + Corrida Race Feel
 
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-Brick estruturado para o bloco BUILD: aquecimento + 30 min Z2, seguidos de 2x8 min em Sweet Spot com cadência 88-92 rpm, transição ativa e 18 min de corrida Z2. TL alvo: 63. Foco: volume aeróbio controlado, estí...</div>
+📌 Treino Proposto
+Brick estruturado para o bloco BUILD: aquecimento + 30 min Z2, seguidos de 2x8 min em Sweet Spot com cadência 88-92 rpm, transição ativa e 18 min de corrida Z2. TL alvo: 63. Foco: volume aeróbio controlado, estímulo de limiar e adaptação neuromuscular pós-bike, respeitando a integridade do joelho.
+
+✅ Treino Executado
+Atividade registrada exclusivamente como Ride (...</div>
     </div>
-    <div class="activity-card activity-run">
+    <div class="activity-card activity-run" data-sport="run">
       <div class="activity-title">
         <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
         <div>
@@ -417,17 +413,20 @@ Brick estruturado para o bloco BUILD: aquecimento + 30 min Z2, seguidos de 2x8 m
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">20min</div><div class="label">Duração</div></div><div class="metric"><div class="value">3.4km</div><div class="label">Distância</div></div><div class="metric"><div class="value">28</div><div class="label">TSS</div></div><div class="metric"><div class="value">444W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.85</div><div class="label">EF</div></div><div class="metric"><div class="value">4.6%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">156bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">174spm</div><div class="label">Cadência</div></div>
+        <div class="metric"><div class="value">20min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">3.4km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">28</div><div class="label">TSS</div></div><div class="metric"><div class="value">444W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.85</div><div class="label">EF</div></div><div class="metric"><div class="value">4.6%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">156bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">174spm</div><div class="label">Cadencia</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; endure-labbs
-&lt;b&gt;📅 Data:&lt;/b&gt; Sáb, 18/04
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; Tremembé Corrida
+      <div class="activity-analysis">👤 Nome do Atleta: André Bruno
+🏢 Assessoria: endure-labbs
+📅 Data: Sáb, 18/04
+🏷️ Título do Treino: Tremembé Corrida
 
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-Nenhuma sessão de corrida foi programada no calendário Intervals para hoje (`planned_found: false`). Isso está alinhado com a diretriz do bloco BUILD, que prioriza volume aeróbio e Sweet Spot na bike, mantendo a corrida estr...</div>
+📌 Treino Proposto
+Nenhuma sessão de corrida foi programada no calendário Intervals para hoje (`planned_found: false`). Isso está alinhado com a diretriz do bloco BUILD, que prioriza volume aeróbio e Sweet Spot na bike, mantendo a corrida estritamente controlada para preservação articular e recuperação entre blocos.
+
+✅ Treino Executado
+Atividade não estruturada de 20min18s, totalizando 3.37 km c...</div>
     </div>
-    <div class="activity-card activity-run">
+    <div class="activity-card activity-run" data-sport="run">
       <div class="activity-title">
         <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
         <div>
@@ -437,20 +436,40 @@ Nenhuma sessão de corrida foi programada no calendário Intervals para hoje (`p
         <div class="activity-badge quality-ok">Carga leve</div>
       </div>
       <div class="activity-metrics">
-        <div class="metric"><div class="value">50min</div><div class="label">Duração</div></div><div class="metric"><div class="value">7.2km</div><div class="label">Distância</div></div><div class="metric"><div class="value">52</div><div class="label">TSS</div></div><div class="metric"><div class="value">385W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.83</div><div class="label">EF</div></div><div class="metric"><div class="value">3.3%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">136bpm</div><div class="label">FC Média</div></div><div class="metric"><div class="value">172spm</div><div class="label">Cadência</div></div>
+        <div class="metric"><div class="value">50min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">7.2km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">52</div><div class="label">TSS</div></div><div class="metric"><div class="value">385W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.02</div><div class="label">VI</div></div><div class="metric"><div class="value">2.83</div><div class="label">EF</div></div><div class="metric"><div class="value">3.3%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">136bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">172spm</div><div class="label">Cadencia</div></div>
       </div>
-      <div class="activity-analysis">&lt;b&gt;👤 Nome do Atleta:&lt;/b&gt; André Bruno
-&lt;b&gt;🏢 Assessoria:&lt;/b&gt; endure-labbs
-&lt;b&gt;📅 Data:&lt;/b&gt; Dom, 19/04
-&lt;b&gt;🏷️ Título do Treino:&lt;/b&gt; Run - Z2 Controlado
+      <div class="activity-analysis">👤 Nome do Atleta: André Bruno
+🏢 Assessoria: endure-labbs
+📅 Data: Dom, 19/04
+🏷️ Título do Treino: Run - Z2 Controlado
 
-&lt;b&gt;📌 Treino Proposto&lt;/b&gt;
-Sessão de 50min estruturada para controle aeróbio e proteção articular durante o bloco BUILD. Composta por warmup de 10min em Z1, bloco principal de 35min em Z2 controlado e cooldown de 5min em Z1. Volume alvo: ~7.10 km....</div>
-    </div></section></div>
+📌 Treino Proposto
+Sessão de 50min estruturada para controle aeróbio e proteção articular durante o bloco BUILD. Composta por warmup de 10min em Z1, bloco principal de 35min em Z2 controlado e cooldown de 5min em Z1. Volume alvo: ~7.10 km. TL planejado: 52. Foco total em estimular capilarização e resistência muscular sem estressar a cadeia, mantendo o joelho esquerdo em zona segura (0/10) e p...</div>
+    </div></div>
+    <script>
+      (function(){
+        const filterRoot = document.getElementById("act-filter-andre");
+        const listRoot = document.getElementById("act-list-andre");
+        if (!filterRoot || !listRoot) return;
+        const buttons = Array.from(filterRoot.querySelectorAll(".sport-filter"));
+        const cards = Array.from(listRoot.querySelectorAll(".activity-card"));
+        function applyFilter(mode){
+          cards.forEach((card) => {
+            const sport = card.getAttribute("data-sport");
+            card.style.display = (mode === "all" || sport === mode) ? "" : "none";
+          });
+          buttons.forEach((btn) => btn.classList.toggle("active", btn.getAttribute("data-filter") === mode));
+        }
+        buttons.forEach((btn) => btn.addEventListener("click", () => applyFilter(btn.getAttribute("data-filter"))));
+        applyFilter("all");
+      })();
+    </script>
+  </section></div>
   
   <div id="graficos-semana" class="anchor-slot">
   <section class="card section">
     <h2>Visão da Semana</h2>
+    <p class="section-help">O primeiro grafico mostra como o tempo de endurance foi dividido por modalidade. O segundo mostra a distribuicao diaria de carga (TSS) na semana.</p>
     <div class="chart-grid">
       <div class="chart-box">
         <h3>Distribuição do Treino (min)</h3>
@@ -483,6 +502,7 @@ Sessão de 50min estruturada para controle aeróbio e proteção articular duran
   <div id="tendencias-semana" class="anchor-slot">
   <section class="card section">
     <h2>Tendências (13 semanas)</h2>
+    <p class="section-help">Aqui voce acompanha tendencia de fitness (CTL), fadiga (ATL), equilibrio (TSB) e carga semanal ao longo das ultimas semanas.</p>
     <div class="chart-grid">
       <div class="chart-box">
         <h3>Tendência: Carga (CTL / ATL / TSB)</h3>
@@ -552,15 +572,7 @@ Sessão de 50min estruturada para controle aeróbio e proteção articular duran
     options: { scales: { y: { ticks: { color: "#94a3b8" }, grid: { color: "#1e293b" } }, x: { ticks: { color: "#94a3b8" }, grid: { display: false } } }, plugins: { legend: { display: false } } }
   });
   </script></div>
-  <div id="fase-ciclo" class="anchor-slot">
-  <section class="card section">
-    <h2>Fase do Ciclo</h2>
-    <div class="phase-block">
-      <p><strong>Fase atual:</strong> BUILD — pré Troféu Brasil</p>
-      <p><strong>Foco do bloco:</strong> Volume aeróbio bike + Sweet Spot + run controlado</p>
-      
-    </div>
-  </section></div>
+  
   <div id="glossario-relatorio" class="anchor-slot">
   <section class="card section glossary">
     <h2>Glossário</h2>
