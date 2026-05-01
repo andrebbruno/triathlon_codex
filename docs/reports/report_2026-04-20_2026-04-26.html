@@ -1,0 +1,935 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatório Semanal — André Bruno | 2026-04-20 a 2026-04-26</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+:root{--bg:#0b1020;--bg-2:#0f172a;--card:#121b34;--card-soft:#0f1a33;--text:#e2e8f0;--muted:#94a3b8;--accent:#5ea3ff;--accent-2:#22c55e;--accent-run:#22c55e;--accent-ride:#f59e0b;--accent-swim:#38bdf8;--accent-strength:#a855f7;--shadow:0 18px 40px rgba(0,0,0,0.4)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Sora",system-ui,sans-serif;background:var(--bg);color:var(--text)}
+body::before{content:"";position:fixed;top:0;right:0;bottom:0;left:0;background:radial-gradient(circle at 10% 10%,rgba(94,163,255,0.18),transparent 45%),radial-gradient(circle at 80% 20%,rgba(34,197,94,0.12),transparent 45%),radial-gradient(circle at 50% 80%,rgba(245,158,11,0.14),transparent 50%);pointer-events:none;z-index:-1}
+@supports not (backdrop-filter:blur(1px)){body::before{background:radial-gradient(circle at 10% 10%,rgba(94,163,255,0.22),transparent 55%),radial-gradient(circle at 80% 20%,rgba(34,197,94,0.16),transparent 55%),radial-gradient(circle at 50% 80%,rgba(245,158,11,0.18),transparent 60%)}}
+.wrap{max-width:1200px;margin:24px auto;padding:0 20px}
+.hero{padding:24px;border-radius:20px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);position:relative;overflow:hidden;flex-wrap:wrap;gap:16px}
+.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:220px;height:220px;background:rgba(255,255,255,0.12);border-radius:50%}
+@supports not (backdrop-filter:blur(1px)){.hero::after{background:rgba(255,255,255,0.18)}}
+.hero h1{margin:0;font-family:"Space Grotesk",system-ui,sans-serif;font-size:24px}
+.hero p{margin:6px 0 0;color:#e2e8f0}
+.hero-pill{background:rgba(255,255,255,0.2);padding:8px 16px;border-radius:999px;font-weight:600;font-size:13px}
+.hero-brand{display:inline-flex;align-items:center;justify-content:center;height:42px;min-width:42px;padding:4px 10px;border-radius:10px;background:rgba(255,255,255,0.16);backdrop-filter:blur(2px)}
+.hero-brand img{display:block;max-height:32px;max-width:130px;object-fit:contain}
+.section{margin-top:22px}
+.card{background:var(--card);padding:18px;border-radius:16px;box-shadow:var(--shadow);border:1px solid rgba(148,163,184,0.12)}
+h2{margin:0 0 14px;font-family:"Space Grotesk",system-ui,sans-serif}
+h3{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.section-help{margin:-6px 0 12px;color:var(--muted);font-size:12px;line-height:1.45}
+.performance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.stat-card{background:#151f3b;border-radius:14px;padding:16px;display:flex;flex-direction:column;min-height:120px}
+.stat-value{font-size:28px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:12px;color:var(--muted);margin-top:6px}
+.stat-pill{margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#1f2a4a;font-size:11px;width:max-content}
+.stat-note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.3}
+.tsb-high{background:rgba(239,68,68,0.2);color:#ef4444}.tsb-med{background:rgba(245,158,11,0.2);color:#f59e0b}.tsb-low{background:rgba(148,163,184,0.2);color:#cbd5f5}.tsb-good{background:rgba(34,197,94,0.2);color:#22c55e}.tsb-neutral{background:rgba(148,163,184,0.2);color:#94a3b8}
+.wellness-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.wellness-card{background:#151f3b;border-radius:12px;padding:14px;text-align:center}
+.wellness-card .value{font-size:22px;font-weight:700}
+.wellness-card .label{font-size:11px;color:var(--muted)}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.chart-box{background:#151f3b;border-radius:14px;padding:16px}
+.chart-wide{grid-column:1 / -1}
+.chart-card{background:var(--card-soft);border-radius:14px;padding:14px;border:1px solid rgba(148,163,184,0.12)}
+.chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.chart-title{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:14px;margin:0}
+.chart-sub{margin-top:4px;font-size:11px;color:var(--muted);line-height:1.4}
+.chart-actions{display:flex;gap:8px;align-items:center}
+.chart-btn{appearance:none;border:1px solid rgba(148,163,184,0.28);background:rgba(15,23,42,0.45);color:#e2e8f0;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:600;cursor:pointer}
+.chart-btn:hover{border-color:rgba(94,163,255,0.5);background:rgba(15,23,42,0.6)}
+.chart-wrap{position:relative;height:260px}
+.chart-wrap canvas{width:100% !important;height:100% !important}
+.chart-help{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(148,163,184,0.18);color:var(--muted);font-size:12px}
+.chart-help summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-weight:700;color:#cbd5f5}
+.chart-help summary::-webkit-details-marker{display:none}
+.chart-help .help-body{margin-top:8px;line-height:1.5}
+.chart-help ul{margin:6px 0 0 18px}
+.chart-help li{margin-bottom:6px}
+.caret{width:10px;height:10px;border-right:2px solid #cbd5f5;border-bottom:2px solid #cbd5f5;transform:rotate(-45deg);transition:transform .18s ease}
+details[open] .caret{transform:rotate(45deg)}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;z-index:1000}
+.modal.open{display:flex}
+.modal-backdrop{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(4,7,16,0.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.modal-backdrop{background:rgba(4,7,16,0.88)}}
+.modal-panel{position:relative;width:min(980px, calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;background:linear-gradient(180deg, rgba(18,26,51,0.96), rgba(12,18,38,0.96));border:1px solid rgba(148,163,184,0.18);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,0.55);padding:16px}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.modal-title{margin:0;font-family:"Space Grotesk",sans-serif;font-size:18px}
+.modal-close{appearance:none;border:1px solid rgba(148,163,184,0.28);background:rgba(15,23,42,0.45);color:#e2e8f0;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer}
+.modal-close:hover{border-color:rgba(255,111,145,0.55);background:rgba(15,23,42,0.65)}
+.modal-chart{height:520px}
+.race-card{display:flex;align-items:center;gap:18px;background:#151f3b;border-radius:14px;padding:16px;margin-bottom:12px;border-left:4px solid var(--accent)}
+.race-card.priority-A{border-left-color:#f59e0b}.race-card.priority-B{border-left-color:var(--accent)}
+.race-days{width:70px;text-align:center}.race-days .days{font-size:26px;font-weight:700;color:#7dd3fc}.race-days .label{font-size:10px;color:var(--muted)}.race-days .sub{font-size:10px;color:var(--muted)}
+.race-name{font-weight:600}.race-meta{color:var(--muted);font-size:12px}.race-badge{margin-left:auto;background:#1f2a4a;padding:6px 12px;border-radius:999px;font-size:11px}
+.race-proj{font-size:11px;color:#7dd3fc;margin-top:4px}
+.race-day-card{background:#141f3a;border-radius:16px;padding:18px;margin-top:14px;border:1px solid rgba(245,158,11,0.28);border-left:4px solid #f59e0b}
+.race-day-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.race-day-title{font-weight:700;font-size:18px}.race-day-sub{font-size:12px;color:var(--muted);margin-top:4px}.race-day-total{background:rgba(245,158,11,0.18);color:#fbbf24;padding:8px 12px;border-radius:999px;font-weight:700;white-space:nowrap}
+.race-day-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px}
+.race-legs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.race-leg{display:flex;gap:10px;align-items:center;background:var(--card-soft);padding:10px;border-radius:12px}.race-leg-type{font-size:13px;font-weight:700}.race-leg-meta{font-size:11px;color:var(--muted)}
+.activity-card{background:#141f3a;border-radius:16px;padding:18px;margin-top:16px;border:1px solid rgba(148,163,184,0.12)}
+.activity-card.activity-run{border-left:4px solid var(--accent-run)}.activity-card.activity-ride{border-left:4px solid var(--accent-ride)}.activity-card.activity-swim{border-left:4px solid var(--accent-swim)}.activity-card.activity-strength{border-left:4px solid var(--accent-strength)}
+.activity-title{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.activity-icon{width:42px;height:42px;border-radius:12px;background:#1f2a4a;display:flex;align-items:center;justify-content:center}
+.activity-icon svg{width:20px;height:20px}.activity-icon.run{background:rgba(34,197,94,0.2);color:#22c55e}.activity-icon.ride{background:rgba(245,158,11,0.2);color:#f59e0b}.activity-icon.swim{background:rgba(56,189,248,0.2);color:#38bdf8}.activity-icon.strength{background:rgba(168,85,247,0.2);color:#a855f7}
+.activity-badge{margin-left:auto;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:600}
+.quality-ok{background:rgba(34,197,94,0.2);color:#22c55e}.quality-high{background:rgba(245,158,11,0.2);color:#f59e0b}.quality-risk{background:rgba(239,68,68,0.2);color:#ef4444}
+.activity-name{font-weight:600}.activity-date{font-size:12px;color:var(--muted)}
+.activity-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px}
+.metric{background:var(--card-soft);padding:10px;border-radius:10px;text-align:center}
+.metric .value{font-size:16px;font-weight:700}
+.metric .label{font-size:10px;color:var(--muted)}
+.activity-analysis{margin-top:12px;padding:12px;background:#0f1a33;border-radius:10px;font-size:13px;color:#cbd5e1;line-height:1.6;white-space:pre-wrap}
+.muted-analysis{color:#94a3b8;font-style:italic}
+.activity-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 10px}
+.sport-filter{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border-radius:9px;border:1px solid rgba(148,163,184,0.25);background:#132344;color:#cbd5e1;cursor:pointer;font-size:12px}
+.sport-filter svg{width:16px;height:16px}
+.sport-filter.active{border-color:#7dd3fc;background:#1e345b;color:#e2e8f0}
+.strength-card{background:#141f3a;border-radius:14px;padding:16px;border-left:4px solid var(--accent-strength)}
+.strength-total{display:flex;gap:14px;align-items:center;margin-bottom:12px}.strength-list{display:grid;gap:8px}.strength-session{display:flex;justify-content:space-between;gap:12px;background:var(--card-soft);padding:10px 12px;border-radius:10px;font-size:13px;color:#cbd5e1}.strength-session strong{white-space:nowrap}
+.coach-card{background:linear-gradient(180deg,#0f274a 0%,#0f1f39 100%);border:1px solid rgba(94,163,255,0.25);padding:16px;border-radius:12px}
+.coach-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.coach-icon{width:44px;height:44px;border-radius:50%;background:#38bdf8;display:flex;align-items:center;justify-content:center;color:#0b1020;flex-shrink:0}
+.coach-icon svg{width:22px;height:22px}
+.coach-subtitle{font-size:12px;color:var(--muted)}
+.week-direction{display:inline-flex;padding:2px 8px;border-radius:999px;background:#1d3458;border:1px solid rgba(125,211,252,0.35);font-size:12px}
+.coach-list{margin:0;padding-left:18px;color:#cbd5e1;line-height:1.5}
+.phase-block{line-height:1.8}
+.glossary-grid{display:grid;gap:10px;font-size:13px;color:#cbd5e1;line-height:1.5}
+.anchor-slot{scroll-margin-top:76px}
+.quick-nav{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;background:#0f1f3a;border:1px solid rgba(148,163,184,0.2)}
+.quick-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#dbeafe;background:#152746;border:1px solid rgba(125,211,252,0.22);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.quick-link:hover{background:#1c3155}
+.editorial-shell{padding:18px}
+.editorial-opening{margin:0 0 14px;color:#dbeafe;line-height:1.55}
+.signal-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.signal-card{background:#151f3b;border:1px solid rgba(148,163,184,0.16);border-radius:12px;padding:12px}
+.signal-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.signal-value{font-size:18px;font-weight:700;margin-top:4px}
+.signal-hint{font-size:12px;color:#cbd5e1;margin-top:6px;line-height:1.35}
+.editorial-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
+.editorial-card{background:#141f3a;border:1px solid rgba(148,163,184,0.15);border-radius:12px;padding:12px}
+.editorial-card h3{margin:0 0 8px;font-size:13px;color:#e2e8f0}
+.editorial-card ul{margin:0;padding-left:18px;color:#cbd5e1;line-height:1.45}
+.editorial-card li{margin:0 0 6px}
+@media(min-width:700px){
+  .signal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .editorial-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:780px){
+  .wrap{padding:0 12px;margin:12px auto}
+  .card{padding:14px}
+  .hero{padding:18px;border-radius:14px;flex-direction:column;align-items:flex-start}
+  .hero h1{font-size:22px}
+  .quick-nav{position:-webkit-sticky;position:sticky;top:8px;z-index:5;padding:8px}
+  .quick-link{font-size:11px;padding:6px 9px}
+  .chart-grid{grid-template-columns:1fr}
+  .race-day-header{flex-direction:column;align-items:flex-start}
+  .race-legs{grid-template-columns:1fr}
+  .performance-grid{grid-template-columns:1fr}
+  .wellness-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chart-wrap{height:220px}
+  .modal{padding:12px}
+  .modal-chart{height:420px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  
+  <div class="hero" style="background:linear-gradient(135deg, #4f7cff, #6c5bd8)">
+    <div>
+      <h1>Relatorio Semanal</h1>
+      <p>André Bruno | 20/04/2026 a 26/04/2026</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+      
+      
+      <div class="hero-pill" style="background:rgba(0,0,0,0.3);font-size:12px">Endure.LabbS | 01/05/2026, 11:18:47</div>
+    </div>
+  </div>
+  
+  <nav class="quick-nav card section" aria-label="Navegacao de secoes do relatorio">
+    <a href="#resumo-semana" class="quick-link">Resumo</a><a href="#performance-semana" class="quick-link">Performance</a><a href="#wellness-semana" class="quick-link">Wellness</a><a href="#feedback-coach" class="quick-link">Feedback</a><a href="#calendario-provas" class="quick-link">Provas</a><a href="#dia-prova" class="quick-link">Dia Prova</a><a href="#endurance-semana" class="quick-link">Endurance</a><a href="#recomendacoes-tecnicas" class="quick-link">Tecnica</a><a href="#forca-semana" class="quick-link">Forca</a><a href="#graficos-semana" class="quick-link">Graficos</a><a href="#tendencias-semana" class="quick-link">Tendencias</a>
+  </nav>
+  <div id="resumo-semana" class="anchor-slot">
+  <section class="card section editorial-shell">
+    <h2>Resumo Semanal</h2>
+    <p class="editorial-opening">Semana com prova concluida e 10 sessoes de endurance, com carga total de 365 TSS.</p>
+    <div class="signal-grid">
+      
+      <div class="signal-card">
+        <div class="signal-label">Consistencia</div>
+        <div class="signal-value">10 sessoes</div>
+        <div class="signal-hint">Aderencia muito alta</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-label">Carga</div>
+        <div class="signal-value">365 TSS</div>
+        <div class="signal-hint">6h49 de endurance</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-label">Recuperacao</div>
+        <div class="signal-value">TSB -3.4</div>
+        <div class="signal-hint">Recuperacao moderada</div>
+      </div>
+    </div>
+    <div class="editorial-grid">
+      <div class="editorial-card">
+        <h3>O Que Funcionou</h3>
+        <ul><li>Regularidade de endurance: 10 sessoes na semana.</li><li>Aderencia ao plano em 111%.</li><li>Distribuicao de carga saudavel (monotonia 0.84).</li><li>Dia de prova consolidado para leitura unica da performance.</li></ul>
+      </div>
+      <div class="editorial-card">
+        <h3>Pontos De Atencao</h3>
+        <ul><li>Sem alertas criticos no bloco semanal.</li></ul>
+      </div>
+      <div class="editorial-card">
+        <h3>Proximo Foco</h3>
+        <ul><li>Proxima prova: DCTA Run Airport SJC 10km (10/05/2026).</li><li>Manter consistencia de endurance e preservar recuperacao entre sessoes-chave.</li></ul>
+      </div>
+    </div>
+  </section></div>
+  <div id="performance-semana" class="anchor-slot">
+  <section class="card section">
+    <h2>Performance da Semana</h2>
+    <p class="section-help">TSS resume a carga total da semana e TSB indica o saldo de recuperação no período. Veja detalhes no <a href="#glossario-relatorio">Glossário</a>.</p>
+    <div class="performance-grid">
+      <div class="stat-card">
+        <div class="stat-value">53.7</div>
+        <div class="stat-label">CTL (Fitness)</div>
+        <div class="stat-pill">-0.08/dia</div>
+        <div class="stat-note">Fitness acumulado (42 dias).</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">57.1</div>
+        <div class="stat-label">ATL (Fadiga)</div>
+        <div class="stat-note">Carga de treino dos ultimos 7 dias.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">-3.4</div>
+        <div class="stat-label">TSB (Forma)</div>
+        <div class="stat-pill tsb-low">Cansado</div>
+        <div class="stat-note">CTL - ATL. Ideal +5 a +15 para provas.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">365</div>
+        <div class="stat-label">TSS Executado</div>
+        <div class="stat-pill">111% aderencia</div>
+        <div class="stat-note">13 atividades totais | 328 planejado.</div>
+      </div>
+    </div>
+  </section></div>
+  <div id="wellness-semana" class="anchor-slot">
+  <section class="card section">
+    <h2>Wellness da Semana</h2>
+    <div class="wellness-grid">
+      <div class="wellness-card"><div class="value">43ms</div><div class="label">HRV Medio</div></div><div class="wellness-card"><div class="value">48bpm</div><div class="label">FC Repouso</div></div><div class="wellness-card"><div class="value">7.1h</div><div class="label">Sono Medio</div></div><div class="wellness-card"><div class="value">106.0kg</div><div class="label">Peso</div></div><div class="wellness-card"><div class="value">0.84</div><div class="label">Monotonia</div></div><div class="wellness-card"><div class="value">306</div><div class="label">Strain</div></div>
+    </div>
+    <p class="section-help">sono sustentou bem a recuperação; HRV e FC de repouso ajudaram a monitorar a fadiga do bloco.</p>
+  </section></div>
+  <div id="feedback-coach" class="anchor-slot">
+  <section class="card section">
+    <h2>Feedback do Coach</h2>
+    <div class="coach-card">
+      <div class="coach-header">
+        <div class="coach-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 110 10A5 5 0 0112 2zM4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div>
+          <div style="font-weight:700">Classificação da Semana: <span class="week-direction">Push</span></div>
+          <div class="coach-subtitle">semana comporta progressao de carga no proximo bloco</div>
+        </div>
+      </div>
+      <div style="white-space:pre-wrap;line-height:1.7;color:#e2e8f0;font-size:14px">O comentario do coach para esta semana esta sendo preparado e sera atualizado em breve.</div>
+    </div>
+  </section></div>
+  <div id="calendario-provas" class="anchor-slot"><section class="card section"><h2>Calendário de Provas</h2>
+    <div class="race-card priority-B">
+      <div class="race-days">
+        <div class="days">9</div>
+        <div class="label">DIAS</div>
+        <div class="sub">1 sem</div>
+      </div>
+      <div class="race-info">
+        <div class="race-name">DCTA Run Airport SJC 10km</div>
+        <div class="race-meta"></div>
+      </div>
+      <div class="race-badge">10/05</div>
+    </div>
+    <div class="race-card priority-B">
+      <div class="race-days">
+        <div class="days">86</div>
+        <div class="label">DIAS</div>
+        <div class="sub">12 sem</div>
+      </div>
+      <div class="race-info">
+        <div class="race-name">Meia Maratona SP</div>
+        <div class="race-meta"></div>
+      </div>
+      <div class="race-badge">26/07</div>
+    </div>
+    <div class="race-card priority-B">
+      <div class="race-days">
+        <div class="days">170</div>
+        <div class="label">DIAS</div>
+        <div class="sub">24 sem</div>
+      </div>
+      <div class="race-info">
+        <div class="race-name">IRONMAN 70.3 Florianópolis</div>
+        <div class="race-meta"></div>
+      </div>
+      <div class="race-badge">18/10</div>
+    </div></section></div>
+  <div id="dia-prova" class="anchor-slot"><section class="card section"><h2>Dia de Prova</h2>
+    <div class="race-day-card">
+      <div class="race-day-header">
+        <div>
+          <div class="race-day-title">Trofeu Brasil Triathlon Etapa 1</div>
+          <div class="race-day-sub">26/04/2026 | Prioridade B</div>
+        </div>
+        <div class="race-day-total">3h14</div>
+      </div>
+      <div class="race-day-metrics">
+        <div class="metric"><div class="value">51.8km</div><div class="label">Distância total</div></div>
+        <div class="metric"><div class="value">200</div><div class="label">TSS</div></div>
+        <div class="metric"><div class="value">5</div><div class="label">Blocos registrados</div></div>
+      </div>
+      <div class="race-legs">
+      <div class="race-leg">
+        <div class="activity-icon swim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></div>
+        <div>
+          <div class="race-leg-type">OpenWaterSwim</div>
+          <div class="race-leg-meta">33min | 1649m | TSS 40</div>
+        </div>
+      </div>
+      <div class="race-leg">
+        <div class="activity-icon strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v4M18 4v4M4 6h4M16 6h4M8 6h8v8a4 4 0 01-8 0V6z"/></svg></div>
+        <div>
+          <div class="race-leg-type">Transition</div>
+          <div class="race-leg-meta">4min | 0.5km | TSS 6</div>
+        </div>
+      </div>
+      <div class="race-leg">
+        <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
+        <div>
+          <div class="race-leg-type">Ride</div>
+          <div class="race-leg-meta">1h14 | 39.1km | TSS 97</div>
+        </div>
+      </div>
+      <div class="race-leg">
+        <div class="activity-icon strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v4M18 4v4M4 6h4M16 6h4M8 6h8v8a4 4 0 01-8 0V6z"/></svg></div>
+        <div>
+          <div class="race-leg-type">Transition</div>
+          <div class="race-leg-meta">2min | 0.3km | TSS 3</div>
+        </div>
+      </div>
+      <div class="race-leg">
+        <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
+        <div>
+          <div class="race-leg-type">Run</div>
+          <div class="race-leg-meta">1h19 | 10.2km | TSS 54</div>
+        </div>
+      </div></div>
+    </div></section></div>
+  <div id="endurance-semana" class="anchor-slot"><section class="card section">
+    <h2>Atividades Realizadas</h2>
+    <div id="act-filter-v3-andre" class="activity-filters">
+      <button type="button" class="sport-filter active" data-filter="all" title="Todas">Todas</button>
+      <button type="button" class="sport-filter" data-filter="run" title="Corrida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></button>
+      <button type="button" class="sport-filter" data-filter="ride" title="Bike"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></button>
+      <button type="button" class="sport-filter" data-filter="swim" title="Natacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></button>
+    </div>
+    <div id="act-list-v3-andre">
+    <div class="activity-card activity-ride" data-sport="ride">
+      <div class="activity-title">
+        <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
+        <div>
+          <div class="activity-name">Bike - Recovery + Ativação</div>
+          <div class="activity-date">20/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">45min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">19.7km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">123bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">157W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.08</div><div class="label">VI</div></div><div class="metric"><div class="value">1.28</div><div class="label">EF</div></div><div class="metric"><div class="value">18.3%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">26</div><div class="label">TSS</div></div>
+      </div>
+      <div class="activity-analysis">⚠️ Pontos de atenção
+1) Cadência média inferior ao planejado: utilize marchas mais leves para garantir a rotação prescrita e reduzir o torque sobre o joelho, mantendo a consistência técnica.
+2) Decoupling de 18,3%: sinal clássico de fadiga acumulada ou hidratação/termorregulação fora do ideal. Monitore a recuperação noturna e a ingestão hídrica/eletrólitos nos dias que antecedem a prova.
+🎯 Lição prática
+Priorize a rotação alta (90-95rpm+) nos treinos de ativação para garantir eficiência mecânica e proteção arti...</div>
+    </div>
+    <div class="activity-card activity-run" data-sport="run">
+      <div class="activity-title">
+        <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
+        <div>
+          <div class="activity-name">São José dos Campos Corrida</div>
+          <div class="activity-date">21/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">39min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">4.0km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">9:56/km</div><div class="label">Pace</div></div><div class="metric"><div class="value">116bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">19</div><div class="label">TSS</div></div><div class="metric"><div class="value">149spm</div><div class="label">Cadencia</div></div>
+      </div>
+      <div class="activity-analysis">⚠️ Pontos de atenção
+1) O decoupling e VI altos indicam perda de continuidade; em treinos de Z2 puro, priorize terrenos planos ou ajuste a intensidade para manter a linearidade hemodinâmica.
+2) A compliance foi zerada pela alteração de volume/intensidade. Para a próxima sessão, mantenha os strides mesmo que reduza o tempo total, garantindo o estímulo neuromuscular mínimo.
+🎯 Lição prática
+Em semanas de competição, a autorregulação protege a integridade articular e otimiza a performance; execute os strides curtos...</div>
+    </div>
+    <div class="activity-card activity-ride" data-sport="ride">
+      <div class="activity-title">
+        <div class="activity-icon ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M5 17l4-7h6l4 7M12 10V6l3-2"/></svg></div>
+        <div>
+          <div class="activity-name">Bike - Race Openers</div>
+          <div class="activity-date">22/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">44min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">21.4km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">122bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">183W</div><div class="label">NP</div></div><div class="metric"><div class="value">1.12</div><div class="label">VI</div></div><div class="metric"><div class="value">1.50</div><div class="label">EF</div></div><div class="metric"><div class="value">0.1%</div><div class="label">Decoup</div></div><div class="metric"><div class="value">35</div><div class="label">TSS</div></div>
+      </div>
+      <div class="activity-analysis">⚠️ Pontos de atenção
+1. Monitore o TSB nos próximos 3 dias; se a fadiga persistir, substitua a próxima bike por recovery puro para garantir TSB ≥ 0 no domingo.
+2. Nos intervalos de openers, priorize a cadência de 95-100 rpm mesmo que a potência oscile; o estímulo neuromuscular depende da velocidade de pedalada, não apenas do watt.
+🎯 Lição prática — Confie na ativação já realizada e foque em hidratação, sono e nutrição rica em carboidratos para elevar o TSB; a perna responderá melhor com menos estímulo agora. Ex...</div>
+    </div>
+    <div class="activity-card activity-swim" data-sport="swim">
+      <div class="activity-title">
+        <div class="activity-icon swim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></div>
+        <div>
+          <div class="activity-name">Natação - Técnica Solta 1400m</div>
+          <div class="activity-date">22/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">28min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">1400m</div><div class="label">Distancia</div></div><div class="metric"><div class="value">2:06/100m</div><div class="label">Pace</div></div><div class="metric"><div class="value">120bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">16</div><div class="label">TSS</div></div><div class="metric"><div class="value">23 br/min</div><div class="label">Cadencia</div></div>
+      </div>
+      <div class="activity-analysis">⚠️ Pontos de atenção — 1) A execução comprimida sugere que os descansos de 20s e as pausas do aquecimento/volta à calma foram ignorados. O repouso é parte ativa do estímulo técnico. 2) Manter a disciplina nos intervalos evita que sessões "soltas" se tornem fadiga oculta antes da prova.
+🎯 Lição prática — Use o cronômetro do relógio para os descansos e respeite o pace de Zona 1 nos blocos de aquecimento e desaquecimento para garantir absorção técnica e frescura para o domingo.
+Parabéns pela consistência e pela na...</div>
+    </div>
+    <div class="activity-card activity-run" data-sport="run">
+      <div class="activity-title">
+        <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
+        <div>
+          <div class="activity-name">Tremembé - Run - Ativação Threshold Curto</div>
+          <div class="activity-date">23/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">38min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">5.4km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">7:05/km</div><div class="label">Pace</div></div><div class="metric"><div class="value">141bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">36</div><div class="label">TSS</div></div><div class="metric"><div class="value">172spm</div><div class="label">Cadencia</div></div>
+      </div>
+      <div class="activity-analysis">🗓️ Contexto macro — Inserido na fase de build com foco em volume aeróbio na bike e corridas de controle técnico. Este treino atua como polimento neuromuscular antes do Troféu Brasil Santos (26/04) e do 10k SJC (10/05). O TSB positivo (0.8) e o ramp rate negativo (-0.15) validam a estratégia de taper parcial e recuperação ativa. A ausência de dor (0/10) após o 10k recente reforça que a gestão de carga está no caminho correto.
+
+⚠️ Pontos de atenção — Decoupling de 12,8% acima do ideal (🎯 Lição prática — Inicie o...</div>
+    </div>
+    <div class="activity-card activity-swim" data-sport="swim">
+      <div class="activity-title">
+        <div class="activity-icon swim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0M2 17c1-1 2-1 3 0s2 1 3 0 2-1 3 0 2 1 3 0 2-1 3 0"/></svg></div>
+        <div>
+          <div class="activity-name">Santos Natação em alto mar</div>
+          <div class="activity-date">25/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">12min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">596m</div><div class="label">Distancia</div></div><div class="metric"><div class="value">2:11/100m</div><div class="label">Pace</div></div><div class="metric"><div class="value">132bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">10</div><div class="label">TSS</div></div><div class="metric"><div class="value">29 br/min</div><div class="label">Cadencia</div></div>
+      </div>
+      <div class="activity-analysis">⚠️ Pontos de atenção
+Este treino não estava previsto na sua planilha para hoje. É importante alinharmos atividades extras para garantir que não interfiram na recuperação e nos objetivos principais da fase, que são o volume na bike e a corrida controlada.
+🎯 Lição prática
+Quando surgir uma oportunidade de treino extra, me avise antes para ajustarmos a carga da semana sem comprometer o plano.
+Parabéns pela iniciativa</div>
+    </div>
+    <div class="activity-card activity-run" data-sport="run">
+      <div class="activity-title">
+        <div class="activity-icon run"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4a1 1 0 100-2 1 1 0 000 2zM6 20l2-7 3 3 2-5 5 3"/></svg></div>
+        <div>
+          <div class="activity-name">Santos Corrida</div>
+          <div class="activity-date">25/04</div>
+        </div>
+        <div class="activity-badge quality-ok">Carga leve</div>
+      </div>
+      <div class="activity-metrics">
+        <div class="metric"><div class="value">12min</div><div class="label">Duracao</div></div><div class="metric"><div class="value">2.0km</div><div class="label">Distancia</div></div><div class="metric"><div class="value">6:22/km</div><div class="label">Pace</div></div><div class="metric"><div class="value">151bpm</div><div class="label">FC media</div></div><div class="metric"><div class="value">13</div><div class="label">TSS</div></div><div class="metric"><div class="value">173spm</div><div class="label">Cadencia</div></div>
+      </div>
+      <div class="activity-analysis">⚠️ Pontos de atenção
+Não havia uma corrida prevista para hoje, então esta atividade extra entra como um volume não planejado. É importante alinhar esses treinos adicionais para garantir que não interfiram na recuperação e no plano geral, especialmente com o joelho em monitoramento.
+🎯 Lição prática
+Quando sentir vontade de adicionar um treino, me avise antes para ajustarmos a carga da semana e mantermos o progresso seguro. Ótimo por se manter ativo</div>
+    </div></div>
+    <script>
+      (function(){
+        const filterRoot = document.getElementById("act-filter-v3-andre");
+        const listRoot = document.getElementById("act-list-v3-andre");
+        if (!filterRoot || !listRoot) return;
+        const buttons = Array.from(filterRoot.querySelectorAll(".sport-filter"));
+        const cards = Array.from(listRoot.querySelectorAll(".activity-card"));
+        function applyFilter(mode){
+          cards.forEach((card) => {
+            const sport = card.getAttribute("data-sport");
+            card.style.display = (mode === "all" || sport === mode) ? "" : "none";
+          });
+          buttons.forEach((btn) => btn.classList.toggle("active", btn.getAttribute("data-filter") === mode));
+        }
+        buttons.forEach((btn) => btn.addEventListener("click", () => applyFilter(btn.getAttribute("data-filter"))));
+        applyFilter("all");
+      })();
+    </script>
+  </section></div>
+  <div id="recomendacoes-tecnicas" class="anchor-slot">
+  <section class="card section">
+    <h2>Recomendacoes Tecnicas</h2>
+    <ul class="coach-list"><li>Corrida: manter pace estavel nas sessoes Z2 e controlar decoupling para segurar economia de corrida no bloco.</li><li>Bike: priorizar cadencia-alvo e distribuicao de esforco (VI) para reduzir sobrecarga muscular e melhorar consistencia.</li><li>Natacao: manter pace por 100m com tecnica limpa e pausas previstas para consolidar eficiencia de bracada.</li></ul>
+  </section></div>
+  <div id="forca-semana" class="anchor-slot">
+  <section class="card section">
+    <h2>Força da Semana</h2>
+    <div class="strength-card">
+      <div class="strength-total">
+        <div class="stat-value">1</div>
+        <div>
+          <div class="stat-label">sessões registradas</div>
+          <div class="stat-note">46min no total | TSS 10.</div>
+        </div>
+      </div>
+      <div class="strength-list">
+    <div class="strength-session">
+      <span>20/04 | Força - Upper Body + Core Leve</span>
+      <strong>46min</strong>
+    </div></div>
+    </div>
+  </section></div>
+  <div id="graficos-semana" class="anchor-slot">
+  <section class="card section">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <h2 style="margin-bottom:0">Graficos da Semana</h2>
+      <div style="color:var(--muted);font-size:12px">Dica: clique em <strong>Ampliar</strong> para ver detalhes.</div>
+    </div>
+    <div class="chart-grid" style="margin-top:14px">
+      <div class="chart-card" data-chart-id="dist-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Distribuicao de Modalidades</div>
+            <div class="chart-sub">Como o tempo da semana se dividiu entre corrida, bike, natacao e forca.</div>
+          </div>
+          <div class="chart-actions">
+            <button class="chart-btn chart-expand" type="button" data-chart="dist-chart" title="Ampliar grafico">Ampliar</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="dist-chart"></canvas></div>
+        <details class="chart-help">
+          <summary><span class="caret"></span>O que este grafico significa</summary>
+          <div class="help-body">
+            <ul>
+              <li>Mostra o percentual de tempo por modalidade na semana.</li>
+              <li>O equilibrio ideal depende da fase do ciclo e da prova-alvo.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+      <div class="chart-card" data-chart-id="load-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Carga Diaria (TSS)</div>
+            <div class="chart-sub">Barra por dia com linha de tendencia curta para visualizar concentracao de carga.</div>
+          </div>
+          <div class="chart-actions">
+            <button class="chart-btn chart-expand" type="button" data-chart="load-chart" title="Ampliar grafico">Ampliar</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="load-chart"></canvas></div>
+        <details class="chart-help">
+          <summary><span class="caret"></span>O que este grafico significa</summary>
+          <div class="help-body">
+            <ul>
+              <li>TSS por dia ajuda a ver picos e distribuicao da semana.</li>
+              <li>Linha de media movel de 3 dias ajuda a identificar acumulacao.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+      <div class="chart-card" data-chart-id="week-wellness-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Snapshot de Wellness</div>
+            <div class="chart-sub">Resumo dos principais sinais de recuperacao coletados na semana.</div>
+          </div>
+          <div class="chart-actions">
+            <button class="chart-btn chart-expand" type="button" data-chart="week-wellness-chart" title="Ampliar grafico">Ampliar</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="week-wellness-chart"></canvas></div>
+        <details class="chart-help">
+          <summary><span class="caret"></span>O que este grafico significa</summary>
+          <div class="help-body">
+            <ul>
+              <li>Mostra os valores medios de sono, HRV, FC de repouso, monotonia e strain.</li>
+              <li>Serve para contextualizar a carga da semana com a resposta fisiologica.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="modal" id="chartModal" aria-hidden="true">
+      <div class="modal-backdrop" data-modal-close="1"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
+        <div class="modal-head">
+          <div>
+            <h3 class="modal-title" id="chartModalTitle">Grafico</h3>
+            <div class="chart-sub" id="chartModalSub"></div>
+          </div>
+          <button class="modal-close" type="button" data-modal-close="1">Fechar</button>
+        </div>
+        <div class="chart-wrap modal-chart"><canvas id="chartModalCanvas"></canvas></div>
+      </div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    if (!window.__weeklyReportCharts) {
+      window.__weeklyReportCharts = (function(){
+        const charts = {};
+        const chartConfigs = {};
+        let listenersBound = false;
+        function deepClone(value){ return JSON.parse(JSON.stringify(value)); }
+        function applyCommonOptions(cfg){
+          cfg.options = cfg.options || {};
+          cfg.options.responsive = true;
+          cfg.options.maintainAspectRatio = false;
+          cfg.options.interaction = cfg.options.interaction || { mode: "index", intersect: false };
+          cfg.options.plugins = cfg.options.plugins || {};
+          cfg.options.plugins.legend = cfg.options.plugins.legend || {};
+          cfg.options.plugins.legend.position = cfg.options.plugins.legend.position || "bottom";
+          cfg.options.plugins.legend.labels = cfg.options.plugins.legend.labels || {};
+          cfg.options.plugins.legend.labels.color = "#e2e8f0";
+          cfg.options.plugins.legend.labels.boxWidth = cfg.options.plugins.legend.labels.boxWidth || 10;
+          cfg.options.plugins.legend.labels.padding = cfg.options.plugins.legend.labels.padding || 12;
+          cfg.options.plugins.tooltip = cfg.options.plugins.tooltip || {};
+          cfg.options.plugins.tooltip.backgroundColor = "rgba(15,23,42,0.95)";
+          cfg.options.plugins.tooltip.titleColor = "#e2e8f0";
+          cfg.options.plugins.tooltip.bodyColor = "#e2e8f0";
+          cfg.options.plugins.tooltip.borderColor = "rgba(148,163,184,0.25)";
+          cfg.options.plugins.tooltip.borderWidth = 1;
+          cfg.options.plugins.tooltip.padding = 10;
+          cfg.options.scales = cfg.options.scales || {};
+          if (cfg.options.scales.x) {
+            cfg.options.scales.x.ticks = cfg.options.scales.x.ticks || {};
+            cfg.options.scales.x.ticks.color = "#94a3b8";
+            cfg.options.scales.x.grid = cfg.options.scales.x.grid || {};
+            if (cfg.options.scales.x.grid.display == null) cfg.options.scales.x.grid.display = false;
+          }
+          if (cfg.options.scales.y) {
+            cfg.options.scales.y.ticks = cfg.options.scales.y.ticks || {};
+            cfg.options.scales.y.ticks.color = "#94a3b8";
+            cfg.options.scales.y.grid = cfg.options.scales.y.grid || {};
+            cfg.options.scales.y.grid.color = cfg.options.scales.y.grid.color || "#1e293b";
+          }
+          return cfg;
+        }
+        function register(id, cfg){ chartConfigs[id] = cfg; }
+        function render(id){
+          const canvas = document.getElementById(id);
+          const cfg = chartConfigs[id];
+          if (!canvas || !cfg) return;
+          if (charts[id]) charts[id].destroy();
+          charts[id] = new Chart(canvas, applyCommonOptions(deepClone(cfg)));
+        }
+        function openModal(id){
+          const modal = document.getElementById("chartModal");
+          const titleEl = document.getElementById("chartModalTitle");
+          const subEl = document.getElementById("chartModalSub");
+          const canvas = document.getElementById("chartModalCanvas");
+          const cfg = chartConfigs[id];
+          if (!modal || !titleEl || !subEl || !canvas || !cfg) return;
+          const card = document.querySelector('.chart-card[data-chart-id="' + id + '"]');
+          const title = card ? card.querySelector(".chart-title") : null;
+          const sub = card ? card.querySelector(".chart-sub") : null;
+          titleEl.textContent = title ? title.textContent : "Grafico";
+          subEl.textContent = sub ? sub.textContent : "";
+          const expanded = applyCommonOptions(deepClone(cfg));
+          if (expanded.options && expanded.options.scales && expanded.options.scales.x) {
+            expanded.options.scales.x.ticks = expanded.options.scales.x.ticks || {};
+            expanded.options.scales.x.ticks.maxTicksLimit = Math.max(6, expanded.options.scales.x.ticks.maxTicksLimit || 0);
+          }
+          if (window.__chartModalInstance) { window.__chartModalInstance.destroy(); window.__chartModalInstance = null; }
+          window.__chartModalInstance = new Chart(canvas, expanded);
+          modal.classList.add("open");
+          modal.setAttribute("aria-hidden", "false");
+        }
+        function closeModal(){
+          const modal = document.getElementById("chartModal");
+          if (!modal) return;
+          modal.classList.remove("open");
+          modal.setAttribute("aria-hidden", "true");
+          if (window.__chartModalInstance) { window.__chartModalInstance.destroy(); window.__chartModalInstance = null; }
+        }
+        function bindListeners(){
+          if (listenersBound) return;
+          listenersBound = true;
+          document.addEventListener("click", function(e){
+            const expandBtn = e.target.closest(".chart-expand");
+            if (expandBtn) {
+              const id = expandBtn.getAttribute("data-chart");
+              if (id) openModal(id);
+              return;
+            }
+            if (e.target.closest("[data-modal-close]")) closeModal();
+          });
+          document.addEventListener("keydown", function(e){
+            if (e.key === "Escape") closeModal();
+          });
+        }
+        return { register, render, bindListeners };
+      })();
+    }
+    const chartApi = window.__weeklyReportCharts;
+    chartApi.bindListeners();
+    chartApi.register("dist-chart", {
+      type: "doughnut",
+      data: {
+        labels: ["VirtualRide · 11%","Run · 42%","Ride · 29%","Swim · 7%","OpenWaterSwim · 11%"],
+        datasets: [{
+          data: [45,171,119,28,46],
+          backgroundColor: ["#f59e0b","#22c55e","#f59e0b","#38bdf8","#38bdf8"],
+          borderColor: "#0b1020",
+          borderWidth: 2
+        }]
+      },
+      options: {
+        cutout: "58%",
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(ctx){
+                const mins = Number(ctx.parsed || 0);
+                const h = (mins / 60).toFixed(1);
+                return ctx.label + ": " + mins + " min (" + h + " h)";
+              }
+            }
+          }
+        }
+      }
+    });
+    chartApi.register("load-chart", {
+      data: {
+        labels: ["20/04","21/04","22/04","23/04","24/04","25/04","26/04"],
+        datasets: [
+          { type: "bar", label: "TSS", data: [36,19,51,36,0,23,200], backgroundColor: "#5ea3ff66", borderColor: "#5ea3ff", borderWidth: 1 },
+          { type: "line", label: "Media movel 3d", data: [36,27.5,35.3,35.3,29,19.7,74.3], borderColor: "#f59e0b", tension: 0.3, borderWidth: 2, pointRadius: 2 }
+        ]
+      },
+      options: { scales: { x: { ticks: { maxTicksLimit: 7 } }, y: { beginAtZero: true } } }
+    });
+    chartApi.register("week-wellness-chart", {
+      type: "bar",
+      data: {
+        labels: ["Sono (h)","HRV","FC Repouso","Monotonia","Strain"],
+        datasets: [{
+          label: "Media semanal",
+          data: [7.15,42.9,48.4,0.84,306],
+          backgroundColor: ["rgba(34,197,94,0.35)","rgba(94,163,255,0.35)","rgba(239,68,68,0.35)","rgba(168,85,247,0.35)","rgba(245,158,11,0.35)"],
+          borderColor: ["#22c55e","#5ea3ff","#ef4444","#a855f7","#f59e0b"],
+          borderWidth: 1
+        }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 5 } }, y: { beginAtZero: true } } }
+    });
+    chartApi.render("dist-chart");
+    chartApi.render("load-chart");
+    chartApi.render("week-wellness-chart");
+  })();
+  </script></div>
+  <div id="tendencias-semana" class="anchor-slot">
+  <section class="card section">
+    <h2>Tendencias Longo Prazo (12 semanas)</h2>
+    <p class="section-help">Evolucao de fitness, carga, recuperacao e qualidade de execucao nas ultimas semanas.</p>
+    <div class="chart-grid" style="margin-top:14px">
+      <div class="chart-card" data-chart-id="trend-load-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Tendencia: Carga interna (CTL / ATL / TSB)</div>
+            <div class="chart-sub">Evolucao do estado de treino e equilibrio de fadiga por semana.</div>
+          </div>
+          <div class="chart-actions"><button class="chart-btn chart-expand" type="button" data-chart="trend-load-chart" title="Ampliar grafico">Ampliar</button></div>
+        </div>
+        <div class="chart-wrap"><canvas id="trend-load-chart"></canvas></div>
+        <details class="chart-help"><summary><span class="caret"></span>O que este grafico significa</summary><div class="help-body"><ul><li>CTL sobe com consistencia de carga no medio prazo.</li><li>ATL sobe com carga recente e TSB mostra o saldo entre fitness e fadiga.</li></ul></div></details>
+      </div>
+      <div class="chart-card" data-chart-id="trend-tss-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Tendencia: TSS e Horas</div>
+            <div class="chart-sub">Carga total e volume total de treino por semana.</div>
+          </div>
+          <div class="chart-actions"><button class="chart-btn chart-expand" type="button" data-chart="trend-tss-chart" title="Ampliar grafico">Ampliar</button></div>
+        </div>
+        <div class="chart-wrap"><canvas id="trend-tss-chart"></canvas></div>
+        <details class="chart-help"><summary><span class="caret"></span>O que este grafico significa</summary><div class="help-body"><ul><li>TSS e horas juntos ajudam a diferenciar semana longa de semana intensa.</li><li>Comparar os dois reduz risco de conclusao enviesada por um unico indicador.</li></ul></div></details>
+      </div>
+      
+      <div class="chart-card" data-chart-id="trend-well-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Tendencia: Wellness</div>
+            <div class="chart-sub">Sono, HRV e FC de repouso ao longo das ultimas semanas.</div>
+          </div>
+          <div class="chart-actions"><button class="chart-btn chart-expand" type="button" data-chart="trend-well-chart" title="Ampliar grafico">Ampliar</button></div>
+        </div>
+        <div class="chart-wrap"><canvas id="trend-well-chart"></canvas></div>
+        <details class="chart-help"><summary><span class="caret"></span>O que este grafico significa</summary><div class="help-body"><ul><li>Leitura de recuperacao ao longo do bloco.</li><li>Tendencia de queda de sono/HRV com subida de FC pode indicar acumulacao de fadiga.</li></ul></div></details>
+      </div>
+      
+      <div class="chart-card" data-chart-id="trend-modality-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Tendencia: Distribuicao por modalidade</div>
+            <div class="chart-sub">Percentual do tempo de treino por esporte (0 a 100%).</div>
+          </div>
+          <div class="chart-actions"><button class="chart-btn chart-expand" type="button" data-chart="trend-modality-chart" title="Ampliar grafico">Ampliar</button></div>
+        </div>
+        <div class="chart-wrap"><canvas id="trend-modality-chart"></canvas></div>
+        <details class="chart-help"><summary><span class="caret"></span>O que este grafico significa</summary><div class="help-body"><ul><li>Ajuda a validar se o bloco respeitou o foco semanal.</li><li>Variacoes bruscas normalmente sinalizam mudanca de fase ou ajuste pontual.</li></ul></div></details>
+      </div>
+      <div class="chart-card" data-chart-id="trend-bike-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Tendencia: Qualidade Bike</div>
+            <div class="chart-sub">VI, EF e decoupling medio das sessoes de bike por semana.</div>
+          </div>
+          <div class="chart-actions"><button class="chart-btn chart-expand" type="button" data-chart="trend-bike-chart" title="Ampliar grafico">Ampliar</button></div>
+        </div>
+        <div class="chart-wrap"><canvas id="trend-bike-chart"></canvas></div>
+        <details class="chart-help"><summary><span class="caret"></span>O que este grafico significa</summary><div class="help-body"><ul><li>VI mais proximo de 1.00 indica distribuicao mais uniforme de esforco.</li><li>Decoupling alto com EF caindo costuma indicar queda de eficiencia com fadiga.</li></ul></div></details>
+      </div>
+      <div class="chart-card" data-chart-id="trend-run-chart">
+        <div class="chart-head">
+          <div>
+            <div class="chart-title">Tendencia: Qualidade Corrida</div>
+            <div class="chart-sub">Cadencia media e decoupling medio nas corridas da semana.</div>
+          </div>
+          <div class="chart-actions"><button class="chart-btn chart-expand" type="button" data-chart="trend-run-chart" title="Ampliar grafico">Ampliar</button></div>
+        </div>
+        <div class="chart-wrap"><canvas id="trend-run-chart"></canvas></div>
+        <details class="chart-help"><summary><span class="caret"></span>O que este grafico significa</summary><div class="help-body"><ul><li>Cadencia estavel com decoupling controlado indica melhor economia de corrida.</li><li>Picos de decoupling pedem revisao de distribuicao de intensidade e recuperacao.</li></ul></div></details>
+      </div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    const chartApi = window.__weeklyReportCharts;
+    if (!chartApi) return;
+    chartApi.register("trend-load-chart", {
+      type: "line",
+      data: {
+        labels: ["19/01","26/01","02/02","09/02","16/02","23/02","02/03","09/03","16/03","23/03","30/03","06/04"],
+        datasets: [
+          { label: "CTL", data: [55.8,56.8,56.3,55.9,58.5,56.4,56.9,54.3,54.5,55.5,54.9,54.4], borderColor: "#5ea3ff", tension: 0.3, borderWidth: 2, pointRadius: 2 },
+          { label: "ATL", data: [79.7,73.8,66.8,63.5,70,57.9,62.7,51.6,57.2,61.8,58.1,58.9], borderColor: "#ef4444", tension: 0.3, borderWidth: 2, pointRadius: 2 },
+          { label: "TSB", data: [-23.9,-17,-10.5,-7.6,-11.5,-1.5,-5.8,2.6,-2.7,-6.4,-3.2,-4.5], borderColor: "#22c55e", tension: 0.3, borderWidth: 2, pointRadius: 2, borderDash: [4, 4] }
+        ]
+      },
+      options: { scales: { x: { ticks: { maxTicksLimit: 6 } } } }
+    });
+    chartApi.register("trend-tss-chart", {
+      data: {
+        labels: ["19/01","26/01","02/02","09/02","16/02","23/02","02/03","09/03","16/03","23/03","30/03","06/04"],
+        datasets: [
+          { type: "bar", label: "TSS", data: [527,446,383,388,522,319,442,293,426,439,393,212], backgroundColor: "#5ea3ff66", borderColor: "#5ea3ff", borderWidth: 1 },
+          { type: "line", label: "Horas", data: [11.4,9.9,9.2,10,11.5,8.9,11.7,8.5,11.8,10.8,10.7,6], borderColor: "#f59e0b", tension: 0.3, borderWidth: 2, pointRadius: 2 }
+        ]
+      },
+      options: { scales: { x: { ticks: { maxTicksLimit: 6 } }, y: { beginAtZero: true } } }
+    });
+    
+    chartApi.register("trend-well-chart", {
+      type: "line",
+      data: {
+        labels: ["19/01","26/01","02/02","09/02","16/02","23/02","02/03","09/03","16/03","23/03","30/03","06/04"],
+        datasets: [
+          { label: "Sono (h)", data: [7.3,7.2,7.4,6.9,6.9,7.6,7.3,7.4,7.2,7.2,6.6,7.2], borderColor: "#22c55e", tension: 0.3, borderWidth: 2, pointRadius: 2, yAxisID: "ySleep" },
+          { label: "HRV", data: [47.3,47.4,45.4,45.3,48.9,47,45,47.4,43.7,41.4,44,42.3], borderColor: "#5ea3ff", tension: 0.3, borderWidth: 2, pointRadius: 2, yAxisID: "yVitals" },
+          { label: "FC Repouso", data: [49.4,45.7,48.1,48,48.4,50,49.6,46.7,52.1,52.4,50.6,50.5], borderColor: "#ef4444", tension: 0.3, borderWidth: 2, pointRadius: 2, yAxisID: "yVitals" }
+        ]
+      },
+      options: {
+        scales: {
+          x: { ticks: { maxTicksLimit: 6 } },
+          ySleep: { position: "left", title: { display: true, text: "Sono (h)" } },
+          yVitals: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "HRV / FC" } }
+        }
+      }
+    });
+    
+    
+    chartApi.register("trend-modality-chart", {
+      type: "bar",
+      data: {
+        labels: ["19/01","26/01","02/02","09/02","16/02","23/02","02/03","09/03","16/03","23/03","30/03","06/04"],
+        datasets: [
+          { label: "Bike %", data: [51,59.7,44.6,51.5,53.9,59.5,45.4,36.8,46.1,49.5,39.2,36.3], backgroundColor: "rgba(245,158,11,0.35)" },
+          { label: "Run %", data: [12.5,11.2,20.7,18.4,23.7,21.1,14.2,26.5,23.2,29.8,27.5,28.2], backgroundColor: "rgba(34,197,94,0.35)" },
+          { label: "Swim %", data: [12.4,12.8,13.6,11.5,13.9,1.3,16.8,14,4.8,3.1,6.1,8.5], backgroundColor: "rgba(56,189,248,0.35)" },
+          { label: "Forca %", data: [24.2,16.3,21.1,18.6,8.5,18.1,23.6,22.7,25.9,17.6,27.3,27], backgroundColor: "rgba(168,85,247,0.35)" }
+        ]
+      },
+      options: { scales: { x: { ticks: { maxTicksLimit: 6 } }, y: { beginAtZero: true, max: 100 } } }
+    });
+    chartApi.register("trend-bike-chart", {
+      type: "line",
+      data: {
+        labels: ["19/01","26/01","02/02","09/02","16/02","23/02","02/03","09/03","16/03","23/03","30/03","06/04"],
+        datasets: [
+          { label: "Bike VI", data: [1.13,1.135,1.168,1.146,1.153,1.231,1.459,1.203,1.185,1.166,1.107,1.141], borderColor: "#94a3b8", tension: 0.3, borderWidth: 2, pointRadius: 2 },
+          { label: "Bike EF", data: [1.59,1.53,1.55,1.43,1.37,1.33,1.56,1.29,1.25,1.33,1.29,1.26], borderColor: "#f59e0b", tension: 0.3, borderWidth: 2, pointRadius: 2 },
+          { label: "Bike Decoupling %", data: [3,1.8,14.6,9.4,9.1,6.9,12.9,11.5,17.1,6.7,8.9,14.3], borderColor: "#ef4444", tension: 0.3, borderWidth: 2, pointRadius: 2 }
+        ]
+      },
+      options: { scales: { x: { ticks: { maxTicksLimit: 6 } } } }
+    });
+    chartApi.register("trend-run-chart", {
+      type: "line",
+      data: {
+        labels: ["19/01","26/01","02/02","09/02","16/02","23/02","02/03","09/03","16/03","23/03","30/03","06/04"],
+        datasets: [
+          { label: "Cadencia Run", data: [173.3,175.5,169.3,168.3,176.4,173.5,176.5,173,173.7,172,175.3,172.5], borderColor: "#22c55e", tension: 0.3, borderWidth: 2, pointRadius: 2 },
+          { label: "Decoupling Run %", data: [6.6,10.5,11,10.9,5.7,15.4,6.1,11.6,11.6,9.9,4,8.5], borderColor: "#ef4444", tension: 0.3, borderWidth: 2, pointRadius: 2 }
+        ]
+      },
+      options: { scales: { x: { ticks: { maxTicksLimit: 6 } } } }
+    });
+    
+    chartApi.render("trend-load-chart");
+    chartApi.render("trend-tss-chart");
+    chartApi.render("trend-well-chart");
+    chartApi.render("trend-modality-chart"); chartApi.render("trend-bike-chart"); chartApi.render("trend-run-chart");
+  })();
+  </script></div>
+  
+  <div id="glossario-relatorio" class="anchor-slot">
+  <section class="card section glossary">
+    <h2>Glossário</h2>
+    <div class="glossary-grid">
+      <div><strong>CTL</strong> — Chronic Training Load. Média ponderada de carga dos últimos 42 dias. Representa fitness acumulado.</div>
+      <div><strong>ATL</strong> — Acute Training Load. Média ponderada dos últimos 7 dias. Representa fadiga recente.</div>
+      <div><strong>TSB</strong> — Training Stress Balance (CTL - ATL). Positivo = descansado, negativo = cansado.</div>
+      <div><strong>TSS</strong> — Training Stress Score. Unidade de carga por sessão.</div>
+      <div><strong>HRV</strong> — Heart Rate Variability. Maior = melhor recuperação.</div>
+      <div><strong>Monotonia</strong> — Variação da carga diária. Acima de 2.0 indica risco de overtraining.</div>
+    </div>
+  </section></div>
+</div>
+</body>
+</html>
