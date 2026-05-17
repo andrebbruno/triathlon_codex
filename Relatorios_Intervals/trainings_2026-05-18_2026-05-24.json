@@ -1,0 +1,90 @@
+[
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_0_2026-05-11-2026-05-18",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-18T06:00:00",
+    "type": "Ride",
+    "name": "Bike - Regenerativo",
+    "description": "Treino gerado automaticamente a partir da periodiza��o aprovada.\nDraft: 9So0UAJ97ZPDhgXBgxkD\nObjetivo principal: Recovery\nCarga estimada (TSS): 19\nModo bike: heart_rate\n\nWarmup\n- 20m Z1 power=3s intensity=warmup\n\nMain Set Repeat 3x\n- 6m Z3 power=3s intensity=active\n- 5m Z2 power=3s intensity=recovery\n\nCooldown\n- 10m Z1 power=3s intensity=cooldown\n\n---\nObjetivo: Aumentar o threshold e potencia sustentada.\nBy Endure.LabbS\n\nAjuste final pelo coach antes da execu��o."
+  },
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_1_2026-05-12-2026-05-19",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-19T06:00:00",
+    "type": "Run",
+    "name": "Corrida - Intervalado",
+    "description": "Treino gerado automaticamente a partir da periodiza��o aprovada.\nDraft: 9So0UAJ97ZPDhgXBgxkD\nObjetivo principal: Threshold\nCarga estimada (TSS): 57\nModo bike: heart_rate\n\nWarmup\n- 10m Ramp Z1 Z2 Pace intensity=warmup\n\nMain Set\n- 45m Z2 Pace intensity=active\n\nCooldown\n- 5m Z1 Pace intensity=cooldown\n\n---\nObjetivo: Desenvolver base aerobica e tolerancia estrutural.\nBy Endure.LabbS\n\nAjuste final pelo coach antes da execu��o."
+  },
+  {
+    "external_id": "training_20260520_20x-100-endurance",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-20T00:00:00",
+    "type": "Swim",
+    "name": "20x 100 Endurance",
+    "description": "Aquecimento \nRepeat 5x\n-100meters z1 pace\n-rest 20s intensity=rest\n\nBloco principal \nRepeat 10x\n-100meters z2 pace\n-rest 20s intensity=interval\n\nDesaquece \nRepeat 5x\n-100meters z1 pace\n-rest 20s intensity=rest\n\n"
+  },
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_2_2026-05-13-2026-05-20",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-20T06:00:00",
+    "type": "Ride",
+    "name": "Bike - Endurance",
+    "description": "Treino gerado automaticamente a partir da periodiza��o aprovada.\nDraft: 9So0UAJ97ZPDhgXBgxkD\nObjetivo principal: Aerobic Base\nCarga estimada (TSS): 68\nModo bike: heart_rate\n\nWarmup\n- 10m Z1 power=3s 90-95rpm intensity=warmup\n- 10m Z2 power=3s 90-95rpm intensity=warmup\n\nMain Set Repeat 3x\n- 1m Z3 power=3s 90-95rpm\n- 8m Z2 power=3s 90-95rpm intensity=active\n- 2m Z4 power=3s 90-95rpm intensity=recovery\n\nCooldown\n- 10m Z1 power=3s 90-95rpm Pace intensity=cooldown\n\n---\nObjetivo: Aumentar o threshold e potencia sustentada.\nBy Endure.LabbS\n\nAjuste final pelo coach antes da execu��o."
+  },
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_3_2026-05-14-2026-05-21",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-21T06:00:00",
+    "type": "Run",
+    "name": "Corrida - Endurance",
+    "description": "Warmup\n\nAquecimento \n- 0.8km Z1 Pace\n- Rest 1m intensity=rest\n\nBloco principal \n\nRepeat 4x\n- Corra Forte! 4m Z3 Pace intensity=active\n- Descanso ativo 0.4km Z1 Pace intensity=recovery\n\nCooldown\n\n- 10m Z2 Pace\n\nBy Endure.LabbS"
+  },
+  {
+    "external_id": "onda42_test_strength_i109108_2026-05-14-2026-05-21",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-21T17:00:00",
+    "type": "WeightTraining",
+    "name": "Musculacao - 10 exercicios (teste Onda 42)",
+    "description": "Sessao de musculacao - corpo inteiro\nDuracao alvo: ~60 min\nFoco: forca geral, mobilidade e core\n\nExercicios:\n1. Agachamento livre - 4x10 (descanso 90s)\n2. Leg press 45 - 3x12 (descanso 75s)\n3. Cadeira extensora - 3x12 (descanso 60s)\n4. Stiff com halteres - 3x12 (descanso 75s)\n5. Supino reto com barra - 4x10 (descanso 90s)\n6. Remada curvada - 3x12 (descanso 75s)\n7. Desenvolvimento militar - 3x10 (descanso 75s)\n8. Rosca direta com barra - 3x12 (descanso 60s)\n9. Triceps testa - 3x12 (descanso 60s)\n10. Prancha abdominal - 3x45s (descanso 30s)\n\nAquecimento: 5 min mobilidade articular + 5 min bike leve\nVolta a calma: 5 min alongamento estatico\n\nBy Endure.LabbS - teste Onda 4.2 (strava extraction)"
+  },
+  {
+    "external_id": "training_20260522_z2-do-jarbas",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-22T00:00:00",
+    "type": "Ride",
+    "name": "Z2 do Jarbas",
+    "description": "Bloco principal \n\n- 2h Z2 power=3s"
+  },
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_4_2026-05-15-2026-05-22",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-22T06:00:00",
+    "type": "Swim",
+    "name": "Natao - Tcnica",
+    "description": "Treino gerado automaticamente a partir da periodiza��o aprovada.\nDraft: 9So0UAJ97ZPDhgXBgxkD\nObjetivo principal: Technique\nCarga estimada (TSS): 26\nModo bike: heart_rate\n\nWarmup\n- 200meters Z1 Pace intensity=warmup\n- Rest 15s intensity=rest\n\nDrills Repeat 4x\n- 50meters Z2 Pace intensity=active\n- Rest 15s intensity=rest\n\nMain Set Repeat 3x\n- 300meters Z2 Pace intensity=active\n- Rest 20s intensity=rest\n\nCooldown\n- 100meters Z1 Pace intensity=cooldown\n\n---\nObjetivo: Refinar tecnica sob fadiga aerobica.\nBy Endure.LabbS\n\nAjuste final pelo coach antes da execu��o."
+  },
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_6_2026-05-17-2026-05-23",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-23T06:00:00",
+    "type": "Run",
+    "name": "Corrida - Longo",
+    "description": "Warmup\n- 10m Ramp Z1-Z2 Pace intensity=warmup\n\nMain Set\n- 66m Z2 Pace intensity=active\n- 2m maxeffort\n\nCooldown\n- 7m Ramp Z2-Z1 Pace intensity=cooldown\n\n\nObjetivo: Desenvolver base aerobica e tolerancia estrutural.\nBy Endure.LabbS\n\nAjuste final pelo coach antes da execu��o.\n"
+  },
+  {
+    "external_id": "periodization_andre_9So0UAJ97ZPDhgXBgxkD_5_2026-05-16-2026-05-24",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-24T06:00:00",
+    "type": "Ride",
+    "name": "Bike - Longo",
+    "description": "Treino gerado automaticamente a partir da periodiza��o aprovada.\nDraft: 9So0UAJ97ZPDhgXBgxkD\nObjetivo principal: Aerobic Base\nCarga estimada (TSS): 95\nModo bike: heart_rate\n\nWarmup\n- 20m Z2 HR Pace intensity=warmup\n\nMain Set Repeat 4x\n- 10m Z4 HR Pace intensity=active\n- 3m Z1 HR Pace intensity=recovery\n\nCooldown\n- 10m Z1 HR Pace intensity=cooldown\n\n---\nObjetivo: Aumentar o threshold e potencia sustentada.\nBy Endure.LabbS\n\nAjuste final pelo coach antes da execu��o."
+  },
+  {
+    "external_id": "swap-recovery-andre-2026-05-17-test_event_smoke_2026-05-17-2026-05-24",
+    "category": "WORKOUT",
+    "start_date_local": "2026-05-24T08:00:00",
+    "type": "Run",
+    "name": "REGENERATIVO (Subst Smoke Test)",
+    "description": "Aquecimento\n- 10m Z1\n\nMain Set\n- 30m Z1\n\nCooldown\n- 10m Z1\n\n[Ajuste automático via Bio-Feedback V2]\nBy Gemini CLI"
+  }
+]
